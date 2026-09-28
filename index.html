@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CYBERZERO — Cyber Detective Simulation</title>
-  <meta name="description" content="CYBERZERO: An interactive cybersecurity simulation game. Become a Cyber Detective and investigate phishing emails." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="CYBERZERO: An interactive cybersecurity simulation game. Become a Cyber Detective and investigate phishing emails.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -24,15 +24,15 @@
     <!-- Column 1: Main / Unlocked Apps -->
     <div class="desktop-icons-col">
       <div class="desktop-icon" id="icon-gmail" onclick="openApp('gmail')" title="Email — Phishing Investigation (Ace)">
-        <div class="icon-img"><img src="assets/icons/apps/mail.svg" alt="Email" style="width:36px;height:36px;"></div>
+        <div class="icon-img"><img src="assets/icons/apps/mail.svg" alt="Email"></div>
         <span>Email</span>
       </div>
       <div class="desktop-icon" id="icon-browser" onclick="openApp('browser')" title="Browser — Cyber-Net Web Search">
-        <div class="icon-img"><img src="assets/icons/apps/browser.svg" alt="Browser" style="width:36px;height:36px;"></div>
+        <div class="icon-img"><img src="assets/icons/apps/browser.svg" alt="Browser"></div>
         <span>Browser</span>
       </div>
       <div class="desktop-icon" id="icon-notes" onclick="toggleStickyNote()">
-        <div class="icon-img"><img src="assets/icons/apps/note.svg" alt="Notes" style="width:36px;height:36px;"></div>
+        <div class="icon-img"><img src="assets/icons/apps/note.svg" alt="Notes"></div>
         <span>Sticky Notes</span>
       </div>
     </div>
@@ -40,15 +40,15 @@
     <!-- Column 2: Threat Progression / Locked Apps -->
     <div class="desktop-icons-col">
       <div class="desktop-icon locked" id="icon-folder" onclick="openApp('folder')" title="🔒 Locked — Complete Chapter 1 (Phishing) first">
-        <div class="icon-img"><img src="assets/icons/apps/folder.svg" alt="File Explorer" style="width:36px;height:36px;"></div>
+        <div class="icon-img"><img src="assets/icons/apps/folder.svg" alt="File Explorer"></div>
         <span>File Explorer</span>
       </div>
       <div class="desktop-icon locked" id="icon-antivirus" onclick="openApp('antivirus')" title="🔒 Locked — Complete Chapter 1 (Phishing) first">
-        <div class="icon-img"><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" style="width:36px;height:36px;"></div>
+        <div class="icon-img"><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus"></div>
         <span>Anti-Virus</span>
       </div>
       <div class="desktop-icon" id="icon-comms" onclick="openApp('comms')" title="Phone Link">
-        <div class="icon-img"><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" style="width:36px;height:36px;"></div>
+        <div class="icon-img"><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link"></div>
         <span>Phone Link</span>
       </div>
     </div>
@@ -57,7 +57,7 @@
   <!-- Sticky Note: Scoring Rules (pops up beside the desktop after the demo) — draggable, fixed title -->
   <div id="sticky-note" class="sticky-note hidden">
     <div class="sticky-note-tape" id="sticky-note-drag-handle" title="Drag to move"></div>
-    <button class="sticky-note-close" onclick="closeStickyNote()" title="Close note">✕</button>
+    <button type="button" class="sticky-note-close" onclick="closeStickyNote()" title="Close note">✕</button>
     <div class="sticky-note-header" id="sticky-note-drag-handle-2" title="Drag to move">
       <span id="sticky-note-title" class="sticky-note-title-text">📒 Detective's Notes</span>
     </div>
@@ -97,9 +97,9 @@
         <span>Email</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('gmail')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('gmail')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('gmail')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('gmail')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('gmail')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('gmail')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body gmail-body">
@@ -108,11 +108,11 @@
         <div class="gmail-logo">
           <span class="gmail-logo-g">E</span><span class="gmail-logo-mail">mail</span>
         </div>
-        <button class="gmail-compose-btn" disabled>✏ Compose</button>
+        <button type="button" class="gmail-compose-btn" disabled>✏ Compose</button>
         <div class="gmail-nav">
           <div class="gmail-nav-item active" id="nav-inbox" onclick="switchGmailFolder('inbox')">📥 Inbox <span id="inbox-count" class="inbox-badge">5</span></div>
           <div class="gmail-nav-item" id="nav-sent" onclick="switchGmailFolder('sent')">📤 Sent <span id="sent-count" class="inbox-badge">2</span></div>
-          <div class="gmail-nav-item" id="nav-trash" onclick="switchGmailFolder('trash')">🗑 Trash <span id="trash-count" class="inbox-badge" style="display:none;">0</span></div>
+          <div class="gmail-nav-item" id="nav-trash" onclick="switchGmailFolder('trash')">🗑 Trash <span id="trash-count" class="inbox-badge hidden-init">0</span></div>
         </div>
       </div>
 
@@ -131,9 +131,9 @@
         <!-- Email Detail View (Inbox investigation emails) -->
         <div id="email-detail-view" class="gmail-view">
           <div class="gmail-toolbar">
-            <button class="back-btn" onclick="returnToInbox()">← Back to Inbox</button>
-            <button id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Evidence</button>
-            <button id="report-btn" class="report-btn" onclick="showReportDialog()">📋 Report</button>
+            <button type="button" class="back-btn" onclick="returnToInbox()">← Back to Inbox</button>
+            <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Evidence</button>
+            <button type="button" id="report-btn" class="report-btn" onclick="showReportDialog()">📋 Report</button>
           </div>
 
           <div id="email-content" class="email-content">
@@ -155,8 +155,8 @@
         <!-- Sent / Trash Detail View — same reading-pane look as Inbox, read-only -->
         <div id="sent-detail-view" class="gmail-view">
           <div class="gmail-toolbar">
-            <button class="back-btn" id="sent-detail-back-btn" onclick="closeSentDetailView()">← Back</button>
-            <button id="sent-detail-action-btn" class="report-btn" style="margin-left:auto;"></button>
+            <button type="button" class="back-btn" id="sent-detail-back-btn" onclick="closeSentDetailView()">← Back</button>
+            <button type="button" id="sent-detail-action-btn" class="report-btn ml-auto" aria-label="Action">Action</button>
           </div>
 
           <div id="sent-detail-content" class="email-content">
@@ -175,44 +175,44 @@
         <!-- Rendered dynamically by renderBrowserTabs() -->
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('browser')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('browser')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('browser')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('browser')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('browser')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('browser')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body browser-body">
       <div class="browser-chrome">
         <div class="browser-nav-bar">
-          <button class="browser-nav-btn" id="browser-back" onclick="browserBack()" title="Back" disabled>←</button>
-          <button class="browser-nav-btn" id="browser-forward" onclick="browserForward()" title="Forward" disabled>→</button>
-          <button class="browser-nav-btn" onclick="browserRefresh()" title="Reload page">↻</button>
-          <button class="browser-nav-btn" onclick="browserGoHome()" title="Google Home">🏠</button>
+          <button type="button" class="browser-nav-btn" id="browser-back" onclick="browserBack()" title="Back" disabled>←</button>
+          <button type="button" class="browser-nav-btn" id="browser-forward" onclick="browserForward()" title="Forward" disabled>→</button>
+          <button type="button" class="browser-nav-btn" onclick="browserRefresh()" title="Reload page">↻</button>
+          <button type="button" class="browser-nav-btn" onclick="browserGoHome()" title="Google Home">🏠</button>
           <div class="browser-omnibox-wrap">
             <div class="browser-security-indicator" id="browser-security">⚠️ Not Secure</div>
-            <input type="text" class="browser-url-bar" id="browser-url-input" value="" placeholder="Search Google, cyber threat intel, or enter URL..." autocomplete="off" spellcheck="false" onkeydown="handleBrowserUrlKey(event)" onfocus="this.select()" />
-            <button class="browser-go-btn" onclick="submitBrowserUrl()" title="Navigate / Search">➔</button>
+            <input type="text" class="browser-url-bar" id="browser-url-input" value="" placeholder="Search Google, cyber threat intel, or enter URL..." autocomplete="off" spellcheck="false" onkeydown="handleBrowserUrlKey(event)" onfocus="this.select()">
+            <button type="button" class="browser-go-btn" onclick="submitBrowserUrl()" title="Navigate / Search">➔</button>
           </div>
         </div>
 
         <!-- Bookmarks Toolbar -->
         <div class="browser-bookmarks-bar">
-          <button class="bookmark-btn" onclick="browserGo('https://www.cisa.gov/topics/malware')" title="Official Malware Threat Intelligence &amp; Classifications">
+          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.cisa.gov/topics/malware')" title="Official Malware Threat Intelligence &amp; Classifications">
             <span class="b-icon">🦠</span>
             <span>Malware Intel &amp; Defense</span>
           </button>
-          <button class="bookmark-btn" onclick="browserGo('https://www.cisa.gov')" title="Cybersecurity &amp; Infrastructure Security Agency">
+          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.cisa.gov')" title="Cybersecurity &amp; Infrastructure Security Agency">
             <span class="b-icon">🛡️</span>
             <span>CISA Cyber Defense</span>
           </button>
-          <button class="bookmark-btn" onclick="browserGo('https://www.consumer.ftc.gov/articles/how-recognize-phishing')" title="Phishing Scam Detection &amp; Prevention Guide">
+          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.consumer.ftc.gov/articles/how-recognize-phishing')" title="Phishing Scam Detection &amp; Prevention Guide">
             <span class="b-icon">🎣</span>
             <span>Phishing Recognition Guide</span>
           </button>
-          <button class="bookmark-btn" onclick="browserGo('https://www.google.com/search?q=ransomware+protection+guide')" title="Ransomware Protection Guide">
+          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.google.com/search?q=ransomware+protection+guide')" title="Ransomware Protection Guide">
             <span class="b-icon">🔒</span>
             <span>Ransomware Guide</span>
           </button>
-          <button class="bookmark-btn" onclick="browserGoHome()" title="Google Search Home">
+          <button type="button" class="bookmark-btn" onclick="browserGoHome()" title="Google Search Home">
             <span class="b-icon">🌐</span>
             <span>Google Home</span>
           </button>
@@ -221,14 +221,14 @@
 
       <div id="browser-content" class="browser-content">
         <div class="browser-home">
-          <div class="google-logo"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+          <div class="google-logo"><span class="gl-blue">G</span><span class="gl-red">o</span><span class="gl-yellow">o</span><span class="gl-blue">g</span><span class="gl-green">l</span><span class="gl-red">e</span></div>
           <div class="google-search-box">
             <span class="google-search-icon">🔍</span>
-            <input type="text" id="browser-home-search" class="google-search-input" placeholder="Search Google or type a URL (e.g. malware, phishing, cisa.gov)" autocomplete="off" spellcheck="false" onkeydown="handleHomeSearchKey(event)" />
+            <input type="text" id="browser-home-search" class="google-search-input" placeholder="Search Google or type a URL (e.g. malware, phishing, cisa.gov)" autocomplete="off" spellcheck="false" onkeydown="handleHomeSearchKey(event)">
           </div>
           <div class="google-search-actions">
-            <button class="google-btn" onclick="submitHomeSearch()">Google Search</button>
-            <button class="google-btn" onclick="browserGo('https://www.cisa.gov/topics/malware')">Explore Malware Threat Intel</button>
+            <button type="button" class="google-btn" onclick="submitHomeSearch()">Google Search</button>
+            <button type="button" class="google-btn" onclick="browserGo('https://www.cisa.gov/topics/malware')">Explore Malware Threat Intel</button>
           </div>
         </div>
       </div>
@@ -243,14 +243,14 @@
         <div class="explorer-tab active" id="explorer-active-tab">
           <span class="tab-icon">📁</span>
           <span class="tab-title" id="explorer-tab-title">Downloads</span>
-          <button class="tab-close-btn" onclick="closeApp('folder')" title="Close Tab">✕</button>
+          <button type="button" class="tab-close-btn" onclick="closeApp('folder')" title="Close Tab">✕</button>
         </div>
-        <button class="explorer-tab-add" onclick="createNewExplorerTab()" title="New tab">+</button>
+        <button type="button" class="explorer-tab-add" onclick="createNewExplorerTab()" title="New tab">+</button>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('folder')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('folder')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('folder')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('folder')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('folder')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('folder')" title="Close">✕</button>
       </div>
     </div>
 
@@ -258,41 +258,41 @@
       <!-- Modern Command Bar / Ribbon -->
       <div class="explorer-command-bar">
         <div class="cmd-group">
-          <button class="cmd-btn" onclick="explorerNewItem()" title="New item">
-            <span class="cmd-icon"><img src="assets/icons/folder icons/new.svg" alt="New" /></span>
+          <button type="button" class="cmd-btn" onclick="explorerNewItem()" title="New item">
+            <span class="cmd-icon"><img src="assets/icons/folder icons/new.svg" alt="New"></span>
             <span class="cmd-label">New</span>
           </button>
         </div>
         <div class="cmd-divider"></div>
         <div class="cmd-group">
-          <button class="cmd-btn" onclick="explorerCut()" title="Cut">
-            <span class="cmd-icon"><img src="assets/icons/folder icons/cut.svg" alt="Cut" /></span>
+          <button type="button" class="cmd-btn" onclick="explorerCut()" title="Cut">
+            <span class="cmd-icon"><img src="assets/icons/folder icons/cut.svg" alt="Cut"></span>
           </button>
-          <button class="cmd-btn" onclick="explorerCopy()" title="Copy">
-            <span class="cmd-icon"><img src="assets/icons/folder icons/copy.svg" alt="Copy" /></span>
+          <button type="button" class="cmd-btn" onclick="explorerCopy()" title="Copy">
+            <span class="cmd-icon"><img src="assets/icons/folder icons/copy.svg" alt="Copy"></span>
           </button>
-          <button class="cmd-btn" onclick="explorerRename()" title="Rename">
-            <span class="cmd-icon"><img src="assets/icons/folder icons/rename.svg" alt="Rename" /></span>
+          <button type="button" class="cmd-btn" onclick="explorerRename()" title="Rename">
+            <span class="cmd-icon"><img src="assets/icons/folder icons/rename.svg" alt="Rename"></span>
           </button>
-          <button class="cmd-btn" onclick="explorerDelete()" title="Delete">
-            <span class="cmd-icon"><img src="assets/icons/folder icons/delete.svg" alt="Delete" /></span>
+          <button type="button" class="cmd-btn" onclick="explorerDelete()" title="Delete">
+            <span class="cmd-icon"><img src="assets/icons/folder icons/delete.svg" alt="Delete"></span>
           </button>
         </div>
         <div class="cmd-spacer"></div>
         <div class="cmd-group">
-          <button class="cmd-btn" id="cmd-toggle-preview" onclick="toggleExplorerPreviewPane()" title="Toggle Preview Pane">
-            <span class="cmd-icon"><img src="assets/icons/folder icons/file_preview.svg" alt="Preview" /></span>
+          <button type="button" class="cmd-btn" id="cmd-toggle-preview" onclick="toggleExplorerPreviewPane()" title="Toggle Preview Pane">
+            <span class="cmd-icon"><img src="assets/icons/folder icons/file_preview.svg" alt="Preview"></span>
             <span class="cmd-label">Preview</span>
           </button>
           <div class="cmd-view-switcher">
-            <button class="cmd-btn active" id="cmd-view-details" onclick="setExplorerViewMode('details')" title="Details View">
+            <button type="button" class="cmd-btn active" id="cmd-view-details" onclick="setExplorerViewMode('details')" title="Details View">
               <span class="cmd-icon">📄</span>
             </button>
-            <button class="cmd-btn" id="cmd-view-grid" onclick="setExplorerViewMode('grid')" title="Large Icons View">
+            <button type="button" class="cmd-btn" id="cmd-view-grid" onclick="setExplorerViewMode('grid')" title="Large Icons View">
               <span class="cmd-icon">⊞</span>
             </button>
           </div>
-          <button class="cmd-btn cmd-btn-tutorial" onclick="startMalwareDemo()" title="How to Play Malware Tutorial">
+          <button type="button" class="cmd-btn cmd-btn-tutorial" onclick="startMalwareDemo()" title="How to Play Malware Tutorial">
             <span class="cmd-icon">❓</span>
             <span class="cmd-label">Tutorial</span>
           </button>
@@ -302,10 +302,10 @@
       <!-- Address Bar & Navigation Controls -->
       <div class="explorer-nav-bar">
         <div class="nav-arrows">
-          <button class="nav-arrow-btn" onclick="explorerGoBack()" title="Back">←</button>
-          <button class="nav-arrow-btn" onclick="explorerGoForward()" title="Forward">→</button>
-          <button class="nav-arrow-btn" onclick="explorerGoUp()" title="Up to This PC">↑</button>
-          <button class="nav-arrow-btn" onclick="refreshExplorerFolder()" title="Refresh">🔄</button>
+          <button type="button" class="nav-arrow-btn" onclick="explorerGoBack()" title="Back">←</button>
+          <button type="button" class="nav-arrow-btn" onclick="explorerGoForward()" title="Forward">→</button>
+          <button type="button" class="nav-arrow-btn" onclick="explorerGoUp()" title="Up to This PC">↑</button>
+          <button type="button" class="nav-arrow-btn" onclick="refreshExplorerFolder()" title="Refresh">🔄</button>
         </div>
         <!-- Breadcrumb Address Bar -->
         <div class="explorer-address-bar">
@@ -321,8 +321,8 @@
         <!-- Search Box -->
         <div class="explorer-search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="folder-search-input" placeholder="Search Downloads..." oninput="filterFolderFiles(this.value)" />
-          <button class="search-clear-btn" id="folder-search-clear" onclick="clearFolderSearch()" title="Clear">✕</button>
+          <input type="text" id="folder-search-input" placeholder="Search Downloads..." oninput="filterFolderFiles(this.value)">
+          <button type="button" class="search-clear-btn" id="folder-search-clear" onclick="clearFolderSearch()" title="Clear">✕</button>
         </div>
       </div>
 
@@ -338,7 +338,7 @@
           <div class="sidebar-item active" id="sidebar-folder-downloads" onclick="switchExplorerFolder('downloads')">
             <span class="sb-icon">⬇️</span>
             <span class="sb-label">Downloads</span>
-            <span class="sb-badge" id="downloads-badge" style="display:none">0</span>
+            <span class="sb-badge hidden-init" id="downloads-badge">0</span>
           </div>
           <div class="sidebar-item" id="sidebar-folder-documents" onclick="switchExplorerFolder('documents')">
             <span class="sb-icon">📄</span>
@@ -415,8 +415,8 @@
         <div class="status-right">
           <span class="status-shield" id="explorer-shield-status">🛡️ ShieldAV Real-Time: ON</span>
           <span class="status-sep">|</span>
-          <button class="status-view-btn active" id="stat-btn-details" onclick="setExplorerViewMode('details')" title="Details view">📄</button>
-          <button class="status-view-btn" id="stat-btn-grid" onclick="setExplorerViewMode('grid')" title="Large icons view">⊞</button>
+          <button type="button" class="status-view-btn active" id="stat-btn-details" onclick="setExplorerViewMode('details')" title="Details view">📄</button>
+          <button type="button" class="status-view-btn" id="stat-btn-grid" onclick="setExplorerViewMode('grid')" title="Large icons view">⊞</button>
         </div>
       </div>
     </div>
@@ -430,30 +430,30 @@
         <span id="docviewer-title-text">Microsoft Word — project_architecture_notes.docx</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('docviewer')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('docviewer')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('docviewer')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('docviewer')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('docviewer')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('docviewer')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body docviewer-body">
       <!-- Word Top Menu Tabs -->
       <div class="word-menu-tabs">
         <span class="word-autosave-wrap"><span class="word-autosave-dot"></span> AutoSave [ON]</span>
-        <button class="word-tab active">File</button>
-        <button class="word-tab active">Home</button>
-        <button class="word-tab">Insert</button>
-        <button class="word-tab">Layout</button>
-        <button class="word-tab">References</button>
-        <button class="word-tab">Review</button>
-        <button class="word-tab">View</button>
-        <button class="word-tab">Help</button>
+        <button type="button" class="word-tab active">File</button>
+        <button type="button" class="word-tab active">Home</button>
+        <button type="button" class="word-tab">Insert</button>
+        <button type="button" class="word-tab">Layout</button>
+        <button type="button" class="word-tab">References</button>
+        <button type="button" class="word-tab">Review</button>
+        <button type="button" class="word-tab">View</button>
+        <button type="button" class="word-tab">Help</button>
         <div class="word-badge-clean">🛡️ Verified Clean Office Document (Zero Macro Payloads)</div>
       </div>
 
       <!-- Word Ribbon Toolbar -->
       <div class="word-ribbon">
         <div class="ribbon-group">
-          <button class="ribbon-btn" onclick="showToast('Clipboard copied', 'info')" title="Paste">📋 Paste</button>
+          <button type="button" class="ribbon-btn" onclick="showToast('Clipboard copied', 'info')" title="Paste">📋 Paste</button>
         </div>
         <div class="ribbon-divider"></div>
         <div class="ribbon-group font-group">
@@ -470,29 +470,29 @@
               <option>14</option>
               <option>16</option>
             </select>
-            <button class="ribbon-mini-btn active" title="Bold"><b>B</b></button>
-            <button class="ribbon-mini-btn" title="Italic"><i>I</i></button>
-            <button class="ribbon-mini-btn" title="Underline"><u>U</u></button>
-            <button class="ribbon-mini-btn" title="Highlight">🖊️</button>
+            <button type="button" class="ribbon-mini-btn active" title="Bold"><b>B</b></button>
+            <button type="button" class="ribbon-mini-btn" title="Italic"><i>I</i></button>
+            <button type="button" class="ribbon-mini-btn" title="Underline"><u>U</u></button>
+            <button type="button" class="ribbon-mini-btn" title="Highlight">🖊️</button>
           </div>
           <div class="font-row">
-            <button class="ribbon-mini-btn" title="Align Left">⫷</button>
-            <button class="ribbon-mini-btn" title="Align Center">≡</button>
-            <button class="ribbon-mini-btn" title="Align Right">⫸</button>
-            <button class="ribbon-mini-btn" title="Bullets">•≡</button>
-            <button class="ribbon-mini-btn" title="Numbers">1≡</button>
+            <button type="button" class="ribbon-mini-btn" title="Align Left">⫷</button>
+            <button type="button" class="ribbon-mini-btn" title="Align Center">≡</button>
+            <button type="button" class="ribbon-mini-btn" title="Align Right">⫸</button>
+            <button type="button" class="ribbon-mini-btn" title="Bullets">•≡</button>
+            <button type="button" class="ribbon-mini-btn" title="Numbers">1≡</button>
           </div>
         </div>
         <div class="ribbon-divider"></div>
         <div class="ribbon-group styles-group">
-          <button class="ribbon-style-card active">Normal</button>
-          <button class="ribbon-style-card">Heading 1</button>
-          <button class="ribbon-style-card">Heading 2</button>
-          <button class="ribbon-style-card">Title</button>
+          <button type="button" class="ribbon-style-card active">Normal</button>
+          <button type="button" class="ribbon-style-card">Heading 1</button>
+          <button type="button" class="ribbon-style-card">Heading 2</button>
+          <button type="button" class="ribbon-style-card">Title</button>
         </div>
         <div class="ribbon-divider"></div>
         <div class="ribbon-group actions-group">
-          <button class="ribbon-btn" onclick="window.print()" title="Print">🖨️ Print</button>
+          <button type="button" class="ribbon-btn" onclick="window.print()" title="Print">🖨️ Print</button>
         </div>
       </div>
 
@@ -514,7 +514,7 @@
         <span class="doc-sec-badge">🛡️ Macro Execution Disabled (Protected View)</span>
         <div class="word-zoom-controls">
           <span>100%</span>
-          <input type="range" min="50" max="150" value="100" class="word-zoom-slider" oninput="setWordZoom(this.value)" />
+          <input type="range" min="50" max="150" value="100" class="word-zoom-slider" oninput="setWordZoom(this.value)">
         </div>
       </div>
     </div>
@@ -528,35 +528,35 @@
         <span id="imageviewer-title-text">Photos — annual_team_retreat.jpg</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('imageviewer')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('imageviewer')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('imageviewer')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('imageviewer')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('imageviewer')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('imageviewer')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body imageviewer-body">
       <!-- Photos Top Action Bar -->
       <div class="photos-toolbar">
-        <button class="photo-tool-btn" onclick="imgViewerZoomIn()" title="Zoom In">🔍 +</button>
-        <button class="photo-tool-btn" onclick="imgViewerZoomOut()" title="Zoom Out">🔍 −</button>
-        <button class="photo-tool-btn" onclick="imgViewerZoomReset()" title="Actual Size (1:1)">1:1</button>
+        <button type="button" class="photo-tool-btn" onclick="imgViewerZoomIn()" title="Zoom In">🔍 +</button>
+        <button type="button" class="photo-tool-btn" onclick="imgViewerZoomOut()" title="Zoom Out">🔍 −</button>
+        <button type="button" class="photo-tool-btn" onclick="imgViewerZoomReset()" title="Actual Size (1:1)">1:1</button>
         <div class="photo-divider"></div>
-        <button class="photo-tool-btn" onclick="imgViewerRotateLeft()" title="Rotate Left">↺ Rotate</button>
-        <button class="photo-tool-btn" onclick="imgViewerRotateRight()" title="Rotate Right">↻ Rotate</button>
+        <button type="button" class="photo-tool-btn" onclick="imgViewerRotateLeft()" title="Rotate Left">↺ Rotate</button>
+        <button type="button" class="photo-tool-btn" onclick="imgViewerRotateRight()" title="Rotate Right">↻ Rotate</button>
         <div class="photo-divider"></div>
-        <button class="photo-tool-btn active" id="btn-toggle-img-info" onclick="toggleImageInfoDrawer()" title="File Info">ℹ️ Details</button>
+        <button type="button" class="photo-tool-btn active" id="btn-toggle-img-info" onclick="toggleImageInfoDrawer()" title="File Info">ℹ️ Details</button>
       </div>
 
       <!-- Photos Canvas & Drawer -->
       <div class="photos-workspace">
         <div class="photos-canvas" id="photos-canvas">
-          <img id="imgviewer-display" src="assets/background/Coffe shop.png" alt="Viewing Image" />
+          <img id="imgviewer-display" src="assets/background/Coffe shop.png" alt="Viewing Image">
         </div>
 
         <!-- Toggleable Info Drawer -->
         <div class="photos-info-drawer" id="photos-info-drawer">
           <div class="pinfo-header">
             <strong>Photo Information</strong>
-            <button class="pinfo-close" onclick="toggleImageInfoDrawer()">✕</button>
+            <button type="button" class="pinfo-close" onclick="toggleImageInfoDrawer()">✕</button>
           </div>
           <div class="pinfo-list" id="pinfo-list">
             <!-- Populated by JS -->
@@ -572,7 +572,7 @@
         <span class="status-sep">|</span>
         <span id="photos-status-zoom">Zoom: 100%</span>
         <span class="status-sep">|</span>
-        <span class="badge-clean" style="font-size:10px">✓ Clean Photographic Asset</span>
+        <span class="badge-clean badge-clean-sm">✓ Clean Photographic Asset</span>
       </div>
     </div>
   </div>
@@ -585,9 +585,9 @@
         <span id="videoplayer-title-text">Media Player — cyber_awareness_clip.mp4</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('videoplayer')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('videoplayer')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('videoplayer')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('videoplayer')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('videoplayer')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('videoplayer')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body videoplayer-body">
@@ -627,28 +627,28 @@
       <div class="vp-controls">
         <!-- Progress Bar -->
         <div class="vp-progress-container" id="vp-progress-container" onclick="vpSeek(event)">
-          <div class="vp-progress-fill" id="vp-progress-fill" style="width:0%"></div>
-          <div class="vp-progress-thumb" id="vp-progress-thumb" style="left:0%"></div>
+          <div class="vp-progress-fill progress-zero-w" id="vp-progress-fill"></div>
+          <div class="vp-progress-thumb progress-zero-l" id="vp-progress-thumb"></div>
         </div>
 
         <div class="vp-buttons-row">
           <div class="vp-btn-group">
-            <button class="vp-btn" id="vp-play-btn" onclick="vpTogglePlay()" title="Play / Pause">▶</button>
-            <button class="vp-btn" onclick="vpSkip(-10)" title="Rewind 10s">⏪ 10s</button>
-            <button class="vp-btn" onclick="vpSkip(10)" title="Forward 10s">10s ⏩</button>
+            <button type="button" class="vp-btn" id="vp-play-btn" onclick="vpTogglePlay()" title="Play / Pause">▶</button>
+            <button type="button" class="vp-btn" onclick="vpSkip(-10)" title="Rewind 10s">⏪ 10s</button>
+            <button type="button" class="vp-btn" onclick="vpSkip(10)" title="Forward 10s">10s ⏩</button>
             <span class="vp-time" id="vp-time-display">0:00 / 0:00</span>
           </div>
 
           <div class="vp-btn-group">
-            <button class="vp-btn" id="vp-mute-btn" onclick="vpToggleMute()" title="Mute / Unmute">🔊</button>
-            <input type="range" min="0" max="1" step="0.05" value="1" class="vp-volume-slider" id="vp-volume-slider" oninput="vpSetVolume(this.value)" title="Volume" />
+            <button type="button" class="vp-btn" id="vp-mute-btn" onclick="vpToggleMute()" title="Mute / Unmute">🔊</button>
+            <input type="range" min="0" max="1" step="0.05" value="1" class="vp-volume-slider" id="vp-volume-slider" oninput="vpSetVolume(this.value)" title="Volume">
             <select class="vp-speed-select" onchange="vpSetSpeed(this.value)" title="Playback Speed">
               <option value="0.75">0.75x</option>
               <option value="1" selected>1.0x</option>
               <option value="1.25">1.25x</option>
               <option value="1.5">1.5x</option>
             </select>
-            <button class="vp-btn" onclick="vpToggleFullscreen()" title="Fullscreen">⛶</button>
+            <button type="button" class="vp-btn" onclick="vpToggleFullscreen()" title="Fullscreen">⛶</button>
           </div>
         </div>
       </div>
@@ -686,9 +686,9 @@
         </div>
 
         <div class="smartscreen-actions">
-          <button class="btn-danger" id="smartscreen-btn-quarantine" onclick="smartscreenQuarantine()">🛡️ Quarantine Immediately (+100 pts)</button>
-          <button class="btn-primary" id="smartscreen-btn-scan" onclick="smartscreenScan()">⚡ Deep Scan with ShieldAV</button>
-          <button class="btn-ghost" onclick="closeSmartScreenModal()">Don't Run (Safe)</button>
+          <button type="button" class="btn-danger" id="smartscreen-btn-quarantine" onclick="smartscreenQuarantine()">🛡️ Quarantine Immediately (+100 pts)</button>
+          <button type="button" class="btn-primary" id="smartscreen-btn-scan" onclick="smartscreenScan()">⚡ Deep Scan with ShieldAV</button>
+          <button type="button" class="btn-ghost" onclick="closeSmartScreenModal()">Don't Run (Safe)</button>
         </div>
       </div>
     </div>
@@ -703,9 +703,9 @@
         <span>ShieldAV — CyberZero Security Center</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('antivirus')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('antivirus')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('antivirus')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('antivirus')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('antivirus')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('antivirus')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body av-body">
@@ -719,7 +719,7 @@
         <!-- Real-Time Protection Toggle Button -->
         <div class="av-toggle-wrap">
           <span class="av-toggle-label">PROTECTION:</span>
-          <button class="av-toggle-btn active" id="av-realtime-toggle" onclick="toggleAntiVirusProtection()" title="Click to turn Real-Time Protection ON or OFF">
+          <button type="button" class="av-toggle-btn active" id="av-realtime-toggle" onclick="toggleAntiVirusProtection()" title="Click to turn Real-Time Protection ON or OFF">
             <span class="av-toggle-slider"></span>
             <span class="av-toggle-text" id="av-toggle-text">ON</span>
           </button>
@@ -727,7 +727,7 @@
         <div class="av-stats-badge" id="av-stats-badge">
           <span id="av-quarantine-count">0</span> / 4 QUARANTINED
         </div>
-        <button class="btn-ghost btn-sm" onclick="startMalwareDemo()" title="How to Play Malware Tutorial" style="font-size:11px;padding:4px 10px;margin-left:10px">❓ Tutorial</button>
+        <button type="button" class="btn-ghost btn-sm btn-av-tutorial" onclick="startMalwareDemo()" title="How to Play Malware Tutorial">❓ Tutorial</button>
       </div>
 
       <!-- AV Main Content -->
@@ -739,7 +739,7 @@
               <div class="av-tc-name" id="av-tc-name">No file selected for scan</div>
               <div class="av-tc-detail" id="av-tc-detail">Select a file from the Folder app or click "Quick Scan All"</div>
             </div>
-            <button class="av-scan-btn" id="av-scan-btn" onclick="startActiveScan()">⚡ Scan File</button>
+            <button type="button" class="av-scan-btn" id="av-scan-btn" onclick="startActiveScan()">⚡ Scan File</button>
           </div>
 
           <!-- Scanning Progress Bar / Radar -->
@@ -777,13 +777,13 @@
   <div id="win-comms" class="app-window hidden" data-app="comms">
     <div class="win-titlebar" id="titlebar-comms">
       <div class="win-title">
-        <span class="win-icon"><img src="assets/icons/apps/messages.svg" alt="Phone Link" style="width:16px;height:16px;vertical-align:middle;"></span>
+        <span class="win-icon"><img src="assets/icons/apps/messages.svg" alt="Phone Link" class="win-icon-img-sm"></span>
         <span>Phone Link</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('comms')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('comms')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('comms')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('comms')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('comms')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('comms')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body phone-link-body">
@@ -820,14 +820,14 @@
       <div class="pl-main-panel">
         <!-- Nav Tabs -->
         <div class="pl-nav-tabs">
-          <button class="pl-tab active" id="pl-tab-messages" onclick="switchPhoneTab('messages')">
+          <button type="button" class="pl-tab active" id="pl-tab-messages" onclick="switchPhoneTab('messages')">
             <span>💬</span> Messages
             <span class="pl-tab-badge" id="pl-msg-badge">2</span>
           </button>
-          <button class="pl-tab" id="pl-tab-calls" onclick="switchPhoneTab('calls')">
+          <button type="button" class="pl-tab" id="pl-tab-calls" onclick="switchPhoneTab('calls')">
             <span>📞</span> Calls
           </button>
-          <button class="pl-tab" id="pl-tab-contacts" onclick="switchPhoneTab('contacts')">
+          <button type="button" class="pl-tab" id="pl-tab-contacts" onclick="switchPhoneTab('contacts')">
             <span>👥</span> Contacts
           </button>
         </div>
@@ -849,38 +849,38 @@
         <span>Settings — Network &amp; Internet — Wi-Fi</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('wifi-settings')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('wifi-settings')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('wifi-settings')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('wifi-settings')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('wifi-settings')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('wifi-settings')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body wifi-settings-body">
       <!-- Sidebar Nav -->
       <div class="settings-sidebar">
         <div class="settings-nav-item active" id="wsnav-wifi" onclick="switchWifiSettingsTab('wifi')">
-          <span><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:16px;height:16px;vertical-align:middle;"></span> Wi-Fi
+          <span><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="settings-nav-icon"></span> Wi-Fi
         </div>
         <div class="settings-nav-item" id="wsnav-bluetooth" onclick="switchWifiSettingsTab('bluetooth')">
-          <span><img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" style="width:16px;height:16px;vertical-align:middle;"></span> Bluetooth
+          <span><img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" class="settings-nav-icon"></span> Bluetooth
         </div>
         <div class="settings-nav-item" id="wsnav-airplane" onclick="switchWifiSettingsTab('airplane')">
-          <span><img src="assets/icons/networks/airlane mode.svg" alt="Airplane Mode" style="width:16px;height:16px;vertical-align:middle;"></span> Airplane Mode
+          <span><img src="assets/icons/networks/airlane mode.svg" alt="Airplane Mode" class="settings-nav-icon"></span> Airplane Mode
         </div>
       </div>
       <!-- Main Content -->
       <div class="settings-main">
         <!-- Wi-Fi Tab -->
         <div id="wstab-wifi">
-          <div class="settings-page-title"><img src="assets/icons/networks/wi-fi.svg" alt="" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">Wi-Fi</div>
+          <div class="settings-page-title"><img src="assets/icons/networks/wi-fi.svg" alt="" class="settings-title-icon">Wi-Fi</div>
           <div class="settings-section-header">Status</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07);">
+          <div class="ws-status-row">
             <div>
-              <div style="font-weight:600;font-size:14px;color:var(--text-primary)">Wi-Fi</div>
-              <div style="font-size:12px;color:var(--text-muted)" id="ws-wifi-state-label">On — Connected to CYBER-NET (WPA3-Enterprise)</div>
+              <div class="ws-status-label-primary">Wi-Fi</div>
+              <div class="ws-status-label-secondary" id="ws-wifi-state-label">On — Connected to CYBER-NET (WPA3-Enterprise)</div>
             </div>
-            <button id="ws-wifi-toggle-btn" onclick="wsToggleWifi()" style="padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;">Turn Off</button>
+            <button type="button" id="ws-wifi-toggle-btn" onclick="wsToggleWifi()" class="ws-toggle-btn">Turn Off</button>
           </div>
-          <div class="settings-section-header" style="margin-top:16px;">Available Networks</div>
+          <div class="settings-section-header settings-section-header-mt">Available Networks</div>
           <div id="wifi-networks-settings-list" class="wifi-networks-settings-list">
             <!-- Rendered by JS -->
           </div>
@@ -889,97 +889,97 @@
             <!-- Rendered by JS -->
           </div>
           <!-- Narrator Tip -->
-          <div class="g4-narrator-tip" id="wifi-narrator-tip" style="display:none;">
+          <div class="g4-narrator-tip hidden-init" id="wifi-narrator-tip">
             <span class="g4-narrator-icon">🎙️</span>
             <p>"Don't trust a network simply because its name looks familiar. Verify the network name with the establishment or another trusted source."</p>
           </div>
         </div>
 
         <!-- Bluetooth Tab -->
-        <div id="wstab-bluetooth" style="display:none;">
-          <div class="settings-page-title"><img src="assets/icons/networks/bluetooth.svg" alt="" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">Bluetooth</div>
+        <div id="wstab-bluetooth" class="hidden-init">
+          <div class="settings-page-title"><img src="assets/icons/networks/bluetooth.svg" alt="" class="settings-title-icon">Bluetooth</div>
           <div class="settings-section-header">Status</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07);">
+          <div class="ws-status-row">
             <div>
-              <div style="font-weight:600;font-size:14px;color:var(--text-primary)">Bluetooth</div>
-              <div style="font-size:12px;color:var(--text-muted)" id="ws-bt-state-label">On — Student Headset connected</div>
+              <div class="ws-status-label-primary">Bluetooth</div>
+              <div class="ws-status-label-secondary" id="ws-bt-state-label">On — Student Headset connected</div>
             </div>
-            <button id="ws-bt-toggle-btn" onclick="wsToggleBluetooth()" style="padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;">Turn Off</button>
+            <button type="button" id="ws-bt-toggle-btn" onclick="wsToggleBluetooth()" class="ws-toggle-btn">Turn Off</button>
           </div>
-          <div class="settings-section-header" style="margin-top:16px;">Available Devices</div>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" style="width:18px;height:18px;">
+          <div class="settings-section-header settings-section-header-mt">Available Devices</div>
+          <div class="bt-device-list">
+            <div class="bt-device-row-connected">
+              <div class="bt-device-info-wrap">
+                <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" class="bt-icon-img">
                 <div>
-                  <div style="font-weight:600;font-size:13px;color:var(--text-primary)">Student Headset</div>
-                  <div style="font-size:11px;color:#38bdf8;">Connected • Audio device</div>
+                  <div class="bt-device-name">Student Headset</div>
+                  <div class="bt-device-status-connected">Connected • Audio device</div>
                 </div>
               </div>
-              <button onclick="showToast('🎧 Student Headset is already connected.','info')" style="padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:#00ff88;">Connected</button>
+              <button type="button" onclick="showToast('🎧 Student Headset is already connected.','info')" class="bt-btn-connected">Connected</button>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" style="width:18px;height:18px;opacity:0.5;">
+            <div class="bt-device-row">
+              <div class="bt-device-info-wrap">
+                <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" class="bt-icon-img-dim">
                 <div>
-                  <div style="font-weight:600;font-size:13px;color:var(--text-primary)">CyberLab Printer</div>
-                  <div style="font-size:11px;color:var(--text-muted);">Available • Printer</div>
+                  <div class="bt-device-name">CyberLab Printer</div>
+                  <div class="bt-device-status-muted">Available • Printer</div>
                 </div>
               </div>
-              <button onclick="showToast('🖨️ Connecting to CyberLab Printer...','info')" style="padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;">Pair</button>
+              <button type="button" onclick="showToast('🖨️ Connecting to CyberLab Printer...','info')" class="bt-btn-pair">Pair</button>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" style="width:18px;height:18px;opacity:0.5;">
+            <div class="bt-device-row">
+              <div class="bt-device-info-wrap">
+                <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" class="bt-icon-img-dim">
                 <div>
-                  <div style="font-weight:600;font-size:13px;color:var(--text-primary)">Unknown Device (BT-4F2A)</div>
-                  <div style="font-size:11px;color:var(--accent-orange,#fb923c);">⚠️ Unrecognized — Do not pair</div>
+                  <div class="bt-device-name">Unknown Device (BT-4F2A)</div>
+                  <div class="bt-device-status-warn">⚠️ Unrecognized — Do not pair</div>
                 </div>
               </div>
-              <button onclick="showToast('⚠️ Unknown Bluetooth device detected. Do not pair with unrecognized devices.','warning')" style="padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:#fb923c;">Inspect</button>
+              <button type="button" onclick="showToast('⚠️ Unknown Bluetooth device detected. Do not pair with unrecognized devices.','warning')" class="bt-btn-inspect">Inspect</button>
             </div>
           </div>
         </div>
 
         <!-- Airplane Mode Tab -->
-        <div id="wstab-airplane" style="display:none;">
-          <div class="settings-page-title"><img src="assets/icons/networks/airlane mode.svg" alt="" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">Airplane Mode</div>
+        <div id="wstab-airplane" class="hidden-init">
+          <div class="settings-page-title"><img src="assets/icons/networks/airlane mode.svg" alt="" class="settings-title-icon">Airplane Mode</div>
           <div class="settings-section-header">Status</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:10px;background:#1e293b;border:1px solid rgba(255,255,255,0.1);margin-bottom:18px;">
+          <div class="air-status-row">
             <div>
-              <div style="font-weight:700;font-size:14px;color:#f8fafc;">Airplane Mode</div>
-              <div style="font-size:12px;color:#94a3b8;margin-top:3px;" id="ws-air-state-label">Off — All wireless transmitters active</div>
+              <div class="air-label-primary">Airplane Mode</div>
+              <div class="air-label-secondary" id="ws-air-state-label">Off — All wireless transmitters active</div>
             </div>
-            <button id="ws-air-toggle-btn" onclick="wsToggleAirplane()" style="padding:7px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:rgba(56,189,248,0.15);border:1px solid #38bdf8;color:#e0f2fe;transition:all 0.2s ease;">Turn On</button>
+            <button type="button" id="ws-air-toggle-btn" onclick="wsToggleAirplane()" class="air-toggle-btn">Turn On</button>
           </div>
           <div class="settings-section-header">Wireless Transmitters</div>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
-            <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:8px;background:#1e293b;border:1px solid rgba(255,255,255,0.08);">
-              <img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;">
-              <div style="flex:1;">
-                <div style="font-weight:700;font-size:13px;color:#f8fafc;">Wi-Fi</div>
-                <div style="font-size:11.5px;color:#94a3b8;margin-top:2px;">Suspended in airplane mode</div>
+          <div class="air-transmitters-list">
+            <div class="air-transmitter-row">
+              <img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="air-icon-img">
+              <div class="air-transmitter-info">
+                <div class="air-transmitter-name">Wi-Fi</div>
+                <div class="air-transmitter-sub">Suspended in airplane mode</div>
               </div>
-              <span style="font-size:11px;color:#4ade80;font-weight:700;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);padding:3px 10px;border-radius:6px;" id="ws-air-wifi-status">Active</span>
+              <span class="air-status-active" id="ws-air-wifi-status">Active</span>
             </div>
-            <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:8px;background:#1e293b;border:1px solid rgba(255,255,255,0.08);">
-              <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" style="width:20px;height:20px;">
-              <div style="flex:1;">
-                <div style="font-weight:700;font-size:13px;color:#f8fafc;">Bluetooth</div>
-                <div style="font-size:11.5px;color:#94a3b8;margin-top:2px;">Suspended in airplane mode</div>
+            <div class="air-transmitter-row">
+              <img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" class="air-icon-img">
+              <div class="air-transmitter-info">
+                <div class="air-transmitter-name">Bluetooth</div>
+                <div class="air-transmitter-sub">Suspended in airplane mode</div>
               </div>
-              <span style="font-size:11px;color:#4ade80;font-weight:700;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);padding:3px 10px;border-radius:6px;" id="ws-air-bt-status">Active</span>
+              <span class="air-status-active" id="ws-air-bt-status">Active</span>
             </div>
-            <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:8px;background:#1e293b;border:1px solid rgba(255,255,255,0.08);">
-              <img src="assets/icons/networks/audio.svg" alt="Audio" style="width:20px;height:20px;">
-              <div style="flex:1;">
-                <div style="font-weight:700;font-size:13px;color:#f8fafc;">Audio (Speakers)</div>
-                <div style="font-size:11.5px;color:#94a3b8;margin-top:2px;">Not affected by airplane mode</div>
+            <div class="air-transmitter-row">
+              <img src="assets/icons/networks/audio.svg" alt="Audio" class="air-icon-img">
+              <div class="air-transmitter-info">
+                <div class="air-transmitter-name">Audio (Speakers)</div>
+                <div class="air-transmitter-sub">Not affected by airplane mode</div>
               </div>
-              <span style="font-size:11px;color:#38bdf8;font-weight:700;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);padding:3px 10px;border-radius:6px;">Always On</span>
+              <span class="air-status-always">Always On</span>
             </div>
           </div>
-          <div class="g4-narrator-tip" style="margin-top:16px;display:flex;">
+          <div class="g4-narrator-tip air-narrator-tip">
             <span class="g4-narrator-icon">🎙️</span>
             <p>"Airplane Mode disables all wireless transmitters — Wi-Fi, Bluetooth, and mobile data. Enable it only when required in restricted areas."</p>
           </div>
@@ -996,9 +996,9 @@
         <span>Settings — Network &amp; Security — Sharing</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('security-settings')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('security-settings')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('security-settings')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('security-settings')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('security-settings')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('security-settings')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body wifi-settings-body">
@@ -1017,13 +1017,13 @@
           <span class="g4-narrator-icon">🎙️</span>
           <p>"You're connected to a public network. Before continuing your work, check how your laptop is exposed."</p>
         </div>
-        <div class="settings-section-header" style="margin-top:14px;">Sharing &amp; Discovery</div>
+        <div class="settings-section-header settings-section-header-mt14">Sharing &amp; Discovery</div>
         <div id="security-settings-list" class="security-settings-list">
           <!-- Rendered by JS -->
         </div>
         <div id="sec-feedback" class="g4-sec-feedback hidden"></div>
-        <div class="g4-stage-nav" id="sec-stage-nav" style="display:none;">
-          <button class="btn-primary" onclick="group4NextStage()">Continue to Stage 3 →</button>
+        <div class="g4-stage-nav hidden-init" id="sec-stage-nav">
+          <button type="button" class="btn-primary" onclick="group4NextStage()">Continue to Stage 3 →</button>
         </div>
       </div>
     </div>
@@ -1037,9 +1037,9 @@
         <span>Task Manager — Processes</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('taskmanager')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('taskmanager')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('taskmanager')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('taskmanager')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('taskmanager')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('taskmanager')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body tm-body">
@@ -1068,9 +1068,9 @@
         <span>Security Scanner — Threat Analysis</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('scanner')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('scanner')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('scanner')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('scanner')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('scanner')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('scanner')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body scanner-body">
@@ -1080,7 +1080,7 @@
           <div class="scanner-title" id="scanner-title">Security Scanner Ready</div>
           <div class="scanner-sub" id="scanner-sub">Run a scan to detect threats on this device</div>
         </div>
-        <button class="scanner-run-btn" id="scanner-run-btn" onclick="runSecurityScan()">▶ Run Scan</button>
+        <button type="button" class="scanner-run-btn" id="scanner-run-btn" onclick="runSecurityScan()">▶ Run Scan</button>
       </div>
       <div class="scanner-progress hidden" id="scanner-progress">
         <div class="scanner-progress-label">
@@ -1101,9 +1101,9 @@
         <span>Incident Console — Chapter 4: Ransomware Response &amp; Vault Recovery</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn win-minimize" onclick="minimizeApp('ransomware')" title="Minimize">─</button>
-        <button class="win-btn win-maximize" onclick="toggleMaximize('ransomware')" title="Maximize">□</button>
-        <button class="win-btn win-close" onclick="closeApp('ransomware')" title="Close">✕</button>
+        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('ransomware')" title="Minimize">─</button>
+        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('ransomware')" title="Maximize">□</button>
+        <button type="button" class="win-btn win-close" onclick="closeApp('ransomware')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body ransomware-body">
@@ -1147,7 +1147,7 @@
   ══════════════════════════════════════════════════════ -->
   <div id="taskbar">
     <div class="taskbar-start">
-      <button class="start-btn" id="start-btn" onclick="toggleStartMenu(event)" title="Windows Start Menu (Search apps, settings &amp; tools)" aria-label="Start Menu">
+      <button type="button" class="start-btn" id="start-btn" onclick="toggleStartMenu(event)" title="Windows Start Menu (Search apps, settings &amp; tools)" aria-label="Start Menu">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
           <rect width="7" height="7" fill="#4FC3F7"/>
           <rect x="9" width="7" height="7" fill="#81D4FA"/>
@@ -1157,42 +1157,42 @@
       </button>
     </div>
     <div class="taskbar-apps">
-      <button class="taskbar-app-btn" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email — Phishing Investigation (Ace)">
-        <span><img src="assets/icons/apps/mail.svg" alt="Email" style="width:18px;height:18px;vertical-align:middle;"></span> Email
+      <button type="button" class="taskbar-app-btn" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email — Phishing Investigation (Ace)">
+        <span><img src="assets/icons/apps/mail.svg" alt="Email" class="taskbar-icon-img"></span> Email
       </button>
-      <button class="taskbar-app-btn" id="taskbar-browser" onclick="taskbarClick('browser')" title="Browser — Cyber-Net Web Search">
-        <span><img src="assets/icons/apps/browser.svg" alt="Browser" style="width:18px;height:18px;vertical-align:middle;"></span> Browser
+      <button type="button" class="taskbar-app-btn" id="taskbar-browser" onclick="taskbarClick('browser')" title="Browser — Cyber-Net Web Search">
+        <span><img src="assets/icons/apps/browser.svg" alt="Browser" class="taskbar-icon-img"></span> Browser
       </button>
-      <button class="taskbar-app-btn locked" id="taskbar-folder" onclick="taskbarClick('folder')" title="File Explorer — Complete Chapter 1 (Phishing) to unlock">
-        <span><img src="assets/icons/apps/folder.svg" alt="File Explorer" style="width:18px;height:18px;vertical-align:middle;"></span> File Explorer
+      <button type="button" class="taskbar-app-btn locked" id="taskbar-folder" onclick="taskbarClick('folder')" title="File Explorer — Complete Chapter 1 (Phishing) to unlock">
+        <span><img src="assets/icons/apps/folder.svg" alt="File Explorer" class="taskbar-icon-img"></span> File Explorer
       </button>
-      <button class="taskbar-app-btn locked" id="taskbar-antivirus" onclick="taskbarClick('antivirus')" title="ShieldAV Anti-Virus — Complete Chapter 1 (Phishing) to unlock">
-        <span><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" style="width:18px;height:18px;vertical-align:middle;"></span> Anti-Virus
+      <button type="button" class="taskbar-app-btn locked" id="taskbar-antivirus" onclick="taskbarClick('antivirus')" title="ShieldAV Anti-Virus — Complete Chapter 1 (Phishing) to unlock">
+        <span><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" class="taskbar-icon-img"></span> Anti-Virus
       </button>
-      <button class="taskbar-app-btn" id="taskbar-comms" onclick="taskbarClick('comms')" title="Phone Link">
-        <span><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" style="width:18px;height:18px;vertical-align:middle;"></span> Phone Link
+      <button type="button" class="taskbar-app-btn" id="taskbar-comms" onclick="taskbarClick('comms')" title="Phone Link">
+        <span><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" class="taskbar-icon-img"></span> Phone Link
       </button>
-      <button class="taskbar-app-btn hidden" id="taskbar-docviewer" onclick="taskbarClick('docviewer')" title="Microsoft Word">
+      <button type="button" class="taskbar-app-btn hidden" id="taskbar-docviewer" onclick="taskbarClick('docviewer')" title="Microsoft Word">
         <span>📄</span> Word
       </button>
-      <button class="taskbar-app-btn hidden" id="taskbar-imageviewer" onclick="taskbarClick('imageviewer')" title="Photos">
+      <button type="button" class="taskbar-app-btn hidden" id="taskbar-imageviewer" onclick="taskbarClick('imageviewer')" title="Photos">
         <span>🖼️</span> Photos
       </button>
-      <button class="taskbar-app-btn hidden" id="taskbar-videoplayer" onclick="taskbarClick('videoplayer')" title="Media Player">
+      <button type="button" class="taskbar-app-btn hidden" id="taskbar-videoplayer" onclick="taskbarClick('videoplayer')" title="Media Player">
         <span>🎬</span> Media Player
       </button>
     </div>
     <div class="taskbar-tray">
 
-      <button class="tray-btn" id="tray-volume-btn" onclick="toggleVolumeFlyout(event)" title="🔊 Sound &amp; Audio Volume Settings" aria-label="Speakers / Sound Settings">
-        <span id="tray-volume-icon" class="tray-icon"><img src="assets/icons/networks/audio.svg" alt="Sound" style="width:18px;height:18px;vertical-align:middle;"></span>
+      <button type="button" class="tray-btn" id="tray-volume-btn" onclick="toggleVolumeFlyout(event)" title="🔊 Sound &amp; Audio Volume Settings" aria-label="Speakers / Sound Settings">
+        <span id="tray-volume-icon" class="tray-icon"><img src="assets/icons/networks/audio.svg" alt="Sound" class="taskbar-icon-img"></span>
       </button>
-      <button class="tray-btn" id="tray-wifi-btn" onclick="toggleNetworkFlyout(event)" title="📶 Cyber-Net Wi-Fi, Bluetooth &amp; Quick Settings" aria-label="Network &amp; Quick Settings">
-        <span id="tray-wifi-icon" class="tray-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:18px;height:18px;vertical-align:middle;"></span>
+      <button type="button" class="tray-btn" id="tray-wifi-btn" onclick="toggleNetworkFlyout(event)" title="📶 Cyber-Net Wi-Fi, Bluetooth &amp; Quick Settings" aria-label="Network &amp; Quick Settings">
+        <span id="tray-wifi-icon" class="tray-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="taskbar-icon-img"></span>
       </button>
-      <button class="taskbar-clock" id="taskbar-clock-btn" onclick="toggleCalendarFlyout(event)" title="📅 View Calendar, Date in Words &amp; Notifications" aria-label="System Clock, Calendar and Notifications">
-        <div id="taskbar-time" class="clock-time">10:42</div>
-        <div id="taskbar-date" class="clock-date">9/6/2026</div>
+      <button type="button" class="taskbar-clock" id="taskbar-clock-btn" onclick="toggleCalendarFlyout(event)" title="📅 View Calendar, Date in Words &amp; Notifications" aria-label="System Clock, Calendar and Notifications">
+        <span id="taskbar-time" class="clock-time">10:42</span>
+        <span id="taskbar-date" class="clock-date">9/6/2026</span>
       </button>
     </div>
   </div>
@@ -1206,7 +1206,7 @@
   <div class="start-search-row">
     <div class="start-search-box">
       <span class="start-search-icon">🔍</span>
-      <input type="text" id="start-search-input" placeholder="Search apps, settings, and evidence files..." oninput="filterStartMenuApps(this.value)" aria-label="Search apps" />
+      <input type="text" id="start-search-input" placeholder="Search apps, settings, and evidence files..." oninput="filterStartMenuApps(this.value)" aria-label="Search apps">
     </div>
   </div>
 
@@ -1220,82 +1220,71 @@
 
     <!-- Clean Tile Grid -->
     <div class="start-apps-grid" id="start-apps-grid">
-      <div class="start-app-tile" onclick="startMenuOpenApp('gmail')" id="start-app-gmail" title="Open Email Client (Ace)">
-        <div class="start-tile-icon"><img src="assets/icons/apps/mail.svg" alt="Email" style="width:32px;height:32px;"></div>
+      <div class="start-app-tile" onclick="startMenuOpenApp('gmail')" id="start-app-gmail" title="Open Email">
+        <div class="start-tile-icon"><img src="assets/icons/apps/mail.svg" alt="Email" class="start-tile-img"></div>
         <div class="start-tile-name">Email</div>
-        <span class="start-tile-status active" id="start-badge-gmail">Open</span>
       </div>
 
-      <div class="start-app-tile" onclick="startMenuOpenApp('browser')" id="start-app-browser" title="Open Cyber Browser">
-        <div class="start-tile-icon"><img src="assets/icons/apps/browser.svg" alt="Browser" style="width:32px;height:32px;"></div>
+      <div class="start-app-tile" onclick="startMenuOpenApp('browser')" id="start-app-browser" title="Open Browser">
+        <div class="start-tile-icon"><img src="assets/icons/apps/browser.svg" alt="Browser" class="start-tile-img"></div>
         <div class="start-tile-name">Browser</div>
-        <span class="start-tile-status" id="start-badge-browser">Ready</span>
       </div>
 
-      <div class="start-app-tile locked" onclick="startMenuOpenApp('folder')" id="start-app-folder" title="File Explorer (Nishren / Malware)">
-        <div class="start-tile-icon"><img src="assets/icons/apps/folder.svg" alt="File Explorer" style="width:32px;height:32px;"></div>
+      <div class="start-app-tile" onclick="startMenuOpenApp('folder')" id="start-app-folder" title="Open File Explorer">
+        <div class="start-tile-icon"><img src="assets/icons/apps/folder.svg" alt="File Explorer" class="start-tile-img"></div>
         <div class="start-tile-name">File Explorer</div>
-        <span class="start-tile-status lock" id="start-badge-folder">🔒 Locked</span>
       </div>
 
-      <div class="start-app-tile locked" onclick="startMenuOpenApp('antivirus')" id="start-app-antivirus" title="ShieldAV Anti-Virus (Nishren / Malware)">
-        <div class="start-tile-icon"><img src="assets/icons/apps/windows_defender.svg" alt="ShieldAV" style="width:32px;height:32px;"></div>
-        <div class="start-tile-name">ShieldAV</div>
-        <span class="start-tile-status lock" id="start-badge-antivirus">🔒 Locked</span>
+      <div class="start-app-tile" onclick="startMenuOpenApp('antivirus')" id="start-app-antivirus" title="Open Anti-Virus">
+        <div class="start-tile-icon"><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" class="start-tile-img"></div>
+        <div class="start-tile-name">Anti-Virus</div>
       </div>
 
       <div class="start-app-tile" onclick="startMenuOpenApp('comms')" id="start-app-comms" title="Phone Link">
-        <div class="start-tile-icon"><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" style="width:32px;height:32px;"></div>
+        <div class="start-tile-icon"><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" class="start-tile-img"></div>
         <div class="start-tile-name">Phone Link</div>
-        <span class="start-tile-status" id="start-badge-comms">Ready</span>
       </div>
 
-      <div class="start-app-tile" onclick="startMenuOpenApp('wifi-settings')" id="start-app-settings" title="Settings (Network &amp; Security)">
-        <div class="start-tile-icon"><img src="assets/icons/apps/settings.svg" alt="Settings" style="width:32px;height:32px;"></div>
+      <div class="start-app-tile" onclick="startMenuOpenApp('wifi-settings')" id="start-app-settings" title="Settings">
+        <div class="start-tile-icon"><img src="assets/icons/apps/settings.svg" alt="Settings" class="start-tile-img"></div>
         <div class="start-tile-name">Settings</div>
-        <span class="start-tile-status" id="start-badge-settings">Ready</span>
       </div>
     </div>
 
     <!-- Recommended Section Header -->
-    <div class="start-section-header" style="margin-top: 14px;">
+    <div class="start-section-header start-section-header-mt">
       <span class="start-section-name">Recommended</span>
       <span class="start-all-apps-label">Available Apps</span>
     </div>
     <div class="start-recommended-list" id="start-recommended-list">
-      <div class="start-recommended-item" onclick="startMenuOpenApp('gmail')" title="Open Email Client">
-        <div class="rec-file-icon"><img src="assets/icons/apps/mail.svg" alt="Email" style="width:28px;height:28px;"></div>
+      <div class="start-recommended-item" onclick="startMenuOpenApp('gmail')" title="Open Email">
+        <div class="rec-file-icon"><img src="assets/icons/apps/mail.svg" alt="Email" class="rec-icon-img"></div>
         <div class="rec-file-info">
-          <div class="rec-file-name">Email Client</div>
-          <div class="rec-file-meta">Phishing Email Investigation • Available</div>
+          <div class="rec-file-name">Email</div>
         </div>
       </div>
-      <div class="start-recommended-item" onclick="startMenuOpenApp('browser')" title="Open Cyber Browser">
-        <div class="rec-file-icon"><img src="assets/icons/apps/browser.svg" alt="Browser" style="width:28px;height:28px;"></div>
+      <div class="start-recommended-item" onclick="startMenuOpenApp('browser')" title="Open Browser">
+        <div class="rec-file-icon"><img src="assets/icons/apps/browser.svg" alt="Browser" class="rec-icon-img"></div>
         <div class="rec-file-info">
-          <div class="rec-file-name">Cyber Browser</div>
-          <div class="rec-file-meta">Cyber-Net Web Engine • Available</div>
+          <div class="rec-file-name">Browser</div>
         </div>
       </div>
-      <div class="start-recommended-item" onclick="startMenuAction('notes')" title="Toggle Case Sticky Notes">
-        <div class="rec-file-icon"><img src="assets/icons/apps/note.svg" alt="Notes" style="width:28px;height:28px;"></div>
+      <div class="start-recommended-item" onclick="startMenuAction('notes')" title="Toggle Sticky Notes">
+        <div class="rec-file-icon"><img src="assets/icons/apps/note.svg" alt="Sticky Notes" class="rec-icon-img"></div>
         <div class="rec-file-info">
-          <div class="rec-file-name">Case Sticky Notes</div>
-          <div class="rec-file-meta">Scoring Rules &amp; Guide • Available</div>
+          <div class="rec-file-name">Sticky Notes</div>
         </div>
       </div>
-      <div class="start-recommended-item hidden" id="rec-app-folder" onclick="startMenuOpenApp('folder')" title="Open File Explorer">
-        <div class="rec-file-icon"><img src="assets/icons/apps/folder.svg" alt="Folder" style="width:28px;height:28px;"></div>
+      <div class="start-recommended-item" id="rec-app-folder" onclick="startMenuOpenApp('folder')" title="Open File Explorer">
+        <div class="rec-file-icon"><img src="assets/icons/apps/folder.svg" alt="Folder" class="rec-icon-img"></div>
         <div class="rec-file-info">
           <div class="rec-file-name">File Explorer</div>
-          <div class="rec-file-meta">Quarantine &amp; File Inspection • Available</div>
         </div>
       </div>
-      <div class="start-recommended-item hidden" id="rec-app-antivirus" onclick="startMenuOpenApp('antivirus')" title="Open ShieldAV Anti-Virus">
-        <div class="rec-file-icon"><img src="assets/icons/apps/windows_defender.svg" alt="ShieldAV" style="width:28px;height:28px;"></div>
+      <div class="start-recommended-item" id="rec-app-antivirus" onclick="startMenuOpenApp('antivirus')" title="Open Anti-Virus">
+        <div class="rec-file-icon"><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" class="rec-icon-img"></div>
         <div class="rec-file-info">
-          <div class="rec-file-name">ShieldAV Anti-Virus</div>
-          <div class="rec-file-meta">Real-Time Virus Shield • Available</div>
+          <div class="rec-file-name">Anti-Virus</div>
         </div>
       </div>
     </div>
@@ -1311,16 +1300,16 @@
       </div>
     </div>
     <div class="start-power-wrap">
-      <button class="start-power-btn" id="start-power-btn" onclick="togglePowerMenu(event)" title="Power &amp; Terminal Controls" aria-label="Power Options">
+      <button type="button" class="start-power-btn" id="start-power-btn" onclick="togglePowerMenu(event)" title="Power &amp; Terminal Controls" aria-label="Power Options">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
           <line x1="12" y1="2" x2="12" y2="12"></line>
         </svg>
       </button>
       <div id="start-power-dropdown" class="power-dropdown hidden">
-        <button onclick="startMenuPower('restart')">🔄 Restart Mission</button>
-        <button onclick="startMenuPower('lock')">🔒 Lock Terminal</button>
-        <button onclick="startMenuPower('title')">🚪 Title Menu</button>
+        <button type="button" onclick="startMenuPower('restart')">🔄 Restart Mission</button>
+        <button type="button" onclick="startMenuPower('lock')">🔒 Lock (Paused)</button>
+        <button type="button" onclick="startMenuPower('shutdown')">⏻ Shutdown (Exit)</button>
       </div>
     </div>
   </div>
@@ -1333,7 +1322,7 @@
       <span id="flyout-header-icon" class="v-title-icon">🔊</span>
       <span>System Sound</span>
     </div>
-    <button class="volume-flyout-close" onclick="closeVolumeFlyout(event)" title="Close sound menu">✕</button>
+    <button type="button" class="volume-flyout-close" onclick="closeVolumeFlyout(event)" title="Close sound menu">✕</button>
   </div>
 
   <div class="volume-flyout-body">
@@ -1344,11 +1333,11 @@
         <span class="volume-percent" id="volume-master-val">80%</span>
       </div>
       <div class="volume-slider-row">
-        <button class="volume-mute-btn" id="btn-master-mute" onclick="toggleMasterMute()" title="Mute/Unmute Master">
+        <button type="button" class="volume-mute-btn" id="btn-master-mute" onclick="toggleMasterMute()" title="Mute/Unmute Master">
           <span id="mute-master-icon">🔊</span>
         </button>
         <div class="cyber-slider-wrap">
-          <input type="range" min="0" max="100" value="80" class="cyber-slider" id="slider-master-volume" oninput="onMasterVolumeInput(this.value)" aria-label="Master Volume Slider" />
+          <input type="range" min="0" max="100" value="80" class="cyber-slider" id="slider-master-volume" oninput="onMasterVolumeInput(this.value)" aria-label="Master Volume Slider">
         </div>
       </div>
     </div>
@@ -1360,11 +1349,11 @@
         <span class="volume-percent" id="volume-clicks-val">85%</span>
       </div>
       <div class="volume-slider-row">
-        <button class="volume-mute-btn" id="btn-clicks-mute" onclick="toggleClicksMute()" title="Mute Mouse Clicks">
+        <button type="button" class="volume-mute-btn" id="btn-clicks-mute" onclick="toggleClicksMute()" title="Mute Mouse Clicks">
           <span id="mute-clicks-icon">🖱️</span>
         </button>
         <div class="cyber-slider-wrap">
-          <input type="range" min="0" max="100" value="85" class="cyber-slider" id="slider-clicks-volume" oninput="onClicksVolumeInput(this.value)" aria-label="Mouse Click Volume Slider" />
+          <input type="range" min="0" max="100" value="85" class="cyber-slider" id="slider-clicks-volume" oninput="onClicksVolumeInput(this.value)" aria-label="Mouse Click Volume Slider">
         </div>
       </div>
     </div>
@@ -1376,11 +1365,11 @@
         <span class="volume-percent" id="volume-sfx-val">80%</span>
       </div>
       <div class="volume-slider-row">
-        <button class="volume-mute-btn" id="btn-sfx-mute" onclick="toggleSfxMute()" title="Mute SFX">
+        <button type="button" class="volume-mute-btn" id="btn-sfx-mute" onclick="toggleSfxMute()" title="Mute SFX">
           <span id="mute-sfx-icon">⚡</span>
         </button>
         <div class="cyber-slider-wrap">
-          <input type="range" min="0" max="100" value="80" class="cyber-slider" id="slider-sfx-volume" oninput="onSfxVolumeInput(this.value)" aria-label="SFX Volume Slider" />
+          <input type="range" min="0" max="100" value="80" class="cyber-slider" id="slider-sfx-volume" oninput="onSfxVolumeInput(this.value)" aria-label="SFX Volume Slider">
         </div>
       </div>
     </div>
@@ -1392,11 +1381,11 @@
         <span class="volume-percent" id="volume-typing-val">75%</span>
       </div>
       <div class="volume-slider-row">
-        <button class="volume-mute-btn" id="btn-typing-mute" onclick="toggleTypingMute()" title="Mute Typing Sounds">
+        <button type="button" class="volume-mute-btn" id="btn-typing-mute" onclick="toggleTypingMute()" title="Mute Typing Sounds">
           <span id="mute-typing-icon">⌨️</span>
         </button>
         <div class="cyber-slider-wrap">
-          <input type="range" min="0" max="100" value="75" class="cyber-slider" id="slider-typing-volume" oninput="onTypingVolumeInput(this.value)" aria-label="Typing Volume Slider" />
+          <input type="range" min="0" max="100" value="75" class="cyber-slider" id="slider-typing-volume" oninput="onTypingVolumeInput(this.value)" aria-label="Typing Volume Slider">
         </div>
       </div>
     </div>
@@ -1407,10 +1396,10 @@
 <div id="desktop-network-flyout" class="volume-flyout network-flyout hidden" role="dialog" aria-label="Network and Quick Settings">
   <div class="volume-flyout-header">
     <div class="volume-flyout-title">
-      <span class="v-title-icon" id="network-header-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Network" style="width:20px;height:20px;vertical-align:middle;"></span>
+      <span class="v-title-icon" id="network-header-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Network" class="network-flyout-icon"></span>
       <span>Network &amp; Quick Settings</span>
     </div>
-    <button class="volume-flyout-close" onclick="closeNetworkFlyout(event)" title="Close network menu">✕</button>
+    <button type="button" class="volume-flyout-close" onclick="closeNetworkFlyout(event)" title="Close network menu">✕</button>
   </div>
 
   <div class="volume-flyout-body">
@@ -1419,7 +1408,7 @@
       <!-- Wi-Fi Tile -->
       <div class="quick-tile active" id="tile-wifi" onclick="toggleWifiSetting()" title="Click to toggle Wi-Fi">
         <div class="quick-tile-top">
-          <span class="quick-tile-icon" id="tile-wifi-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:22px;height:22px;"></span>
+          <span class="quick-tile-icon" id="tile-wifi-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="quick-tile-img"></span>
           <span class="quick-tile-toggle-indicator" id="tile-wifi-badge">ON</span>
         </div>
         <div class="quick-tile-info">
@@ -1431,7 +1420,7 @@
       <!-- Bluetooth Tile -->
       <div class="quick-tile active" id="tile-bluetooth" onclick="toggleBluetoothSetting()" title="Click to toggle Bluetooth">
         <div class="quick-tile-top">
-          <span class="quick-tile-icon" id="tile-bt-icon"><img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" style="width:22px;height:22px;"></span>
+          <span class="quick-tile-icon" id="tile-bt-icon"><img src="assets/icons/networks/bluetooth.svg" alt="Bluetooth" class="quick-tile-img"></span>
           <span class="quick-tile-toggle-indicator" id="tile-bt-badge">ON</span>
         </div>
         <div class="quick-tile-info">
@@ -1443,7 +1432,7 @@
       <!-- Airplane Mode Tile -->
       <div class="quick-tile" id="tile-airplane" onclick="toggleAirplaneSetting()" title="Click to toggle Airplane Mode">
         <div class="quick-tile-top">
-          <span class="quick-tile-icon" id="tile-airplane-icon"><img src="assets/icons/networks/airlane mode.svg" alt="Airplane Mode" style="width:22px;height:22px;vertical-align:middle;"></span>
+          <span class="quick-tile-icon" id="tile-airplane-icon"><img src="assets/icons/networks/airlane mode.svg" alt="Airplane Mode" class="quick-tile-img-mid"></span>
           <span class="quick-tile-toggle-indicator" id="tile-airplane-badge">OFF</span>
         </div>
         <div class="quick-tile-info">
@@ -1455,7 +1444,7 @@
       <!-- Anti-Virus Protection Tile -->
       <div class="quick-tile active" id="tile-antivirus" onclick="toggleAntiVirusSetting()" title="Click to toggle Anti-Virus Real-Time Protection">
         <div class="quick-tile-top">
-          <span class="quick-tile-icon" id="tile-antivirus-icon"><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" style="width:22px;height:22px;vertical-align:middle;"></span>
+          <span class="quick-tile-icon" id="tile-antivirus-icon"><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" class="quick-tile-img-mid"></span>
           <span class="quick-tile-toggle-indicator" id="tile-antivirus-badge">ON</span>
         </div>
         <div class="quick-tile-info">
@@ -1468,52 +1457,52 @@
     <!-- Available Wi-Fi Networks Section -->
     <div class="flyout-section-header">
       <span class="flyout-section-title">Available Networks</span>
-      <button class="flyout-refresh-btn" onclick="refreshWifiNetworks()" title="Scan for Wi-Fi networks">🔄 Scan</button>
+      <button type="button" class="flyout-refresh-btn" onclick="refreshWifiNetworks()" title="Scan for Wi-Fi networks">🔄 Scan</button>
     </div>
 
     <div class="wifi-networks-list" id="wifi-networks-list">
       <!-- Active Connected Network -->
       <div class="wifi-net-item connected" id="wifi-item-cybernet">
-        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
+        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">CYBER-NET (WPA3-Enterprise)</div>
           <div class="wifi-net-meta">Connected, secured • 5.0 GHz • 1200 Mbps</div>
         </div>
-        <button class="wifi-net-action-btn disconnect" id="btn-cybernet-action" onclick="toggleCybernetConnect()">Disconnect</button>
+        <button type="button" class="wifi-net-action-btn disconnect" id="btn-cybernet-action" onclick="toggleCybernetConnect()">Disconnect</button>
       </div>
 
       <!-- Other detected networks -->
       <div class="wifi-net-item" id="wifi-item-academy" onclick="connectToWifi('HQ-CyberAcademy-Internal')">
-        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
+        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">HQ-CyberAcademy-Internal</div>
           <div class="wifi-net-meta">Secured (802.1X Student Key)</div>
         </div>
-        <button class="wifi-net-action-btn connect">Connect</button>
+        <button type="button" class="wifi-net-action-btn connect">Connect</button>
       </div>
 
       <div class="wifi-net-item" id="wifi-item-lab" onclick="connectToWifi('Lab-Investigation-Mesh')">
-        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
+        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">Lab-Investigation-Mesh</div>
           <div class="wifi-net-meta">Secured • Isolated Forensic Sandbox</div>
         </div>
-        <button class="wifi-net-action-btn connect">Connect</button>
+        <button type="button" class="wifi-net-action-btn connect">Connect</button>
       </div>
 
       <div class="wifi-net-item warning-net" id="wifi-item-public" onclick="warnPublicWifi()">
-        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
+        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">Free_Public_Unsecured</div>
-          <div class="wifi-net-meta" style="color:var(--accent-red)">⚠️ Open • High Risk of Phishing / MITM!</div>
+          <div class="wifi-net-meta wifi-meta-warn">⚠️ Open • High Risk of Phishing / MITM!</div>
         </div>
-        <button class="wifi-net-action-btn warn-btn">Inspect</button>
+        <button type="button" class="wifi-net-action-btn warn-btn">Inspect</button>
       </div>
     </div>
   </div>
 
-  <div class="volume-flyout-footer" style="justify-content:center;padding:10px 14px;align-items:center;">
-    <button class="vol-test-btn" id="btn-flyout-wifi-settings" style="padding:6px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;border-radius:6px;" onclick="openWifiSettingsFromFlyout(event)" title="Click to show Wi-Fi Settings">
+  <div class="volume-flyout-footer flyout-footer-centered">
+    <button type="button" class="vol-test-btn btn-wifi-settings" id="btn-flyout-wifi-settings" onclick="openWifiSettingsFromFlyout(event)" title="Click to show Wi-Fi Settings">
       📶 Wi-Fi Settings
     </button>
   </div>
@@ -1528,7 +1517,7 @@
       <div class="cal-date-words" id="cal-date-words">Wednesday, September 16, 2026</div>
       <div class="cal-terminal-badge">CYBER CRIME BUREAU • SYSTEM TIME (LOCAL)</div>
     </div>
-    <button class="volume-flyout-close" onclick="closeCalendarFlyout(event)" title="Close calendar and notifications">✕</button>
+    <button type="button" class="volume-flyout-close" onclick="closeCalendarFlyout(event)" title="Close calendar and notifications">✕</button>
   </div>
 
   <div class="volume-flyout-body cal-scrollable-body">
@@ -1539,7 +1528,7 @@
           <span>🔔 NOTIFICATIONS</span>
           <span class="notif-count-badge" id="notif-count-badge">4</span>
         </div>
-        <button class="notif-clear-btn" id="btn-clear-notifs" onclick="clearAllNotifications()">Clear all</button>
+        <button type="button" class="notif-clear-btn" id="btn-clear-notifs" onclick="clearAllNotifications()">Clear all</button>
       </div>
 
       <div class="notif-list" id="notif-list">
@@ -1553,7 +1542,7 @@
             <div class="notif-card-title">CyberZerØ Simulation Ready</div>
             <div class="notif-card-body">Follow Ace, Nishren, Phillip &amp; Jonald on their cybersecurity journey. Complete the pre-assessment to begin.</div>
           </div>
-          <button class="notif-dismiss-btn" onclick="dismissNotification('notif-1')" title="Dismiss notification">✕</button>
+          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-1')" title="Dismiss notification">✕</button>
         </div>
 
         <div class="notif-card" id="notif-2">
@@ -1566,7 +1555,7 @@
             <div class="notif-card-title">Ace's Urgent Email — Phishing Alert</div>
             <div class="notif-card-body">Ace received a suspicious email claiming his school account will be suspended. Help him inspect the sender domain and links!</div>
           </div>
-          <button class="notif-dismiss-btn" onclick="dismissNotification('notif-2')" title="Dismiss notification">✕</button>
+          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-2')" title="Dismiss notification">✕</button>
         </div>
 
         <div class="notif-card" id="notif-3">
@@ -1579,7 +1568,7 @@
             <div class="notif-card-title">Signatures Synchronized</div>
             <div class="notif-card-body">Malware database updated to v2026.09. Heuristic protection active.</div>
           </div>
-          <button class="notif-dismiss-btn" onclick="dismissNotification('notif-3')" title="Dismiss notification">✕</button>
+          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-3')" title="Dismiss notification">✕</button>
         </div>
 
         <div class="notif-card" id="notif-4">
@@ -1592,7 +1581,7 @@
             <div class="notif-card-title">Encrypted VPN Established</div>
             <div class="notif-card-body">WireGuard 256-bit encryption tunnel connected to Cyber Crime Bureau headquarters.</div>
           </div>
-          <button class="notif-dismiss-btn" onclick="dismissNotification('notif-4')" title="Dismiss notification">✕</button>
+          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-4')" title="Dismiss notification">✕</button>
         </div>
       </div>
     </div>
@@ -1600,9 +1589,9 @@
     <!-- Interactive Calendar Widget Section -->
     <div class="cal-widget-section">
       <div class="cal-nav-row">
-        <button class="cal-nav-btn" onclick="navCalendar(-1)" title="Previous month">◀</button>
+        <button type="button" class="cal-nav-btn" onclick="navCalendar(-1)" title="Previous month">◀</button>
         <span class="cal-nav-title" id="cal-nav-month-year">September 2026</span>
-        <button class="cal-nav-btn" onclick="navCalendar(1)" title="Next month">▶</button>
+        <button type="button" class="cal-nav-btn" onclick="navCalendar(1)" title="Next month">▶</button>
       </div>
 
       <div class="cal-weekdays-row">
@@ -1615,11 +1604,11 @@
     </div>
   </div>
 
-  <div class="volume-flyout-footer" style="justify-content:space-between;padding:10px 14px;">
-    <span style="font-size:11px;color:var(--text-muted);">
+  <div class="volume-flyout-footer flyout-footer-between">
+    <span class="flyout-footer-note">
       🕒 Time sync: <strong>time.cyberacademy.gov</strong>
     </span>
-    <button class="vol-test-btn" style="padding:4px 10px;font-size:11px;" onclick="resetCalendarToToday()">
+    <button type="button" class="vol-test-btn btn-jump-today" onclick="resetCalendarToToday()">
       📅 Jump to Today
     </button>
   </div>
@@ -1631,6 +1620,25 @@
      OVERLAY SYSTEM
 ══════════════════════════════════════════════════════════ -->
 <div id="overlay-backdrop" class="overlay-backdrop"></div>
+
+<!-- ── WINDOWS 10 SPOTLIGHT LOCK SCREEN (Paused Terminal) ── -->
+<div id="overlay-lock-paused" class="lock-paused-screen hidden" onclick="unlockPausedTerminal()" role="button" tabindex="0" aria-label="Terminal Locked. Click or tap anywhere to resume">
+  <div class="lock-paused-bg"></div>
+  <div class="lock-paused-content">
+    <div class="lock-paused-icon-wrap" aria-hidden="true">
+      <svg class="lock-paused-svg" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3.5" y="19" width="33" height="25" rx="4" stroke="#ffffff" stroke-width="3.5" fill="none"/>
+        <path d="M10 19V13C10 7.477 14.477 3 20 3C25.523 3 30 7.477 30 13V19" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="lock-paused-time" id="lock-paused-time">21:00</div>
+    <div class="lock-paused-date" id="lock-paused-date">Tuesday, 5 April</div>
+    <div class="lock-paused-hint">
+      <span class="lock-paused-hint-icon">▲</span>
+      <span class="lock-paused-hint-text">Click or tap anywhere to resume</span>
+    </div>
+  </div>
+</div>
 
 <!-- ── MAIN MENU / TITLE SCREEN (Windows 10 Login Style) ── -->
 <div id="overlay-title-menu" class="overlay active">
@@ -1663,9 +1671,12 @@
         autocomplete="off"
         oninput="lsHandleNameInput(this.value)"
         onkeydown="if(event.key==='Enter') lsSignIn()"
-        aria-label="Enter your name to sign in"
-      />
-      <button class="ls-signin-btn" id="ls-signin-arrow" onclick="lsSignIn()" title="Sign In">Enter</button>
+        aria-label="Enter your name to sign in">
+      <button type="button" class="ls-signin-btn" id="ls-signin-arrow" onclick="lsSignIn()" title="Sign In" aria-label="Sign In">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 12H20M13 5L20 12L13 19" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Clock Block (bottom) -->
@@ -1686,26 +1697,26 @@
       </p>
       <p class="exit-modal-sub">Are you sure you want to exit CyberZerØ?</p>
       <div class="exit-modal-actions">
-        <button class="btn-primary" onclick="closeExitModal()">◀ RETURN TO TITLE MENU</button>
-        <button class="btn-danger" onclick="confirmExitGame()">DISCONNECT &amp; CLOSE</button>
+        <button type="button" class="btn-primary" onclick="closeExitModal()">◀ RETURN TO TITLE MENU</button>
+        <button type="button" class="btn-danger" onclick="confirmExitGame()">DISCONNECT &amp; CLOSE</button>
       </div>
     </div>
   </div>
 
-  <!-- Disconnected Terminal Screen (if user confirms exit) -->
-  <div class="title-modal-backdrop hidden" id="title-disconnected-screen">
-    <div class="title-exit-card" style="border-color:rgba(255,82,82,0.5)">
-      <div class="exit-modal-icon" style="color:var(--accent-red)">🔌</div>
-      <h3 class="exit-modal-title" style="color:var(--accent-red)">TERMINAL DISCONNECTED</h3>
-      <p class="exit-modal-msg">
-        CyberZerØ simulation offline. Thank you for enhancing your cybersecurity knowledge and awareness!
-      </p>
-      <div class="exit-modal-actions" style="justify-content:center;margin-top:18px">
-        <button class="btn-primary" onclick="reconnectTerminal()">⚡ RECONNECT TERMINAL</button>
-      </div>
+</div>
+
+<!-- ── SYSTEM SHUT DOWN / TERMINAL OFFLINE SCREEN ── -->
+<div class="title-modal-backdrop shutdown-screen-backdrop hidden" id="title-disconnected-screen" role="dialog" aria-modal="true" aria-label="System Shut Down">
+  <div class="title-exit-card exit-card-red">
+    <div class="exit-modal-icon exit-icon-red">⏻</div>
+    <h3 class="exit-modal-title exit-title-red">SYSTEM SHUT DOWN</h3>
+    <p class="exit-modal-msg">
+      CyberZerØ simulation is now offline. You may safely close this browser window or tab.
+    </p>
+    <div class="exit-modal-actions exit-actions-centered">
+      <button type="button" class="btn-primary" onclick="reconnectTerminal()">⏻ POWER ON</button>
     </div>
   </div>
-
 </div>
 
 
@@ -1749,7 +1760,7 @@
       </div>
 
       <div class="intro-footer">
-        <button class="btn-primary intro-start-btn" onclick="proceedFromIntroToExam()">
+        <button type="button" class="btn-primary intro-start-btn" onclick="proceedFromIntroToExam()">
           📝 START PRE-ASSESSMENT EXAM ➔
         </button>
         <button type="button" class="intro-skip-btn" onclick="skipPreAssessmentFromIntro()" title="Skip the exam and choose your threat category immediately">
@@ -1801,7 +1812,7 @@
         <div class="exam-student-fields">
           <div class="exam-field exam-field-name">
             <label for="exam-input-name" class="exam-field-label">NAME:</label>
-            <input type="text" id="exam-input-name" class="exam-paper-name-input" placeholder="Write your name here..." maxlength="30" autocomplete="off" spellcheck="false" />
+            <input type="text" id="exam-input-name" class="exam-paper-name-input" placeholder="Write your name here..." maxlength="30" autocomplete="off" spellcheck="false">
           </div>
           <div class="exam-field">
             <span class="exam-field-label">DATE:</span>
@@ -1847,12 +1858,12 @@
 
     <div class="cat-hub-shell">
       <!-- Inside Top Bar: Back to Menu button & Replay VN -->
-      <div class="cat-hub-inner-topbar" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-        <button class="cat-top-btn" id="cat-hub-back-btn" onclick="closeCategoryHubBack()" title="Go back">
+      <div class="cat-hub-inner-topbar cat-hub-topbar">
+        <button type="button" class="cat-top-btn" id="cat-hub-back-btn" onclick="closeCategoryHubBack()" title="Go back">
           <span class="cat-top-btn-icon">◀</span>
           <span id="cat-hub-back-label">BACK TO MENU</span>
         </button>
-        <button class="cat-top-btn" id="cat-hub-replay-intro" onclick="replayPrologueVN()" title="Replay the Visual Novel introduction with AI Guide Zero" style="margin-left:auto;border-color:rgba(0,229,255,0.4);color:var(--accent-cyan)">
+        <button type="button" class="cat-top-btn cat-replay-btn" id="cat-hub-replay-intro" onclick="replayPrologueVN()" title="Replay the Visual Novel introduction with AI Guide Zero">
           <span class="cat-top-btn-icon">🎬</span>
           <span>REPLAY ZERO'S INTRO</span>
         </button>
@@ -1873,7 +1884,7 @@
           </div>
           <div class="cat-stat-chip">
             <span class="stat-lbl">Overall Score:</span>
-            <strong id="cat-hub-score-val" style="color:var(--accent-cyan)">0 pts</strong>
+            <strong id="cat-hub-score-val" class="cat-score-val">0 pts</strong>
           </div>
         </div>
       </div>
@@ -1891,7 +1902,7 @@
 <div id="overlay-welcome" class="overlay">
 
   <!-- Skip button -->
-  <button class="vn-skip-btn" id="vn-skip-btn" onclick="vnSkip()">Skip ⏩</button>
+  <button type="button" class="vn-skip-btn" id="vn-skip-btn" onclick="vnSkip()">Skip ⏩</button>
 
   <!-- Scene background particles -->
   <div class="vn-scene" id="vn-scene">
@@ -1904,7 +1915,7 @@
     <!-- Chapter 1 Video Call Interactive Scene -->
     <div class="vn-videocall-stage hidden" id="vn-videocall-stage">
       <div class="vcall-aspect-wrapper" id="vcall-aspect-wrapper">
-        <img src="assets/Chapter1.png" alt="Video Call" class="vcall-base-img" id="vcall-base-img" />
+        <img src="assets/Chapter1.png" alt="Video Call" class="vcall-base-img" id="vcall-base-img">
 
         <!-- Video Call Top HUD -->
         <div class="vcall-top-bar">
@@ -1985,7 +1996,7 @@
       <div class="vn-dialogue-inner">
         <div class="vn-speaker-row">
           <div class="vn-speaker-avatar-wrap hidden" id="vn-speaker-avatar-wrap">
-            <img id="vn-speaker-avatar" src="" alt="Speaker" class="vn-speaker-avatar" />
+            <img id="vn-speaker-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Speaker" class="vn-speaker-avatar">
           </div>
           <div>
             <div class="vn-speaker-name" id="vn-speaker-name">DIRECTOR ZERO</div>
@@ -2018,8 +2029,8 @@
     </div>
     <div class="training-dots" id="training-dots"></div>
     <div class="training-nav">
-      <button class="btn-ghost" id="btn-training-prev" onclick="trainingPrev()" style="visibility:hidden">← Previous</button>
-      <button class="btn-primary" id="btn-training-next" onclick="trainingNext()">Next →</button>
+      <button type="button" class="btn-ghost training-prev-hidden" id="btn-training-prev" onclick="trainingPrev()">← Previous</button>
+      <button type="button" class="btn-primary" id="btn-training-next" onclick="trainingNext()">Next →</button>
     </div>
   </div>
 </div>
@@ -2040,8 +2051,8 @@
         <span class="av-title">Think Before You Connect, Trust, or Download</span>
       </div>
       <div class="av-titlebar-right">
-        <button class="av-topbtn av-skip-top" id="btn-skip-video" onclick="skipAwarenessVideo()" title="Skip video and start mission">⏩ Skip</button>
-        <button class="av-topbtn av-close-btn" onclick="closeAwarenessVideo()" title="Close video">✕</button>
+        <button type="button" class="av-topbtn av-skip-top" id="btn-skip-video" onclick="skipAwarenessVideo()" title="Skip video and start mission">⏩ Skip</button>
+        <button type="button" class="av-topbtn av-close-btn" onclick="closeAwarenessVideo()" title="Close video">✕</button>
       </div>
     </div>
 
@@ -2060,22 +2071,22 @@
           <div class="av-finished-icon">✅</div>
           <div class="av-finished-title">Video Complete</div>
           <div class="av-finished-sub">You may now start the mission.</div>
-          <button class="av-finished-btn" onclick="skipAwarenessVideo()">Start Mission →</button>
+          <button type="button" class="av-finished-btn" onclick="skipAwarenessVideo()">Start Mission →</button>
         </div>
       </div>
     </div>
 
     <!-- Controls bar -->
     <div class="av-controls">
-      <button class="av-ctrl-btn" id="av-play-btn" onclick="avTogglePlay()" title="Play / Pause">▶</button>
+      <button type="button" class="av-ctrl-btn" id="av-play-btn" onclick="avTogglePlay()" title="Play / Pause">▶</button>
       <span class="av-time" id="av-time">0:00 / 0:00</span>
       <div class="av-progress-bar" id="av-progress-bar" onclick="avSeek(event)" title="Click to seek">
-        <div class="av-progress-fill" id="av-progress-fill" style="width:0%"></div>
-        <div class="av-progress-thumb" id="av-progress-thumb" style="left:0%"></div>
+        <div class="av-progress-fill progress-zero-w" id="av-video-progress-fill"></div>
+        <div class="av-progress-thumb progress-zero-l" id="av-progress-thumb"></div>
       </div>
-      <button class="av-ctrl-btn" id="av-mute-btn" onclick="avToggleMute()" title="Mute / Unmute">🔊</button>
+      <button type="button" class="av-ctrl-btn" id="av-mute-btn" onclick="avToggleMute()" title="Mute / Unmute">🔊</button>
       <input type="range" class="av-volume-slider" id="av-volume-slider" min="0" max="1" step="0.05" value="1" oninput="avSetVolume(this.value)" title="Volume">
-      <button class="av-ctrl-btn av-ctrl-mission" onclick="skipAwarenessVideo()" title="Skip and Start Mission">Start Mission →</button>
+      <button type="button" class="av-ctrl-btn av-ctrl-mission" onclick="skipAwarenessVideo()" title="Skip and Start Mission">Start Mission →</button>
     </div>
 
   </div>
@@ -2092,7 +2103,7 @@
         <div class="gdemo-speech-arrow"></div>
         <div id="gdemo-speech-text" class="gdemo-speech-text"></div>
       </div>
-      <button class="gdemo-skip-btn" onclick="skipDemo()" title="Skip the walkthrough and jump straight to your mission">⏭ Skip Demo</button>
+      <button type="button" class="gdemo-skip-btn" onclick="skipDemo()" title="Skip the walkthrough and jump straight to your mission">⏭ Skip Demo</button>
     </div>
 
 
@@ -2111,8 +2122,8 @@
       <!-- Toolbar mock -->
       <div class="gdemo-toolbar" id="gdemo-toolbar">
         <span class="gdemo-toolbar-back">← Inbox</span>
-        <button class="flag-mode-btn" id="gdemo-flag-btn">🚩 Flag Evidence</button>
-        <button class="report-btn" id="gdemo-report-btn" style="margin-left:auto;">📋 Report</button>
+        <button type="button" class="flag-mode-btn" id="gdemo-flag-btn">🚩 Flag Evidence</button>
+        <button type="button" class="report-btn gdemo-report-btn-right" id="gdemo-report-btn">📋 Report</button>
       </div>
 
       <!-- Demo Email Content — PHISHING EMAIL (steps 1-6) -->
@@ -2126,7 +2137,7 @@
           </div>
           <div class="gdemo-meta-row">
             <span class="gdemo-meta-label">TO</span>
-            <span class="gdemo-meta-val" style="color:var(--text-muted)">me@cybercorp.com</span>
+            <span class="gdemo-meta-val gdemo-to-muted">me@cybercorp.com</span>
           </div>
         </div>
         <!-- Body -->
@@ -2155,14 +2166,14 @@
         </div>
         <!-- Header -->
         <div class="gdemo-email-hdr">
-          <div class="gdemo-email-subject" style="color:var(--accent-green)">✅ September Employee Benefits Update</div>
+          <div class="gdemo-email-subject gdemo-legit-subject">✅ September Employee Benefits Update</div>
           <div class="gdemo-meta-row">
             <span class="gdemo-meta-label">FROM</span>
             <span class="gdemo-meta-val" id="gdemo-legit-sender">HR Department &lt;hr@cybercorp.com&gt;</span>
           </div>
           <div class="gdemo-meta-row">
             <span class="gdemo-meta-label">TO</span>
-            <span class="gdemo-meta-val" style="color:var(--text-muted)">me@cybercorp.com</span>
+            <span class="gdemo-meta-val gdemo-to-muted">me@cybercorp.com</span>
           </div>
         </div>
         <!-- Body -->
@@ -2206,14 +2217,14 @@
         <div class="gdemo-rm-flags" id="gdemo-rm-flags"></div>
         <div class="gdemo-rm-question">Is this email phishing?</div>
         <div class="gdemo-rm-btns">
-          <button class="btn-danger gdemo-rm-phishing" id="gdemo-report-phishing">🚩 REPORT AS PHISHING</button>
-          <button class="btn-success" style="opacity:.4;cursor:default">✓ MARK AS LEGITIMATE</button>
+          <button type="button" class="btn-danger gdemo-rm-phishing" id="gdemo-report-phishing">🚩 REPORT AS PHISHING</button>
+          <button type="button" class="btn-success btn-success-muted">✓ MARK AS LEGITIMATE</button>
         </div>
       </div>
 
       <!-- Report dialog mock — LEGITIMATE (hidden until legit report step) -->
       <div class="gdemo-report-modal hidden" id="gdemo-legit-report-modal">
-        <h3 class="gdemo-rm-title" style="color:var(--accent-green)">📋 Report This Email?</h3>
+        <h3 class="gdemo-rm-title gdemo-legit-rm-title">📋 Report This Email?</h3>
         <div class="gdemo-rm-flags" id="gdemo-legit-rm-flags">
           <div class="gdemo-legit-check-summary">
             <div class="gdemo-lcs-item">✅ Verified sender domain</div>
@@ -2224,8 +2235,8 @@
         </div>
         <div class="gdemo-rm-question">Is this email phishing?</div>
         <div class="gdemo-rm-btns">
-          <button class="btn-danger" style="opacity:.4;cursor:default">🚩 REPORT AS PHISHING</button>
-          <button class="btn-success gdemo-rm-legit" id="gdemo-report-legit">✓ MARK AS LEGITIMATE</button>
+          <button type="button" class="btn-danger btn-danger-muted">🚩 REPORT AS PHISHING</button>
+          <button type="button" class="btn-success gdemo-rm-legit" id="gdemo-report-legit">✓ MARK AS LEGITIMATE</button>
         </div>
       </div>
 
@@ -2245,7 +2256,7 @@
 
       <!-- Proceed button -->
       <div class="gdemo-bottom-bar">
-        <button class="btn-primary" id="btn-demo-next" onclick="demoProceed()">Let's Begin →</button>
+        <button type="button" class="btn-primary" id="btn-demo-next" onclick="demoProceed()">Let's Begin →</button>
       </div>
     </div>
   </div>
@@ -2262,7 +2273,7 @@
         <div class="gdemo-speech-arrow"></div>
         <div id="gdemo-malware-speech-text" class="gdemo-speech-text"></div>
       </div>
-      <button class="gdemo-skip-btn" onclick="skipMalwareDemo()" title="Skip tutorial and jump straight to the malware mission">⏭ Skip Demo</button>
+      <button type="button" class="gdemo-skip-btn" onclick="skipMalwareDemo()" title="Skip tutorial and jump straight to the malware mission">⏭ Skip Demo</button>
     </div>
 
     <!-- Right: Malware Demo Workspace -->
@@ -2270,10 +2281,10 @@
       <!-- Toolbar with App Switcher Tabs -->
       <div class="gdemo-toolbar" id="gdemo-malware-toolbar">
         <div class="gdemo-app-tabs">
-          <button class="gdemo-tab-btn active" id="gdemo-mtab-folder" onclick="setMalwareDemoTab('folder')">
+          <button type="button" class="gdemo-tab-btn active" id="gdemo-mtab-folder" onclick="setMalwareDemoTab('folder')">
             <span>📁</span> Folder (Downloads)
           </button>
-          <button class="gdemo-tab-btn" id="gdemo-mtab-av" onclick="setMalwareDemoTab('av')">
+          <button type="button" class="gdemo-tab-btn" id="gdemo-mtab-av" onclick="setMalwareDemoTab('av')">
             <span>🛡️</span> ShieldAV Scanner
           </button>
         </div>
@@ -2355,7 +2366,7 @@
               <div class="fdp-icon-large" id="gdemo-minsp-icon">📄</div>
               <div>
                 <div class="fdp-name" id="gdemo-minsp-name">bonus_payroll_sept.pdf.exe</div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:2px" id="gdemo-minsp-sub">Executable Binary • 2.4 MB</div>
+                <div class="fdp-sub-label" id="gdemo-minsp-sub">Executable Binary • 2.4 MB</div>
               </div>
             </div>
 
@@ -2366,7 +2377,7 @@
               </div>
               <div class="fdp-meta-row" id="gdemo-mext-row">
                 <span class="fdp-meta-label">Actual Ext</span>
-                <span class="fdp-meta-val" id="gdemo-mext-val" style="color:var(--accent-red);font-weight:700">.exe <span class="gdemo-warning-pill">⚠️ HIDDEN EXECUTABLE</span></span>
+                <span class="fdp-meta-val fdp-ext-val" id="gdemo-mext-val">.exe <span class="gdemo-warning-pill">⚠️ HIDDEN EXECUTABLE</span></span>
               </div>
               <div class="fdp-meta-row">
                 <span class="fdp-meta-label">Status</span>
@@ -2378,8 +2389,8 @@
               ⚠️ <strong>Double Extension Alert</strong>: Filename mimics a PDF document, but the real file extension is <code>.exe</code>. Opening it executes binary code!
             </div>
 
-            <div class="fdp-actions" style="margin-top:auto">
-              <button class="btn-primary btn-sm" id="gdemo-mbtn-scan-av" style="width:100%" onclick="malwareDemoGoToScan()">⚡ Scan with Anti-Virus</button>
+            <div class="fdp-actions fdp-actions-bottom">
+              <button type="button" class="btn-primary btn-sm btn-sm-full" id="gdemo-mbtn-scan-av" onclick="malwareDemoGoToScan()">⚡ Scan with Anti-Virus</button>
             </div>
           </div>
         </div>
@@ -2397,7 +2408,7 @@
           <!-- Real-Time Protection Toggle in Demo -->
           <div class="av-toggle-wrap">
             <span class="av-toggle-label">PROTECTION:</span>
-            <button class="av-toggle-btn" id="gdemo-mav-toggle" onclick="toggleMalwareDemoProtection()" title="Click to turn Real-Time Protection ON or OFF">
+            <button type="button" class="av-toggle-btn" id="gdemo-mav-toggle" onclick="toggleMalwareDemoProtection()" title="Click to turn Real-Time Protection ON or OFF">
               <span class="av-toggle-slider"></span>
               <span class="av-toggle-text" id="gdemo-mav-toggle-text">OFF</span>
             </button>
@@ -2415,7 +2426,7 @@
               <div class="av-tc-name" id="gdemo-mav-tc-name">bonus_payroll_sept.pdf.exe</div>
               <div class="av-tc-detail" id="gdemo-mav-tc-detail">Executable Binary (.exe) • 2.4 MB • SHA-256: a94f82c1b4…</div>
             </div>
-            <button class="av-scan-btn" id="gdemo-mav-scan-btn" onclick="malwareDemoTriggerScan()">⚡ Scan File</button>
+            <button type="button" class="av-scan-btn" id="gdemo-mav-scan-btn" onclick="malwareDemoTriggerScan()">⚡ Scan File</button>
           </div>
 
           <!-- Scanning Progress Bar -->
@@ -2436,7 +2447,7 @@
               <div class="av-threat-desc" id="gdemo-mav-res-desc">Disguised executable binary. Signature matches known backdoor dropper payload.</div>
             </div>
             <div>
-              <button class="btn-danger btn-sm" id="gdemo-mav-quarantine-btn" onclick="malwareDemoTriggerQuarantine()">🚩 QUARANTINE THREAT (+100)</button>
+              <button type="button" class="btn-danger btn-sm" id="gdemo-mav-quarantine-btn" onclick="malwareDemoTriggerQuarantine()">🚩 QUARANTINE THREAT (+100)</button>
             </div>
           </div>
 
@@ -2458,7 +2469,7 @@
 
       <!-- Proceed button -->
       <div class="gdemo-bottom-bar">
-        <button class="btn-primary" id="btn-malware-demo-next" onclick="malwareDemoProceed()">Let's Begin →</button>
+        <button type="button" class="btn-primary" id="btn-malware-demo-next" onclick="malwareDemoProceed()">Let's Begin →</button>
       </div>
     </div>
   </div>
@@ -2473,10 +2484,10 @@
     </div>
     <p class="dialog-question">What is your verdict on this email?</p>
     <div class="dialog-actions">
-      <button class="btn-danger" onclick="submitReport(true)">🚩 REPORT AS PHISHING</button>
-      <button class="btn-success" onclick="submitReport(false)">✓ MARK AS LEGITIMATE</button>
+      <button type="button" class="btn-danger" onclick="submitReport(true)">🚩 REPORT AS PHISHING</button>
+      <button type="button" class="btn-success" onclick="submitReport(false)">✓ MARK AS LEGITIMATE</button>
     </div>
-    <button class="btn-ghost" onclick="closeOverlay('overlay-report')" style="margin-top:12px">← Keep Investigating</button>
+    <button type="button" class="btn-ghost btn-report-keep" onclick="closeOverlay('overlay-report')">← Keep Investigating</button>
   </div>
 </div>
 
@@ -2510,7 +2521,7 @@
       <span id="review-score-value" class="review-score-value">+0</span>
     </div>
 
-    <button class="btn-primary review-next-btn" id="btn-next-email" onclick="nextEmail()">NEXT EMAIL →</button>
+    <button type="button" class="btn-primary review-next-btn" id="btn-next-email" onclick="nextEmail()">NEXT EMAIL →</button>
   </div>
 </div>
 
@@ -2554,10 +2565,10 @@
       <span class="results-score-max">out of <span id="res-max-score">625</span> possible</span>
     </div>
 
-    <div class="results-actions" style="display:flex;gap:12px;margin-top:16px;justify-content:center;flex-wrap:wrap">
-      <button class="btn-primary" id="btn-next-malware" onclick="proceedToNextCategory('malware')">🦠 PROCEED TO CHAPTER 2 (MALWARE) →</button>
-      <button class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
-      <button class="btn-ghost" onclick="playAgain()">🔄 Replay Phishing</button>
+    <div class="results-action-row">
+      <button type="button" class="btn-primary" id="btn-next-malware" onclick="proceedToNextCategory('malware')">🦠 PROCEED TO CHAPTER 2 (MALWARE) →</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-ghost" onclick="playAgain()">🔄 Replay Phishing</button>
     </div>
   </div>
 </div>
@@ -2565,14 +2576,14 @@
 <!-- ── MALWARE MISSION RESULTS (CHAPTER 2 - NISHREN) ── -->
 <div id="overlay-malware-results" class="overlay">
   <div class="results-card">
-    <div class="results-badge" style="background:rgba(0,230,118,0.2);color:var(--accent-green);border:1px solid rgba(0,230,118,0.4)">CHAPTER 2 COMPLETE</div>
+    <div class="results-badge results-badge-green">CHAPTER 2 COMPLETE</div>
     <div class="results-rank-circle rank-s" id="malware-results-rank">S</div>
     <div class="results-rank-label" id="malware-results-rank-label">MASTER MALWARE HUNTER</div>
-    <p style="color:var(--text-secondary);font-size:13px;margin:10px 0 16px">Nishren learned how to inspect disguised files, run Anti-Virus scans, and quarantine malware threats!</p>
+    <p class="results-desc">Nishren learned how to inspect disguised files, run Anti-Virus scans, and quarantine malware threats!</p>
     <div class="results-grid">
       <div class="results-stat">
         <span class="results-stat-label">Malware Quarantined</span>
-        <span class="results-stat-value" id="res-malware-count" style="color:var(--accent-green)">4 / 4</span>
+        <span class="results-stat-value stat-val-green" id="res-malware-count">4 / 4</span>
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Clean Files Protected</span>
@@ -2584,13 +2595,13 @@
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Chapter Score</span>
-        <span class="results-stat-value" id="res-malware-score" style="color:var(--accent-cyan)">0</span>
+        <span class="results-stat-value stat-val-cyan" id="res-malware-score">0</span>
       </div>
     </div>
-    <div style="display:flex;gap:12px;margin-top:20px;justify-content:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="proceedToNextCategory('social_engineering')">🎭 PROCEED TO CHAPTER 3 (SOCIAL ENG) →</button>
-      <button class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
-      <button class="btn-ghost" onclick="startMalwareMission()">🔄 Replay Malware</button>
+    <div class="results-action-row-20">
+      <button type="button" class="btn-primary" onclick="proceedToNextCategory('social_engineering')">🎭 PROCEED TO CHAPTER 3 (SOCIAL ENG) →</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-ghost" onclick="startMalwareMission()">🔄 Replay Malware</button>
     </div>
   </div>
 </div>
@@ -2598,14 +2609,14 @@
 <!-- ── SOCIAL ENGINEERING MISSION RESULTS (CHAPTER 3 - PHILLIP) ── -->
 <div id="overlay-social-results" class="overlay">
   <div class="results-card">
-    <div class="results-badge" style="background:rgba(234,128,252,0.2);color:#ea80fc;border:1px solid rgba(234,128,252,0.4)">CHAPTER 3 COMPLETE</div>
+    <div class="results-badge results-badge-purple">CHAPTER 3 COMPLETE</div>
     <div class="results-rank-circle rank-s" id="social-results-rank">S</div>
     <div class="results-rank-label" id="social-results-rank-label">SOCIAL DEFENSE MASTER</div>
-    <p style="color:var(--text-secondary);font-size:13px;margin:10px 0 16px">Phillip identified fake IT calls (vishing), urgent SMS scams (smishing), and credential pretexting with CyberZerØ!</p>
+    <p class="results-desc">Phillip identified fake IT calls (vishing), urgent SMS scams (smishing), and credential pretexting with CyberZerØ!</p>
     <div class="results-grid">
       <div class="results-stat">
         <span class="results-stat-label">Threats Blocked</span>
-        <span class="results-stat-value" id="res-social-blocked" style="color:var(--accent-green)">3 / 3</span>
+        <span class="results-stat-value stat-val-green" id="res-social-blocked">3 / 3</span>
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Safe Verified</span>
@@ -2613,17 +2624,17 @@
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Vectors Neutralized</span>
-        <span class="results-stat-value" style="color:#ea80fc">Phishing / Vishing / Smishing</span>
+        <span class="results-stat-value stat-val-purple">Phishing / Vishing / Smishing</span>
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Chapter Score</span>
-        <span class="results-stat-value" id="res-social-score" style="color:var(--accent-cyan)">0</span>
+        <span class="results-stat-value stat-val-cyan" id="res-social-score">0</span>
       </div>
     </div>
-    <div style="display:flex;gap:12px;margin-top:20px;justify-content:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="proceedToNextCategory('ransomware')">🔒 PROCEED TO CHAPTER 4 (RANSOMWARE) →</button>
-      <button class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
-      <button class="btn-ghost" onclick="startSocialEngineeringMission()">🔄 Replay Social Defense</button>
+    <div class="results-action-row-20">
+      <button type="button" class="btn-primary" onclick="proceedToNextCategory('ransomware')">🔒 PROCEED TO CHAPTER 4 (RANSOMWARE) →</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-ghost" onclick="startSocialEngineeringMission()">🔄 Replay Social Defense</button>
     </div>
   </div>
 </div>
@@ -2631,14 +2642,14 @@
 <!-- ── RANSOMWARE MISSION RESULTS (CHAPTER 4 - JONALD) ── -->
 <div id="overlay-ransomware-results" class="overlay">
   <div class="results-card">
-    <div class="results-badge" style="background:rgba(255,82,82,0.2);color:var(--accent-red);border:1px solid rgba(255,82,82,0.4)">CHAPTER 4 COMPLETE</div>
+    <div class="results-badge results-badge-red">CHAPTER 4 COMPLETE</div>
     <div class="results-rank-circle rank-s" id="ransomware-results-rank">S</div>
     <div class="results-rank-label" id="ransomware-results-rank-label">RANSOMWARE INCIDENT COMMANDER</div>
-    <p style="color:var(--text-secondary);font-size:13px;margin:10px 0 16px">Jonald contained the ransomware payload, isolated network shares, and restored all project data from clean backups!</p>
+    <p class="results-desc">Jonald contained the ransomware payload, isolated network shares, and restored all project data from clean backups!</p>
     <div class="results-grid">
       <div class="results-stat">
         <span class="results-stat-label">Storage Recovered</span>
-        <span class="results-stat-value" id="res-rw-recovered" style="color:var(--accent-green)">100% (4 / 4 Nodes)</span>
+        <span class="results-stat-value stat-val-green" id="res-rw-recovered">100% (4 / 4 Nodes)</span>
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Processes Terminated</span>
@@ -2646,16 +2657,16 @@
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Extortion Ransom Paid</span>
-        <span class="results-stat-value" style="color:var(--accent-green)">$0 (Zero Ransom)</span>
+        <span class="results-stat-value stat-val-green">$0 (Zero Ransom)</span>
       </div>
       <div class="results-stat">
         <span class="results-stat-label">Chapter Score</span>
-        <span class="results-stat-value" id="res-rw-score" style="color:var(--accent-cyan)">0</span>
+        <span class="results-stat-value stat-val-cyan" id="res-rw-score">0</span>
       </div>
     </div>
-    <div style="display:flex;gap:12px;margin-top:20px;justify-content:center;flex-wrap:wrap">
-      <button class="btn-primary" onclick="showGrandCertificate()">🏆 VIEW GRAND MASTER CERTIFICATE →</button>
-      <button class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+    <div class="results-action-row-20">
+      <button type="button" class="btn-primary" onclick="showGrandCertificate()">🏆 VIEW GRAND MASTER CERTIFICATE →</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
     </div>
   </div>
 </div>
@@ -2676,7 +2687,7 @@
         </div>
 
         <p class="grand-cert-statement">
-          This certifies that Student <strong id="grand-cert-name" style="color:#00e5ff">Ace</strong> has successfully guided <strong>Ace, Nishren, Phillip, and Jonald</strong> through all realistic threat simulations, demonstrating mastery over:
+          This certifies that Student <strong id="grand-cert-name" class="cert-name-cyan">Ace</strong> has successfully guided <strong>Ace, Nishren, Phillip, and Jonald</strong> through all realistic threat simulations, demonstrating mastery over:
         </p>
 
         <!-- 4 Badges Matrix -->
@@ -2718,23 +2729,23 @@
         <!-- 4 Friends Photo Strip -->
         <div class="grand-team-strip">
           <div class="team-avatar-box">
-            <img src="assets/Ace.png" alt="Ace" class="team-avatar-img" />
+            <img src="assets/Ace.png" alt="Ace" class="team-avatar-img">
             <span class="team-name">Ace</span>
           </div>
           <div class="team-avatar-box">
-            <img src="assets/Nishren.png" alt="Nishren" class="team-avatar-img" />
+            <img src="assets/Nishren.png" alt="Nishren" class="team-avatar-img">
             <span class="team-name">Nishren</span>
           </div>
           <div class="team-avatar-box">
-            <img src="assets/Phillip.png" alt="Phillip" class="team-avatar-img" />
+            <img src="assets/Phillip.png" alt="Phillip" class="team-avatar-img">
             <span class="team-name">Phillip</span>
           </div>
           <div class="team-avatar-box">
-            <img src="assets/Jonald.png" alt="Jonald" class="team-avatar-img" />
+            <img src="assets/Jonald.png" alt="Jonald" class="team-avatar-img">
             <span class="team-name">Jonald</span>
           </div>
           <div class="team-avatar-box cyberzero-avatar-box">
-            <img src="assets/CyberZerØ.png" alt="CyberZerØ" class="team-avatar-img" />
+            <img src="assets/CyberZerØ.png" alt="CyberZerØ" class="team-avatar-img">
             <span class="team-name">CyberZerØ</span>
           </div>
         </div>
@@ -2745,8 +2756,8 @@
 
         <!-- Certificate Footer Actions -->
         <div class="grand-cert-actions">
-          <button class="btn-primary" onclick="openCategoryHub()">📁 RETURN TO CATEGORIES HUB</button>
-          <button class="btn-ghost" onclick="restartEntireGame()">🔄 RESTART FULL ADVENTURE</button>
+          <button type="button" class="btn-primary" onclick="openCategoryHub()">📁 RETURN TO CATEGORIES HUB</button>
+          <button type="button" class="btn-ghost" onclick="restartEntireGame()">🔄 RESTART FULL ADVENTURE</button>
         </div>
       </div>
     </div>
@@ -2758,9 +2769,9 @@
   <div class="lip-header">🔗 Link Destination</div>
   <div id="lip-url" class="lip-url"></div>
   <div class="lip-actions">
-    <button class="btn-primary btn-sm" id="lip-flag-btn" onclick="flagFromPopup()">🚩 Flag This Link</button>
-    <button class="btn-ghost btn-sm" id="lip-open-btn" onclick="openInBrowser()">🌐 Open in Browser</button>
-    <button class="btn-ghost btn-sm" onclick="closeLinkPopup()">✕ Close</button>
+    <button type="button" class="btn-primary btn-sm" id="lip-flag-btn" onclick="flagFromPopup()">🚩 Flag This Link</button>
+    <button type="button" class="btn-ghost btn-sm" id="lip-open-btn" onclick="openInBrowser()">🌐 Open in Browser</button>
+    <button type="button" class="btn-ghost btn-sm" onclick="closeLinkPopup()">✕ Close</button>
   </div>
 </div>
 
@@ -2802,6 +2813,50 @@
       </div>
       <p class="win-loading-note-text" id="win-loading-note-text">
         Phishing is a trick to steal your personal information, like passwords and bank details.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SHUTDOWN LOADING SCREEN
+     Shown when Shutdown (Exit) is clicked from power menu
+     ══════════════════════════════════════════════════════ -->
+<div id="overlay-shutdown-screen">
+  <div class="win-loading-content">
+
+    <!-- Windows 12-Dot Spinning Ring (red tint for shutdown) -->
+    <div class="win-spinner-wrap" aria-hidden="true">
+      <svg class="win-spinner-svg" viewBox="0 0 64 64" width="60" height="60">
+        <circle cx="32" cy="10" r="3.2" fill="#ffffff" opacity="1.0"/>
+        <circle cx="43" cy="13" r="3.2" fill="#ffffff" opacity="0.91"/>
+        <circle cx="51" cy="21" r="3.2" fill="#ffffff" opacity="0.80"/>
+        <circle cx="54" cy="32" r="3.2" fill="#ffffff" opacity="0.65"/>
+        <circle cx="51" cy="43" r="3.2" fill="#ffffff" opacity="0.48"/>
+        <circle cx="43" cy="51" r="3.2" fill="#ffffff" opacity="0.32"/>
+        <circle cx="32" cy="54" r="3.2" fill="#ffffff" opacity="0.18"/>
+        <circle cx="21" cy="51" r="3.2" fill="#ffffff" opacity="0.08"/>
+        <circle cx="13" cy="43" r="3.2" fill="#ffffff" opacity="0.02"/>
+        <circle cx="10" cy="32" r="3.2" fill="#ffffff" opacity="0.05"/>
+        <circle cx="13" cy="21" r="3.2" fill="#ffffff" opacity="0.25"/>
+        <circle cx="21" cy="13" r="3.2" fill="#ffffff" opacity="0.60"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <h2 class="win-loading-title" id="shutdown-loading-title">Shutting down</h2>
+
+    <!-- Shutdown Note Box with Power Icon -->
+    <div class="win-loading-note-wrap" id="shutdown-loading-note-wrap">
+      <div class="win-loading-shield-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2v10" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M7.22 5.64A8 8 0 1 0 16.78 5.64" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <p class="win-loading-note-text" id="shutdown-loading-note-text">
+        Saving your progress and securing all open files…
       </p>
     </div>
 

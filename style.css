@@ -107,6 +107,143 @@ p { line-height: 1.6; }
 }
 .desktop-icon:active { transform: scale(0.95); }
 .icon-img { font-size: 34px; filter: drop-shadow(0 2px 8px rgba(79,195,247,0.4)); }
+.icon-img img { width: 36px; height: 36px; }
+
+/* ── Inline-style replacements ── */
+/* Taskbar / tray icon images */
+.taskbar-icon-img { width: 18px; height: 18px; vertical-align: middle; }
+/* Settings sidebar nav icon images */
+.settings-nav-icon { width: 16px; height: 16px; vertical-align: middle; }
+/* Settings page title icon images */
+.settings-title-icon { width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; }
+/* Network flyout header icon */
+.network-flyout-icon { width: 20px; height: 20px; vertical-align: middle; }
+/* Quick-tiles icon images (22×22) */
+.quick-tile-img { width: 22px; height: 22px; }
+.quick-tile-img-mid { width: 22px; height: 22px; vertical-align: middle; }
+/* WiFi network list item icon */
+.wifi-icon-img { width: 20px; height: 20px; }
+/* Airplane mode transmitter row icons */
+.air-icon-img { width: 20px; height: 20px; }
+/* Bluetooth device list icon (18×18) */
+.bt-icon-img { width: 18px; height: 18px; }
+.bt-icon-img-dim { width: 18px; height: 18px; opacity: 0.5; }
+/* Start menu tile icons */
+.start-tile-img { width: 32px; height: 32px; }
+/* Start menu recommended list icons */
+.rec-icon-img { width: 28px; height: 28px; }
+/* badge-clean small font */
+.badge-clean-sm { font-size: 10px; }
+/* Progress bar initial states (set via JS, but used in HTML as starting values) */
+.progress-zero-w { width: 0%; }
+.progress-zero-l { left: 0%; }
+/* AV tutorial button */
+.btn-av-tutorial { font-size: 11px; padding: 4px 10px; margin-left: 10px; }
+/* sent-detail-action-btn push */
+.ml-auto { margin-left: auto; }
+/* inline display:none for JS-toggled elements (initial state) */
+.hidden-init { display: none; }
+/* Wi-Fi status row */
+.ws-status-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.ws-status-label-primary { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+.ws-status-label-secondary { font-size: 12px; color: var(--text-muted); }
+/* Toggle buttons (wifi/bluetooth/airplane) */
+.ws-toggle-btn { padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; }
+/* Section header with top margin */
+.settings-section-header-mt { margin-top: 16px; }
+/* Bluetooth device rows */
+.bt-device-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.bt-device-row-connected { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); }
+.bt-device-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.bt-device-info-wrap { display: flex; align-items: center; gap: 10px; }
+.bt-device-name { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+.bt-device-status-connected { font-size: 11px; color: #38bdf8; }
+.bt-device-status-muted { font-size: 11px; color: var(--text-muted); }
+.bt-device-status-warn { font-size: 11px; color: var(--accent-orange, #fb923c); }
+/* Bluetooth action buttons */
+.bt-btn-connected { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); color: #00ff88; }
+.bt-btn-pair { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; }
+.bt-btn-inspect { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.3); color: #fb923c; }
+/* Airplane mode */
+.ws-airplane-tab { display: none; }
+.air-status-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 10px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 18px; }
+.air-label-primary { font-weight: 700; font-size: 14px; color: #f8fafc; }
+.air-label-secondary { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+.air-toggle-btn { padding: 7px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #e0f2fe; transition: all 0.2s ease; }
+.air-transmitters-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.air-transmitter-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 8px; background: #1e293b; border: 1px solid rgba(255,255,255,0.08); }
+.air-transmitter-info { flex: 1; }
+.air-transmitter-name { font-weight: 700; font-size: 13px; color: #f8fafc; }
+.air-transmitter-sub { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
+.air-status-active { font-size: 11px; color: #4ade80; font-weight: 700; background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.3); padding: 3px 10px; border-radius: 6px; }
+.air-status-always { font-size: 11px; color: #38bdf8; font-weight: 700; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3); padding: 3px 10px; border-radius: 6px; }
+.air-narrator-tip { margin-top: 16px; display: flex; }
+/* Security settings section header */
+.settings-section-header-mt14 { margin-top: 14px; }
+/* Security stage nav (hidden initially) */
+.g4-stage-nav-hidden { display: none; }
+/* phone-link titlebar icon */
+.win-icon-img-sm { width: 16px; height: 16px; vertical-align: middle; }
+/* wifi-net-meta warning color */
+.wifi-meta-warn { color: var(--accent-red); }
+/* network flyout footer custom */
+.flyout-footer-centered { justify-content: center; padding: 10px 14px; align-items: center; }
+.flyout-footer-between { justify-content: space-between; padding: 10px 14px; }
+.flyout-footer-note { font-size: 11px; color: var(--text-muted); }
+.btn-jump-today { padding: 4px 10px; font-size: 11px; }
+.btn-wifi-settings { padding: 6px 14px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; border-radius: 6px; }
+/* Category hub inner topbar */
+.cat-hub-topbar { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+/* Category hub replay button accent */
+.cat-replay-btn { margin-left: auto; border-color: rgba(0,229,255,0.4); color: var(--accent-cyan); }
+/* Category hub score value */
+.cat-score-val { color: var(--accent-cyan); }
+/* Start menu recommended section header margin */
+.start-section-header-mt { margin-top: 14px; }
+/* Training nav prev button (hidden initially) */
+.training-prev-hidden { visibility: hidden; }
+/* Demo report button push right */
+.gdemo-report-btn-right { margin-left: auto; }
+/* Demo email TO field color */
+.gdemo-to-muted { color: var(--text-muted); }
+/* Demo email subject (legitimate, green) */
+.gdemo-legit-subject { color: var(--accent-green); }
+/* Demo report modal — legit title */
+.gdemo-legit-rm-title { color: var(--accent-green); }
+/* Demo report phishing button muted */
+.btn-danger-muted { opacity: .4; cursor: default; }
+/* Demo report legit button muted */
+.btn-success-muted { opacity: .4; cursor: default; }
+/* File inspection pane sub-label */
+.fdp-sub-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+/* Ext val highlight */
+.fdp-ext-val { color: var(--accent-red); font-weight: 700; }
+/* FDP actions push to bottom */
+.fdp-actions-bottom { margin-top: auto; }
+/* FDP scan button full width */
+.btn-sm-full { width: 100%; }
+/* Overlay report keep-investigating btn */
+.btn-report-keep { margin-top: 12px; }
+/* Results action rows */
+.results-action-row { display: flex; gap: 12px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
+.results-action-row-20 { display: flex; gap: 12px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+/* Results badge variants */
+.results-badge-green { background: rgba(0,230,118,0.2); color: var(--accent-green); border: 1px solid rgba(0,230,118,0.4); }
+.results-badge-purple { background: rgba(234,128,252,0.2); color: #ea80fc; border: 1px solid rgba(234,128,252,0.4); }
+.results-badge-red { background: rgba(255,82,82,0.2); color: var(--accent-red); border: 1px solid rgba(255,82,82,0.4); }
+/* Results stat value colors */
+.stat-val-green { color: var(--accent-green); }
+.stat-val-cyan { color: var(--accent-cyan); }
+.stat-val-purple { color: #ea80fc; }
+/* Results description paragraph */
+.results-desc { color: var(--text-secondary); font-size: 13px; margin: 10px 0 16px; }
+/* Disconnected terminal card border/title */
+.exit-card-red { border-color: rgba(255,82,82,0.5); }
+.exit-icon-red { color: var(--accent-red); }
+.exit-title-red { color: var(--accent-red); }
+.exit-actions-centered { justify-content: center; margin-top: 18px; }
+/* Grand certificate student name color */
+.cert-name-cyan { color: #00e5ff; }
 .desktop-icon span {
   font-size: 11px;
   color: var(--text-primary);
@@ -1203,6 +1340,10 @@ p { line-height: 1.6; }
   background: #fff;
 }
 .google-logo { font-size: 52px; font-weight: 700; letter-spacing: -1px; }
+.gl-blue   { color: #4285F4; }
+.gl-red    { color: #EA4335; }
+.gl-yellow { color: #FBBC05; }
+.gl-green  { color: #34A853; }
 .google-search-box {
   display: flex;
   align-items: center;
@@ -6993,6 +7134,121 @@ p { line-height: 1.6; }
 }
 
 /* ═══════════════════════════════════════════════════════════
+   WINDOWS 10 SPOTLIGHT LOCK SCREEN (Paused Terminal)
+═══════════════════════════════════════════════════════════ */
+#overlay-lock-paused {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  display: block;
+  transition: transform 0.42s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.35s ease;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+#overlay-lock-paused.hidden {
+  display: none !important;
+}
+
+#overlay-lock-paused.slide-up {
+  transform: translateY(-100%);
+  opacity: 0.95;
+}
+
+.lock-paused-bg {
+  position: absolute;
+  inset: 0;
+  background: url('assets/lockscreen_spotlight.jpg') no-repeat center center;
+  background-size: cover;
+  z-index: 1;
+}
+
+.lock-paused-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top right, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.1) 45%, transparent 100%);
+}
+
+.lock-paused-content {
+  position: absolute;
+  left: clamp(32px, 6vw, 84px);
+  bottom: clamp(36px, 8vh, 96px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 10;
+  user-select: none;
+  pointer-events: none;
+}
+
+.lock-paused-icon-wrap {
+  width: 44px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+.lock-paused-svg {
+  width: 38px;
+  height: 46px;
+  display: block;
+}
+
+.lock-paused-time {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-size: clamp(64px, 8.5vw, 96px);
+  font-weight: 200;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -1.5px;
+  margin: 16px 0 6px 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.lock-paused-date {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-size: clamp(20px, 2.6vw, 32px);
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1.25;
+  letter-spacing: 0.2px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.lock-paused-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  animation: lockHintPulse 2.4s infinite ease-in-out;
+}
+
+.lock-paused-hint-icon {
+  font-size: 11px;
+}
+
+@keyframes lockHintPulse {
+  0%, 100% {
+    opacity: 0.65;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
    WINDOWS 10 LOCK & LOGIN SCREEN — CyberZero Main Menu
 ═══════════════════════════════════════════════════════════ */
 #overlay-title-menu {
@@ -7094,33 +7350,35 @@ p { line-height: 1.6; }
 /* ── Name Input & Button Wrapper ── */
 .ls-name-input-wrap {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 14px;
-  width: 100%;
+  justify-content: center;
+  width: auto;
+  gap: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
 }
 
 /* ── Text Input Box ── */
 .ls-name-input {
-  width: 260px;
-  height: 34px;
+  width: 250px;
+  height: 36px;
   background: #ffffff;
   color: #111111;
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   font-size: 14px;
   font-weight: 400;
-  padding: 4px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  padding: 0 12px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-right: none;
   border-radius: 0;
   box-sizing: border-box;
   outline: none;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: none;
+  transition: border-color 0.15s ease;
 }
 
 .ls-name-input:focus {
-  border-color: #0078d7;
-  box-shadow: 0 0 0 1px #0078d7;
+  border-color: #ffffff;
 }
 
 .ls-name-input::placeholder {
@@ -7129,33 +7387,43 @@ p { line-height: 1.6; }
   opacity: 1;
 }
 
-/* ── Blue "Enter" Button ── */
+/* ── Windows 10 Arrow Sign-in Button ── */
 .ls-signin-btn {
-  width: 130px;
-  height: 32px;
-  background: #0078d7;
+  width: 36px;
+  height: 36px;
+  background: rgba(72, 80, 92, 0.88);
   color: #ffffff;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  padding: 0;
+  box-sizing: border-box;
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ls-name-input-wrap:focus-within .ls-name-input,
+.ls-name-input-wrap:focus-within .ls-signin-btn {
+  border-color: #ffffff;
 }
 
 .ls-signin-btn:hover {
-  background: #1a86db;
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(105, 115, 130, 0.95);
+  border-color: #ffffff;
 }
 
 .ls-signin-btn:active {
-  background: #005a9e;
-  transform: scale(0.98);
+  background: rgba(55, 62, 72, 0.95);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.ls-signin-btn svg {
+  display: block;
+  pointer-events: none;
 }
 
 /* ── Clock block (Hidden by default for identical visual match) ── */
@@ -7473,6 +7741,20 @@ p { line-height: 1.6; }
 }
 
 .title-modal-backdrop.hidden {
+  display: none !important;
+}
+
+.shutdown-screen-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10010;
+  background: #01040a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shutdown-screen-backdrop.hidden {
   display: none !important;
 }
 
@@ -8395,7 +8677,7 @@ p { line-height: 1.6; }
   font-weight: 600;
   color: #fff;
   line-height: 1.2;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 .start-tile-status {
   font-size: 9px;
@@ -8451,9 +8733,9 @@ p { line-height: 1.6; }
   overflow: hidden;
 }
 .rec-file-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: #e0f2fe;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -11902,5 +12184,44 @@ body.g4-infected {
   font-size: 11px;
   line-height: 1.6;
   color: #94a3b8;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SHUTDOWN LOADING SCREEN
+   ═══════════════════════════════════════════════════════════ */
+#overlay-shutdown-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #005ea6; /* same Windows blue as restart screen */
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.45s;
+  isolation: isolate;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  user-select: none;
+}
+
+#overlay-shutdown-screen.sd-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#overlay-shutdown-screen.sd-leaving {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Red-tinted spinner override — just reuses winSpinnerSpin */
+.win-spinner-red {
+  animation: winSpinnerSpin 1.15s linear infinite;
 }
 

@@ -495,8 +495,8 @@ function updateAppLockStates() {
       } else {
         startCard.classList.remove('locked');
         if (startBadge) {
-          startBadge.className = 'start-tile-status';
-          startBadge.textContent = 'Ready';
+          startBadge.className = 'start-tile-status hidden';
+          startBadge.textContent = '';
         }
       }
     }
@@ -848,6 +848,11 @@ function hideAllOverlays() {
     av.classList.remove('active');
     const vid = document.getElementById('awareness-real-video');
     if (vid) vid.pause();
+  }
+  const lp = document.getElementById('overlay-lock-paused');
+  if (lp) {
+    lp.classList.add('hidden');
+    lp.classList.remove('slide-up');
   }
   // Only reveal desktop if the loading screen is NOT currently active
   const ls = document.getElementById('overlay-loading-screen');
@@ -3198,10 +3203,12 @@ function openSentOrTrashEmail(id, folder) {
   const actionBtn = document.getElementById('sent-detail-action-btn');
   if (folder === 'sent') {
     actionBtn.textContent = '🗑 Delete';
+    actionBtn.setAttribute('aria-label', 'Delete email');
     actionBtn.className = 'report-btn sent-detail-action-btn-delete';
     actionBtn.onclick = () => { deleteSentEmail(email.id); closeSentDetailView(); };
   } else {
     actionBtn.textContent = '↩ Restore to Sent';
+    actionBtn.setAttribute('aria-label', 'Restore email to Sent');
     actionBtn.className = 'report-btn sent-detail-action-btn-restore';
     actionBtn.onclick = () => { restoreSentEmail(email.id); closeSentDetailView(); };
   }
@@ -7757,7 +7764,7 @@ function _avOnTimeUpdate() {
   if (timeEl) timeEl.textContent = `${_avFmtTime(cur)} / ${_avFmtTime(dur)}`;
 
   const pct = dur > 0 ? (cur / dur) * 100 : 0;
-  const fillEl = document.getElementById('av-progress-fill');
+  const fillEl = document.getElementById('av-video-progress-fill');
   if (fillEl) fillEl.style.width = `${pct}%`;
   const thumbEl = document.getElementById('av-progress-thumb');
   if (thumbEl) thumbEl.style.left = `${pct}%`;
@@ -9085,10 +9092,94 @@ function showGrandCertificate() {
 }
 
 function restartEntireGame() {
-  hideAllOverlays();
-  retakePreAssessment();
-  playAgain();
-  showOverlay('overlay-title-menu');
+  const ls = document.getElementById('overlay-loading-screen');
+  const titleEl = document.getElementById('win-loading-title');
+  const noteEl = document.getElementById('win-loading-note-text');
+  const noteWrap = document.getElementById('win-loading-note-wrap');
+
+  // Close start menu and power dropdown immediately
+  closeStartMenu();
+  const powerMenu = document.getElementById('start-power-dropdown');
+  if (powerMenu) powerMenu.classList.add('hidden');
+
+  if (!ls) {
+    hideAllOverlays();
+    retakePreAssessment();
+    playAgain();
+    showOverlay('overlay-title-menu');
+    return;
+  }
+
+  // Set Windows 10 restart title
+  if (titleEl) titleEl.textContent = 'Restarting';
+
+  // Cyber awareness notes and system status tips
+  const RESTART_NOTES = [
+    'Resetting detective environment, threat logs, and quarantine database…',
+    'Tip: Phishing attacks often create a false sense of urgency to trick you.',
+    'Tip: Always verify the sender\'s email address before clicking any links or opening attachments.',
+    'Tip: Legitimate services and banks will never request your passwords, MPINs, or OTPs.',
+    'Tip: Disguised file extensions like .pdf.exe can secretly harbor malicious payloads.',
+    'Tip: Multi-factor authentication (MFA) adds a vital layer of defense to all your accounts.'
+  ];
+
+  let selectedNote = RESTART_NOTES[Math.floor(Math.random() * RESTART_NOTES.length)];
+  if (noteEl) noteEl.textContent = selectedNote;
+
+  // Activate Windows circle loading screen
+  ls.classList.remove('ls-leaving');
+  ls.classList.add('ls-active');
+
+  // Play subtle restart tone
+  _playLoadingBeep(320, 0.12, 0);
+
+  // Midway status note update with smooth transition at 1.8s
+  const RESTART_DURATION = 3600; // 3.6 seconds
+  const midTimer = setTimeout(() => {
+    if (noteWrap && noteEl) {
+      noteWrap.classList.add('transitioning');
+      setTimeout(() => {
+        noteEl.textContent = 'Restoring system security policies and initializing fresh mission…';
+        noteWrap.classList.remove('transitioning');
+      }, 300);
+    }
+  }, 1800);
+
+  // Complete restart after duration
+  setTimeout(() => {
+    clearTimeout(midTimer);
+
+    // Reset game state and hide any active dialogues
+    hideAllOverlays();
+    retakePreAssessment();
+    playAgain();
+
+    // Reset lock screen input values
+    const nameInput = document.getElementById('ls-name-input');
+    if (nameInput) nameInput.value = '';
+    const userDisp = document.getElementById('ls-win10-username-display');
+    if (userDisp) userDisp.textContent = 'Enter your Name';
+    const avatar = document.getElementById('ls-user-avatar');
+    if (avatar) avatar.classList.remove('has-name');
+
+    // Show title / lock screen behind the loading overlay
+    showOverlay('overlay-title-menu');
+
+    // Startup chime
+    _playLoadingBeep(440, 0.1, 0);
+    _playLoadingBeep(660, 0.12, 0.12);
+
+    // Smoothly dissolve loading screen
+    setTimeout(() => {
+      ls.classList.add('ls-leaving');
+      setTimeout(() => {
+        ls.classList.remove('ls-active', 'ls-leaving');
+        // Restore title to "Just a moment..." for regular game start
+        if (titleEl) titleEl.textContent = 'Just a moment...';
+      }, 700);
+    }, 200);
+
+  }, RESTART_DURATION);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -9226,6 +9317,10 @@ function startFromTitleMenu() {
     return;
   }
 
+  // Ensure title is 'Just a moment...' for sign-in
+  const titleEl = document.getElementById('win-loading-title');
+  if (titleEl) titleEl.textContent = 'Just a moment...';
+
   // Activate loading overlay smoothly FIRST, then close title menu
   ls.classList.remove('ls-leaving');
   ls.classList.add('ls-active');
@@ -9358,6 +9453,8 @@ function reconnectTerminal() {
   const discScreen = document.getElementById('title-disconnected-screen');
   if (discScreen) discScreen.classList.add('hidden');
   closeExitModal();
+  const desktop = document.getElementById('desktop');
+  if (desktop) desktop.style.visibility = 'visible';
   showOverlay('overlay-title-menu');
   showToast('⚡ Terminal reconnected. Welcome back, Student.', 'success');
 }
@@ -10703,17 +10800,161 @@ function togglePowerMenu(event) {
   if (pMenu) pMenu.classList.toggle('hidden');
 }
 
+let pausedLockInterval = null;
+
+function updatePausedLockClock() {
+  const timeEl = document.getElementById('lock-paused-time');
+  const dateEl = document.getElementById('lock-paused-date');
+  if (!timeEl && !dateEl) return;
+
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  if (timeEl) timeEl.textContent = `${h}:${m}`;
+
+  if (dateEl) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+  }
+}
+
+function lockTerminalPaused() {
+  closeStartMenu();
+  const powerMenu = document.getElementById('start-power-dropdown');
+  if (powerMenu) powerMenu.classList.add('hidden');
+
+  const lockEl = document.getElementById('overlay-lock-paused');
+  if (!lockEl) return;
+
+  updatePausedLockClock();
+  if (pausedLockInterval) clearInterval(pausedLockInterval);
+  pausedLockInterval = setInterval(updatePausedLockClock, 1000);
+
+  // Reveal paused lock screen
+  lockEl.classList.remove('slide-up');
+  lockEl.classList.remove('hidden');
+
+  if (typeof AudioManager !== 'undefined') {
+    AudioManager.playWindowSound(false);
+  }
+
+  // Allow pressing any key to resume
+  const onKeyResume = () => {
+    window.removeEventListener('keydown', onKeyResume);
+    unlockPausedTerminal();
+  };
+  window.addEventListener('keydown', onKeyResume, { once: true });
+}
+
+function unlockPausedTerminal() {
+  const lockEl = document.getElementById('overlay-lock-paused');
+  if (!lockEl || lockEl.classList.contains('hidden') || lockEl.classList.contains('slide-up')) return;
+
+  if (pausedLockInterval) {
+    clearInterval(pausedLockInterval);
+    pausedLockInterval = null;
+  }
+
+  // Smooth slide-up transition to reveal desktop
+  lockEl.classList.add('slide-up');
+
+  // Subtle unlock chime
+  _playLoadingBeep(523, 0.08, 0);
+  _playLoadingBeep(659, 0.08, 0.08);
+
+  setTimeout(() => {
+    lockEl.classList.add('hidden');
+    lockEl.classList.remove('slide-up');
+  }, 420);
+}
+
 function startMenuPower(action) {
   closeStartMenu();
   if (action === 'restart') {
     restartEntireGame();
   } else if (action === 'lock') {
-    showOverlay('overlay-title-menu');
-    showToast('🔒 Terminal Locked.', 'info');
-  } else if (action === 'title') {
-    showOverlay('overlay-title-menu');
+    lockTerminalPaused();
+  } else if (action === 'shutdown') {
+    shutdownGame();
   }
 }
+
+function shutdownGame() {
+  const sd = document.getElementById('overlay-shutdown-screen');
+  const noteEl  = document.getElementById('shutdown-loading-note-text');
+  const noteWrap = document.getElementById('shutdown-loading-note-wrap');
+
+  // Close start menu/power dropdown immediately
+  closeStartMenu();
+  const powerMenu = document.getElementById('start-power-dropdown');
+  if (powerMenu) powerMenu.classList.add('hidden');
+
+  if (!sd) {
+    // Fallback: just try to close
+    try { window.close(); } catch(e) {}
+    return;
+  }
+
+  // Shutdown-specific awareness tips
+  const SHUTDOWN_NOTES = [
+    'Saving your progress and securing all open files…',
+    'Tip: Always log out of shared computers to protect your accounts.',
+    'Tip: Never leave your workstation unlocked — even for a moment.',
+    'Tip: Clearing your browser history and cache protects your privacy.',
+    'Tip: Strong passwords use 12+ characters with letters, numbers, and symbols.',
+    'Shutting down terminal… All detective session data has been saved.'
+  ];
+
+  const selected = SHUTDOWN_NOTES[Math.floor(Math.random() * SHUTDOWN_NOTES.length)];
+  if (noteEl) noteEl.textContent = selected;
+
+  // Play power-off descending tones
+  _playLoadingBeep(320, 0.12, 0);
+  _playLoadingBeep(240, 0.10, 0.18);
+  _playLoadingBeep(160, 0.08, 0.38);
+
+  // Show the shutdown overlay
+  sd.classList.remove('sd-leaving');
+  sd.classList.add('sd-active');
+
+  const SHUTDOWN_DURATION = 3500; // 3.5 seconds
+
+  // Mid-point note transition at 1.7s
+  const midTimer = setTimeout(() => {
+    if (noteWrap && noteEl) {
+      noteWrap.classList.add('transitioning');
+      setTimeout(() => {
+        noteEl.textContent = 'Shutting down CyberZerØ terminal… Goodbye, Detective.';
+        noteWrap.classList.remove('transitioning');
+      }, 300);
+    }
+  }, 1700);
+
+  // After full duration: fade to black, then close browser
+  setTimeout(() => {
+    clearTimeout(midTimer);
+
+    // Fade overlay to full black
+    sd.classList.add('sd-leaving');
+
+    setTimeout(() => {
+      // Remove overlay and blank out the page
+      sd.classList.remove('sd-active', 'sd-leaving');
+      document.body.style.background = '#000';
+      document.body.innerHTML = '';
+
+      // Close the browser tab
+      try {
+        window.close();
+      } catch(e) {
+        // If browser blocks it, the page is already blanked to solid black
+      }
+    }, 900);
+
+  }, SHUTDOWN_DURATION);
+}
+
 
 function onMasterVolumeInput(val) {
   const num = parseInt(val, 10);
