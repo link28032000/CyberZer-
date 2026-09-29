@@ -9106,7 +9106,7 @@ function restartEntireGame() {
     hideAllOverlays();
     retakePreAssessment();
     playAgain();
-    showOverlay('overlay-title-menu');
+    showMainMenu();
     return;
   }
 
@@ -9162,8 +9162,8 @@ function restartEntireGame() {
     const avatar = document.getElementById('ls-user-avatar');
     if (avatar) avatar.classList.remove('has-name');
 
-    // Show title / lock screen behind the loading overlay
-    showOverlay('overlay-title-menu');
+    // Show main menu behind the loading overlay
+    showMainMenu();
 
     // Startup chime
     _playLoadingBeep(440, 0.1, 0);
@@ -9440,13 +9440,22 @@ function closeExitModal() {
 
 function confirmExitGame() {
   closeExitModal();
-  const discScreen = document.getElementById('title-disconnected-screen');
-  if (discScreen) discScreen.classList.remove('hidden');
-  try {
-    window.close();
-  } catch (e) {
-    // Modern browsers prevent scripts from closing unscripted tabs; disconnected screen acts as fallback
-  }
+  closeMainMenuExit();
+
+  // Attempt to close tab via standard and window-replacement methods
+  try { window.close(); } catch (e) {}
+  try { window.open('', '_self', ''); window.close(); } catch (e) {}
+  try { self.close(); } catch (e) {}
+  try { if (window.top) window.top.close(); } catch (e) {}
+
+  // If browser blocks closing user-opened tabs, navigate to about:blank to totally exit
+  setTimeout(() => {
+    try {
+      window.location.replace('about:blank');
+    } catch (e) {
+      window.location.href = 'about:blank';
+    }
+  }, 100);
 }
 
 function reconnectTerminal() {
@@ -11150,7 +11159,8 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('DOMContentLoaded', () => {
   initTitleParticles();
   initPreAssessment();
-  showOverlay('overlay-title-menu');
+  // Show main menu first (before name input)
+  showMainMenu();
   renderEmailList();
   initStickyNote();
   updateAppLockStates();
@@ -11158,10 +11168,92 @@ window.addEventListener('DOMContentLoaded', () => {
   updateNetworkUI();
   // Start lock screen clock
   lsStartClock();
-  // Auto-focus name input
+});
+
+// ════════════════════════════════════════════════════════════
+//  MAIN MENU FUNCTIONS
+// ════════════════════════════════════════════════════════════
+
+/** Show the main menu overlay */
+function showMainMenu() {
+  const mm = document.getElementById('overlay-main-menu');
+  if (mm) {
+    // Restore any inline styles that were force-set when hiding
+    mm.style.display = '';
+    mm.style.zIndex  = '';
+    mm.style.pointerEvents = '';
+    mm.style.opacity = '';
+    mm.style.visibility = '';
+    mm.style.transform = '';
+    mm.classList.add('active');
+  }
+  // Make sure title-menu & others are hidden
+  const tm = document.getElementById('overlay-title-menu');
+  if (tm) tm.classList.remove('active');
+}
+
+/** Hide the main menu overlay */
+function hideMainMenu() {
+  const mm = document.getElementById('overlay-main-menu');
+  if (mm) mm.classList.remove('active');
+  // Close any open sub-modals
+  closeMainMenuAbout();
+  closeMainMenuExit();
+}
+
+/** START button — go to name input screen */
+function mainMenuStart() {
+  // Force-hide main menu immediately (bypasses CSS transition delay)
+  const mm = document.getElementById('overlay-main-menu');
+  if (mm) {
+    mm.classList.remove('active');
+    mm.style.display = 'none';       // ensure it's fully gone
+    mm.style.pointerEvents = 'none'; // no interaction
+    mm.style.zIndex = '-1';          // sink below everything
+  }
+  // Close any open sub-modals
+  closeMainMenuAbout();
+  closeMainMenuExit();
+
+  // Show name input screen (overlay-title-menu)
+  const tm = document.getElementById('overlay-title-menu');
+  if (tm) {
+    tm.style.display = '';           // clear any inline override
+    tm.classList.add('active');
+  }
+
+  // Show backdrop
+  const bd = document.getElementById('overlay-backdrop');
+  if (bd) bd.classList.add('active');
+
+  // Auto-focus name input after CSS transition
   setTimeout(() => {
     const inp = document.getElementById('ls-name-input');
     if (inp) inp.focus();
-  }, 600);
-});
+  }, 400);
+}
+
+/** ABOUT button — show the About modal */
+function mainMenuAbout() {
+  const modal = document.getElementById('mm-about-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+/** Close About modal */
+function closeMainMenuAbout() {
+  const modal = document.getElementById('mm-about-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+/** EXIT button — show exit confirmation modal */
+function mainMenuExit() {
+  const modal = document.getElementById('mm-exit-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+/** Close Exit confirmation modal */
+function closeMainMenuExit() {
+  const modal = document.getElementById('mm-exit-modal');
+  if (modal) modal.classList.add('hidden');
+}
 
