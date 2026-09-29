@@ -7636,7 +7636,7 @@ let selectedCommId = 'vishing_1';
 const G4_WIFI_NETWORKS = [
   {
     id: 'coffeeshop_guest',
-    name: 'CoffeeShop_Guest',
+    name: 'Free Wifi',
     security: 'Open',
     signal: 3,
     password: 'None',
@@ -7648,7 +7648,7 @@ const G4_WIFI_NETWORKS = [
   },
   {
     id: 'sjshs_free',
-    name: 'SJSHS_FREE_WIFI',
+    name: 'GLOBE_BROADBAND_2G',
     security: 'Open',
     signal: 4,
     password: 'None',
@@ -7660,7 +7660,7 @@ const G4_WIFI_NETWORKS = [
   },
   {
     id: 'coffeeshop_secure',
-    name: 'CoffeeShop_Secure',
+    name: 'PLDT-Home-5A3B',
     security: 'WPA2-Personal',
     signal: 4,
     password: 'Staff-provided',

@@ -1465,38 +1465,34 @@
       <div class="wifi-net-item connected" id="wifi-item-cybernet">
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
-          <div class="wifi-net-name">CYBER-NET (WPA3-Enterprise)</div>
-          <div class="wifi-net-meta">Connected, secured • 5.0 GHz • 1200 Mbps</div>
+          <div class="wifi-net-name">HomeNetwork_5G</div>
         </div>
         <button type="button" class="wifi-net-action-btn disconnect" id="btn-cybernet-action" onclick="toggleCybernetConnect()">Disconnect</button>
       </div>
 
       <!-- Other detected networks -->
-      <div class="wifi-net-item" id="wifi-item-academy" onclick="connectToWifi('HQ-CyberAcademy-Internal')">
+      <div class="wifi-net-item" id="wifi-item-academy" onclick="connectToWifi('PLDT-Home-5A3B')">
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
-          <div class="wifi-net-name">HQ-CyberAcademy-Internal</div>
-          <div class="wifi-net-meta">Secured (802.1X Student Key)</div>
+          <div class="wifi-net-name">PLDT-Home-5A3B</div>
         </div>
         <button type="button" class="wifi-net-action-btn connect">Connect</button>
       </div>
 
-      <div class="wifi-net-item" id="wifi-item-lab" onclick="connectToWifi('Lab-Investigation-Mesh')">
+      <div class="wifi-net-item" id="wifi-item-lab" onclick="connectToWifi('GLOBE_BROADBAND_2G')">
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
-          <div class="wifi-net-name">Lab-Investigation-Mesh</div>
-          <div class="wifi-net-meta">Secured • Isolated Forensic Sandbox</div>
+          <div class="wifi-net-name">GLOBE_BROADBAND_2G</div>
         </div>
         <button type="button" class="wifi-net-action-btn connect">Connect</button>
       </div>
 
-      <div class="wifi-net-item warning-net" id="wifi-item-public" onclick="warnPublicWifi()">
+      <div class="wifi-net-item" id="wifi-item-public" onclick="connectToWifi('Free Wifi')">
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
-          <div class="wifi-net-name">Free_Public_Unsecured</div>
-          <div class="wifi-net-meta wifi-meta-warn">⚠️ Open • High Risk of Phishing / MITM!</div>
+          <div class="wifi-net-name">Free Wifi</div>
         </div>
-        <button type="button" class="wifi-net-action-btn warn-btn">Inspect</button>
+        <button type="button" class="wifi-net-action-btn connect">Connect</button>
       </div>
     </div>
   </div>
@@ -1622,7 +1618,7 @@
 <div id="overlay-backdrop" class="overlay-backdrop"></div>
 
 <!-- ── WINDOWS 10 SPOTLIGHT LOCK SCREEN (Paused Terminal) ── -->
-<div id="overlay-lock-paused" class="lock-paused-screen hidden" onclick="unlockPausedTerminal()" role="button" tabindex="0" aria-label="Terminal Locked. Click or tap anywhere to resume">
+<div id="overlay-lock-paused" class="lock-paused-screen hidden" buttonrole="" tabindex="0" onclick="unlockPausedTerminal()" onkeydown="if(event.key==='Enter'||event.key===' ')unlockPausedTerminal()" aria-label="Terminal Locked. Click or tap anywhere to resume">
   <div class="lock-paused-bg"></div>
   <div class="lock-paused-content">
     <div class="lock-paused-icon-wrap" aria-hidden="true">
