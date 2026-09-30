@@ -1645,15 +1645,6 @@
   <!-- Animated scanline overlay -->
   <div class="mm-scanlines"></div>
 
-  <!-- Floating particles -->
-  <div class="mm-particles" aria-hidden="true">
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-  </div>
 
   <!-- Center Content -->
   <div class="mm-center">
@@ -1889,15 +1880,6 @@
   <div class="mm-bg"></div>
   <div class="mm-scanlines"></div>
 
-  <!-- Floating particles -->
-  <div class="mm-particles" aria-hidden="true">
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-  </div>
 
   <!-- Cinematic Flash Transition Overlay -->
   <div class="loading-flash-overlay" id="loading-flash-overlay" aria-hidden="true"></div>
@@ -1946,15 +1928,6 @@
   <div class="mm-bg"></div>
   <div class="mm-scanlines"></div>
 
-  <!-- Floating particles -->
-  <div class="mm-particles" aria-hidden="true">
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-    <span class="mm-particle"></span>
-  </div>
 
   <!-- BACK button (top-left) -->
   <button class="ss-back-btn" id="ss-back-btn" onclick="storySelectBack()" aria-label="Back to main menu">
@@ -1965,10 +1938,6 @@
   <!-- Main content wrapper -->
   <div class="ss-content">
 
-    <!-- Logo -->
-    <div class="ss-logo-wrap">
-      <img src="assets/logo/cyber_logo1.png" alt="CyberZerØ" class="ss-logo-img">
-    </div>
 
     <!-- "STORY SELECTION" banner -->
     <div class="ss-title-banner">
@@ -1991,12 +1960,12 @@
           <!-- Scan line overlay -->
           <div class="ss-scan-line"></div>
           <div class="ss-card-thumb">
-            <img src="assets/01Cover.png" alt="Chapter 1 scene" class="ss-thumb-img">
+            <img src="assets/Story Selection/Chapter1.png" alt="Chapter 1 scene" class="ss-thumb-img">
             <div class="ss-card-glow"></div>
           </div>
           <div class="ss-card-footer">
             <div class="ss-chapter-label">CHAPTER 1</div>
-            <div class="ss-chapter-title">THE FIRST CLICK</div>
+            <div class="ss-chapter-title">THE FIRST DAY</div>
             <div class="ss-card-dots">
               <span class="ss-dot ss-dot-active"></span>
             </div>
@@ -2096,6 +2065,14 @@
   </div><!-- /.ss-content -->
 </div><!-- /#overlay-story-select -->
 
+<!-- ── CHAPTER TITLE CARD (Cinematic Mission Intro) ── -->
+<div id="overlay-chapter-card" class="overlay" style="display:none;" aria-live="polite">
+  <div class="cc-container">
+    <div class="cc-chapter-num" id="cc-chapter-num">CHAPTER 1</div>
+    <div class="cc-chapter-title" id="cc-chapter-title">THE FIRST DAY</div>
+  </div>
+</div>
+
 <!-- ── MAIN MENU / TITLE SCREEN (Windows 10 Login Style) ── -->
 <div id="overlay-title-menu" class="overlay">
   <!-- Windows 10 Background Wallpaper -->
@@ -2114,26 +2091,28 @@
     </div>
 
     <!-- Username display -->
-    <div class="ls-win10-username" id="ls-win10-username-display">Enter your Name</div>
+    <div class="ls-win10-username" id="ls-win10-username-display">Alex</div>
 
-    <!-- Name Input Row -->
+    <!-- Password Input Row -->
     <div class="ls-name-input-wrap" id="ls-name-input-wrap">
       <input
-        type="text"
+        type="password"
         id="ls-name-input"
         class="ls-name-input"
-        placeholder="Enter your Name"
-        maxlength="32"
-        autocomplete="off"
-        oninput="lsHandleNameInput(this.value)"
+        placeholder="Password"
+        maxlength="64"
+        autocomplete="current-password"
         onkeydown="if(event.key==='Enter') lsSignIn()"
-        aria-label="Enter your name to sign in">
+        aria-label="Enter password to sign in">
       <button type="button" class="ls-signin-btn" id="ls-signin-arrow" onclick="lsSignIn()" title="Sign In" aria-label="Sign In">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 12H20M13 5L20 12L13 19" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
     </div>
+
+    <!-- Sign-in hint -->
+    <div class="ls-signin-hint">Enter any password to sign in</div>
 
     <!-- Clock Block (bottom) -->
     <div class="ls-win10-clock-block">

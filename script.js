@@ -839,9 +839,15 @@ function closeOverlay(id) {
   }
 }
 
-function hideAllOverlays() {
-  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
-  document.getElementById('overlay-backdrop').classList.remove('active');
+function hideAllOverlays(revealDesktop = false) {
+  document.querySelectorAll('.overlay').forEach(o => {
+    // Keep story select and main menu active if they are intentionally open
+    if (o.id !== 'overlay-story-select' && o.id !== 'overlay-main-menu') {
+      o.classList.remove('active');
+    }
+  });
+  const bd = document.getElementById('overlay-backdrop');
+  if (bd) bd.classList.remove('active');
   const av = document.getElementById('overlay-awareness-video');
   if (av) {
     av.classList.add('hidden');
@@ -854,10 +860,20 @@ function hideAllOverlays() {
     lp.classList.add('hidden');
     lp.classList.remove('slide-up');
   }
-  // Only reveal desktop if the loading screen is NOT currently active
+
+  // Only reveal desktop if explicitly requested AND neither loading/shutdown/story-select/main-menu is active
   const ls = document.getElementById('overlay-loading-screen');
-  const loadingActive = ls && ls.classList.contains('ls-active');
-  if (!loadingActive) {
+  const loadingActive = ls && (ls.classList.contains('ls-active') || ls.classList.contains('ls-leaving'));
+  const sd = document.getElementById('overlay-shutdown-screen');
+  const shutdownActive = sd && (sd.classList.contains('sd-active') || sd.classList.contains('sd-leaving'));
+  const ss = document.getElementById('overlay-story-select');
+  const storyActive = ss && ss.classList.contains('active');
+  const mm = document.getElementById('overlay-main-menu');
+  const mmActive = mm && mm.classList.contains('active');
+  const tm = document.getElementById('overlay-title-menu');
+  const tmActive = tm && tm.classList.contains('active');
+
+  if (revealDesktop && !loadingActive && !shutdownActive && !storyActive && !mmActive && !tmActive) {
     const desktop = document.getElementById('desktop');
     if (desktop) desktop.style.visibility = 'visible';
   }
@@ -1249,7 +1265,7 @@ function skipPreAssessmentFromIntro() {
   showToast('⏩ Assessment skipped — choose your threat category.', 'info');
 }
 
-function retakePreAssessment() {
+function retakePreAssessment(silent = false) {
   isPreAssessmentGraded = false;
   preAssessmentAnswers = {};
   preAssessmentScore = 0;
@@ -1259,8 +1275,8 @@ function retakePreAssessment() {
   }
   renderPreAssessment();
   const shell = document.getElementById('exam-paper-shell');
-  if (shell) shell.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showToast('📝 Fresh exam sheet ready. Good luck!', 'info');
+  if (shell && !silent) shell.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!silent) showToast('📝 Fresh exam sheet ready. Good luck!', 'info');
 }
 
 function openPreAssessment() {
@@ -1278,7 +1294,7 @@ const CATEGORIES = [
     num: 1,
     chapterRange: '1-3',
     chapterTag: 'CHAPTER 1-3',
-    title: 'THE FIRST CLICK',
+    title: 'THE FIRST DAY',
     subtitle: 'Chapters 1-3',
     accent: '#00e5ff',
     desc: 'A student clicked a suspicious scholarship email. Investigate the phishing trap, remove malware from the attachment, and recover the compromised account.',
@@ -1601,7 +1617,7 @@ const VN_STORIES = {
   phishing: [
     {
       speaker: 'NARRATOR',
-      text: 'CHAPTER 1: THE FIRST CLICK\n\nMonday, 7:48 AM. Alex, IT Support Trainee, logs in to start the week. A support request is already waiting.',
+      text: 'CHAPTER 1: THE FIRST DAY\n\nMonday, 7:48 AM. Alex, IT Support Trainee, logs in to start the week. A support request is already waiting.',
       speed: 26,
       scene: 'story'
     },
@@ -2050,7 +2066,7 @@ function vnFinish() {
   if (activeCategoryStory === 'prologue') {
     proceedFromIntroToExam();
   } else if (activeCategoryStory === 'phishing') {
-    startDemo();
+    startMission(false);
   } else if (activeCategoryStory === 'malware') {
     startMalwareDemo();
   } else if (activeCategoryStory === 'social_engineering') {
@@ -2107,7 +2123,7 @@ function trainingNext() {
     gameState.trainingSlide++;
     renderTrainingSlide();
   } else {
-    startDemo();
+    startMission(false);
   }
 }
 
@@ -2222,21 +2238,13 @@ let gdemoFlags = [];
 let gdemoAutoTimer = null;
 
 function startDemo() {
-  gameState.phase = 'demo';
-  gdemoStep = 0;
-  gdemoFlags = [];
-  updateDesktopBackgroundForPhase('phishing');
-
-  // Reset all demo state
-  resetDemoVisuals();
-  showOverlay('overlay-demo');
-  renderDemoStep(0);
+  hideAllOverlays();
+  startMission(false);
 }
 
 function skipDemo() {
   hideAllOverlays();
-  startMission();
-  showToast('⏭ Demo skipped — mission started!', 'success');
+  startMission(false);
 }
 
 function resetDemoVisuals() {
@@ -2663,7 +2671,7 @@ function updateDemoEvidencePanel(flags) {
 // MISSION
 // ═══════════════════════════════════════════════════════════
 
-function startMission() {
+function startMission(openGmail = false) {
   gameState.phase = 'mission';
   gameState.currentEmail = 0;
   gameState.score = 0;
@@ -2683,13 +2691,34 @@ function startMission() {
   updateAppLockStates();
 
   document.getElementById('hud').classList.remove('hidden');
-  openApp('gmail');
 
-  showToast('🕵️ Mission started! Investigate your inbox.', 'success');
+  // Close all open apps so the desktop starts completely clean
+  ['gmail', 'browser', 'folder', 'antivirus', 'comms', 'ransomware', 'wifi-settings', 'docviewer', 'imageviewer', 'videoplayer'].forEach(a => {
+    if (typeof appState !== 'undefined' && appState[a]) {
+      appState[a].open = false;
+      appState[a].minimized = false;
+      appState[a].maximized = false;
+      appState[a].hasBeenPositioned = false;
+    }
+    const w = document.getElementById(`win-${a}`);
+    if (w) {
+      w.classList.add('hidden');
+      w.classList.remove('maximized', 'focused', 'minimized');
+      w.style.left = '';
+      w.style.top = '';
+    }
+  });
+  if (typeof updateTaskbar === 'function') updateTaskbar();
 
-  // Pop up the scoring sticky note beside the desktop once the demo is done
-  updateStickyNoteForPhase('phishing');
-  setTimeout(showStickyNote, 700);
+  closeStickyNote();
+
+  if (openGmail) {
+    openApp('gmail');
+    updateStickyNoteForPhase('phishing');
+    setTimeout(showStickyNote, 700);
+  }
+
+  showToast('🕵️ Welcome to your desktop, Alex. Mission ready.', 'success');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3835,7 +3864,7 @@ function finishMission() {
 // PLAY AGAIN
 // ═══════════════════════════════════════════════════════════
 
-function playAgain() {
+function playAgain(showVN = false) {
   // Reset state
   updateStickyNoteForPhase('phishing');
   gameState.phase = 'welcome';
@@ -3901,8 +3930,10 @@ function playAgain() {
   const strip = document.getElementById('browser-tabs-strip');
   if (strip) strip.innerHTML = '';
 
-  showOverlay('overlay-welcome');
-  vnInit();
+  if (showVN) {
+    showOverlay('overlay-welcome');
+    vnInit();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -8969,23 +9000,45 @@ function restartEntireGame() {
   const noteEl = document.getElementById('win-loading-note-text');
   const noteWrap = document.getElementById('win-loading-note-wrap');
 
+  // Immediately hide desktop so it can NEVER pop in or flash
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.visibility = 'hidden';
+    desktop.style.opacity = '0';
+  }
+
+  // Immediately kill any active VN narration, typing text loops, and typing audio
+  if (typeof vnState !== 'undefined') {
+    if (vnState.typingTimer) {
+      clearTimeout(vnState.typingTimer);
+      vnState.typingTimer = null;
+    }
+    vnState.typing = false;
+    vnState.done = true;
+  }
+  const welcomeOv = document.getElementById('overlay-welcome');
+  if (welcomeOv) {
+    welcomeOv.classList.remove('active');
+    welcomeOv.style.display = 'none';
+  }
+
   // Close start menu and power dropdown immediately
   closeStartMenu();
   const powerMenu = document.getElementById('start-power-dropdown');
   if (powerMenu) powerMenu.classList.add('hidden');
 
   if (!ls) {
-    hideAllOverlays();
-    retakePreAssessment();
-    playAgain();
-    showMainMenu();
+    hideAllOverlays(false);
+    retakePreAssessment(true);
+    playAgain(false);
+    _goToStorySelect();
     return;
   }
 
   // Set Windows 10 restart title
   if (titleEl) titleEl.textContent = 'Restarting';
 
-  // Cyber awareness notes and system status tips
+  // Cyber awareness notes
   const RESTART_NOTES = [
     'Resetting detective environment, threat logs, and quarantine database…',
     'Tip: Phishing attacks often create a false sense of urgency to trick you.',
@@ -8998,20 +9051,31 @@ function restartEntireGame() {
   let selectedNote = RESTART_NOTES[Math.floor(Math.random() * RESTART_NOTES.length)];
   if (noteEl) noteEl.textContent = selectedNote;
 
-  // Activate Windows circle loading screen
+  // Ensure Story Selection is completely hidden while restarting
+  const ss = document.getElementById('overlay-story-select');
+  if (ss) {
+    ss.classList.remove('active');
+    ss.style.display = 'none';
+    ss.style.opacity = '0';
+  }
+
+  // Activate Windows circle loading screen immediately
+  ls.style.transition = 'none';
   ls.classList.remove('ls-leaving');
   ls.classList.add('ls-active');
+  void ls.offsetWidth;
+  ls.style.transition = '';
 
   // Play subtle restart tone
   _playLoadingBeep(320, 0.12, 0);
 
-  // Midway status note update with smooth transition at 1.8s
+  // Midway status note update
   const RESTART_DURATION = 3600; // 3.6 seconds
   const midTimer = setTimeout(() => {
     if (noteWrap && noteEl) {
       noteWrap.classList.add('transitioning');
       setTimeout(() => {
-        noteEl.textContent = 'Restoring system security policies and initializing fresh mission…';
+        noteEl.textContent = 'Restoring mission environment… Returning to Story Selection.';
         noteWrap.classList.remove('transitioning');
       }, 300);
     }
@@ -9021,37 +9085,107 @@ function restartEntireGame() {
   setTimeout(() => {
     clearTimeout(midTimer);
 
-    // Reset game state and hide any active dialogues
-    hideAllOverlays();
-    retakePreAssessment();
-    playAgain();
+    // Make sure VN narration and typing are completely dead
+    if (typeof vnState !== 'undefined') {
+      if (vnState.typingTimer) {
+        clearTimeout(vnState.typingTimer);
+        vnState.typingTimer = null;
+      }
+      vnState.typing = false;
+      vnState.done = true;
+    }
+    const welcomeOv = document.getElementById('overlay-welcome');
+    if (welcomeOv) {
+      welcomeOv.classList.remove('active');
+      welcomeOv.style.display = 'none';
+    }
 
-    // Reset lock screen input values
-    const nameInput = document.getElementById('ls-name-input');
-    if (nameInput) nameInput.value = '';
-    const userDisp = document.getElementById('ls-win10-username-display');
-    if (userDisp) userDisp.textContent = 'Enter your Name';
-    const avatar = document.getElementById('ls-user-avatar');
-    if (avatar) avatar.classList.remove('has-name');
+    // Reset game state WITHOUT revealing desktop
+    hideAllOverlays(false);
+    retakePreAssessment(true);
+    playAgain(false);
 
-    // Show main menu behind the loading overlay
-    showMainMenu();
+    // Reset player name state so selecting chapter will show lock screen again
+    if (typeof playerName !== 'undefined') playerName = '';
+    if (typeof gameState !== 'undefined') gameState.playerName = '';
+    const passInp = document.getElementById('ls-name-input');
+    if (passInp) passInp.value = '';
+
+    // Re-ensure desktop is hidden and Story Selection is active and visible underneath
+    if (desktop) {
+      desktop.style.visibility = 'hidden';
+      desktop.style.opacity = '0';
+    }
+    if (ss) {
+      ss.style.display = 'flex';
+      ss.style.opacity = '1';
+      ss.classList.add('active');
+      refreshStorySelectLocks();
+    }
 
     // Startup chime
     _playLoadingBeep(440, 0.1, 0);
     _playLoadingBeep(660, 0.12, 0.12);
 
-    // Smoothly dissolve loading screen
+    // Smoothly dissolve loading screen directly to reveal Story Selection
     setTimeout(() => {
       ls.classList.add('ls-leaving');
       setTimeout(() => {
         ls.classList.remove('ls-active', 'ls-leaving');
-        // Restore title to "Just a moment..." for regular game start
         if (titleEl) titleEl.textContent = 'Just a moment...';
-      }, 700);
+      }, 800);
     }, 200);
 
   }, RESTART_DURATION);
+}
+
+/** Navigate to Story Selection with a smooth cross-fade transition */
+function _goToStorySelect() {
+  // Ensure VN narration and typing text are completely stopped and hidden
+  if (typeof vnState !== 'undefined') {
+    if (vnState.typingTimer) {
+      clearTimeout(vnState.typingTimer);
+      vnState.typingTimer = null;
+    }
+    vnState.typing = false;
+    vnState.done = true;
+  }
+  const welcomeOv = document.getElementById('overlay-welcome');
+  if (welcomeOv) {
+    welcomeOv.classList.remove('active');
+    welcomeOv.style.display = 'none';
+  }
+
+  // Hide all overlays cleanly
+  document.querySelectorAll('.overlay').forEach(o => {
+    o.classList.remove('active');
+    o.style.display = 'none';
+  });
+  const bd = document.getElementById('overlay-backdrop');
+  if (bd) bd.classList.remove('active');
+
+  // Reset desktop visibility
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.visibility = 'hidden';
+    desktop.style.opacity = '0';
+  }
+
+  // Fade in story select
+  const ss = document.getElementById('overlay-story-select');
+  if (ss) {
+    ss.style.opacity = '0';
+    ss.style.display = 'flex';
+    ss.classList.add('active');
+    refreshStorySelectLocks();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        ss.style.transition = 'opacity 0.55s ease';
+        ss.style.opacity = '1';
+        setTimeout(() => { ss.style.transition = ''; ss.style.opacity = ''; }, 600);
+      });
+    });
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -9134,20 +9268,7 @@ function lsStartClock() {
 }
 
 function lsHandleNameInput(val) {
-  const avatar   = document.getElementById('ls-user-avatar');
-  const initials = document.getElementById('ls-avatar-initials');
-  const userDisp = document.getElementById('ls-win10-username-display');
-  const trimmed  = val.trim();
-
-  if (trimmed.length > 0) {
-    const initial = trimmed.charAt(0).toUpperCase();
-    if (initials) initials.textContent = initial;
-    if (avatar)   avatar.classList.add('has-name');
-    if (userDisp) userDisp.textContent = trimmed;
-  } else {
-    if (avatar)   avatar.classList.remove('has-name');
-    if (userDisp) userDisp.textContent = 'Enter your Name';
-  }
+  // No-op: username is fixed to Alex; input is now a password field
 }
 
 function applyPlayerName(name) {
@@ -9168,19 +9289,89 @@ function applyPlayerName(name) {
 }
 
 function lsSignIn() {
-  const input   = document.getElementById('ls-name-input');
-  const rawName = input ? input.value.trim() : '';
-  const name    = rawName.length > 0 ? rawName : 'Student';
+  // Name is always Alex — fixed protagonist identity
+  const name = 'Alex';
 
   applyPlayerName(name);
 
-  // If the player came here via Story Selection → Chapter card, go straight to that chapter
+  // If the player came here via Story Selection → Chapter card, show loading then go to chapter (no narrator)
   if (window._pendingStoryChapter) {
     const catId = window._pendingStoryChapter;
     window._pendingStoryChapter = null;
+
+    // Close title menu / login overlay
     const tm = document.getElementById('overlay-title-menu');
     if (tm) tm.classList.remove('active');
-    startCategoryChapter(catId);
+
+    // Show "Just a moment..." loading screen, then launch chapter directly
+    const ls = document.getElementById('overlay-loading-screen');
+    if (ls) {
+      const titleEl = document.getElementById('win-loading-title');
+      if (titleEl) titleEl.textContent = 'Just a moment...';
+      ls.classList.remove('ls-leaving');
+      ls.classList.add('ls-active');
+      _playLoadingBeep(320, 0.12, 0);
+
+      const DURATION = 10000;
+      const noteEl = document.getElementById('win-loading-note-text');
+      let tipIdx = Math.floor(Math.random() * LOADING_TIPS.length);
+      if (noteEl) noteEl.textContent = LOADING_TIPS[tipIdx].text;
+
+      const midTimer = setTimeout(() => {
+        const noteWrap = document.getElementById('win-loading-note-wrap');
+        if (noteWrap && noteEl) {
+          noteWrap.classList.add('transitioning');
+          setTimeout(() => {
+            let nextIdx = (tipIdx + 1 + Math.floor(Math.random() * (LOADING_TIPS.length - 1))) % LOADING_TIPS.length;
+            if (noteEl) noteEl.textContent = LOADING_TIPS[nextIdx].text;
+            noteWrap.classList.remove('transitioning');
+          }, 350);
+        }
+      }, 5000);
+
+      setTimeout(() => {
+        clearTimeout(midTimer);
+        _playLoadingBeep(440, 0.12, 0);
+        _playLoadingBeep(660, 0.12, 0.12);
+        _playLoadingBeep(880, 0.18, 0.24);
+
+        // Reveal desktop then dismiss loading
+        const desktop = document.getElementById('desktop');
+        updateDesktopBackgroundForPhase(catId);
+        if (desktop) {
+          desktop.style.opacity = '0';
+          desktop.style.transition = 'opacity 0.6s ease';
+          desktop.style.visibility = 'visible';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => { desktop.style.opacity = '1'; });
+          });
+        }
+        document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+        const bd = document.getElementById('overlay-backdrop');
+        if (bd) bd.classList.remove('active');
+
+        // Start the chapter gameplay directly (skip narrator VN and demo tutorial)
+        closeCategoryHub();
+        if (catId === 'phishing') startMission(false);
+        else if (catId === 'malware') startMalwareDemo();
+        else if (catId === 'social_engineering') startGroup4Mission();
+        else if (catId === 'ransomware') startRansomwareMission();
+        else openCategoryHub();
+
+        setTimeout(() => {
+          ls.classList.add('ls-leaving');
+          setTimeout(() => ls.classList.remove('ls-active', 'ls-leaving'), 800);
+        }, 300);
+      }, DURATION);
+    } else {
+      // No loading screen — just go directly
+      closeCategoryHub();
+      if (catId === 'phishing') startMission(false);
+      else if (catId === 'malware') startMalwareDemo();
+      else if (catId === 'social_engineering') startGroup4Mission();
+      else if (catId === 'ransomware') startRansomwareMission();
+      else openCategoryHub();
+    }
     return;
   }
 
@@ -9265,17 +9456,32 @@ function startFromTitleMenu() {
 }
 
 function _doStartFromTitleMenu() {
-  // Don't call closeOverlay here — it would briefly show the desktop.
-  // The title menu is already closed by startFromTitleMenu().
+  // Skip narrator — go straight to desktop after loading
   const titleMenu = document.getElementById('overlay-title-menu');
   if (titleMenu) titleMenu.classList.remove('active');
   updateDesktopBackgroundForPhase('prologue');
+
+  // Initialize mission environment with all apps closed
+  startMission(false);
+
+  // Reveal desktop directly — no narrator / VN overlay
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.opacity = '0';
+    desktop.style.transition = 'opacity 0.6s ease';
+    desktop.style.visibility = 'visible';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { desktop.style.opacity = '1'; });
+    });
+  }
+
+  // Remove all overlays cleanly
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+  document.getElementById('overlay-backdrop') && document.getElementById('overlay-backdrop').classList.remove('active');
+
   if (typeof AudioManager !== 'undefined') {
     AudioManager.playNotification();
   }
-  // Launch the Visual Novel Prologue with AI Guide Zero
-  playCategoryStory('prologue');
-  showToast('🤖 AI Guide Zero: Welcome to CyberZerØ.', 'info');
 }
 
 
@@ -10777,14 +10983,58 @@ function shutdownGame() {
   const noteEl  = document.getElementById('shutdown-loading-note-text');
   const noteWrap = document.getElementById('shutdown-loading-note-wrap');
 
+  // Immediately hide desktop so it can NEVER pop in or flash
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.visibility = 'hidden';
+    desktop.style.opacity = '0';
+  }
+
   // Close start menu/power dropdown immediately
   closeStartMenu();
   const powerMenu = document.getElementById('start-power-dropdown');
   if (powerMenu) powerMenu.classList.add('hidden');
 
+  // Immediately kill any active VN narration and typing text
+  if (typeof vnState !== 'undefined') {
+    if (vnState.typingTimer) {
+      clearTimeout(vnState.typingTimer);
+      vnState.typingTimer = null;
+    }
+    vnState.typing = false;
+    vnState.done = true;
+  }
+  const welcomeOv = document.getElementById('overlay-welcome');
+  if (welcomeOv) {
+    welcomeOv.classList.remove('active');
+    welcomeOv.style.display = 'none';
+  }
+
+  // Close open app windows
+  ['gmail', 'browser', 'folder', 'antivirus'].forEach(a => {
+    if (typeof appState !== 'undefined' && appState[a]) {
+      appState[a].open = false;
+      appState[a].minimized = false;
+      appState[a].maximized = false;
+      appState[a].hasBeenPositioned = false;
+    }
+    const w = document.getElementById(`win-${a}`);
+    if (w) {
+      w.classList.add('hidden');
+      w.classList.remove('maximized', 'focused', 'minimized');
+      w.style.left = '';
+      w.style.top = '';
+    }
+  });
+  if (typeof updateTaskbar === 'function') updateTaskbar();
+
   if (!sd) {
-    // Fallback: just try to close
-    try { window.close(); } catch(e) {}
+    hideAllOverlays(false);
+    if (desktop) {
+      desktop.style.visibility = 'hidden';
+      desktop.style.opacity = '0';
+    }
+    showMainMenu();
     return;
   }
 
@@ -10795,7 +11045,7 @@ function shutdownGame() {
     'Tip: Never leave your workstation unlocked — even for a moment.',
     'Tip: Clearing your browser history and cache protects your privacy.',
     'Tip: Strong passwords use 12+ characters with letters, numbers, and symbols.',
-    'Shutting down terminal… All detective session data has been saved.'
+    'Shutting down terminal… Returning to Main Menu.'
   ];
 
   const selected = SHUTDOWN_NOTES[Math.floor(Math.random() * SHUTDOWN_NOTES.length)];
@@ -10806,43 +11056,46 @@ function shutdownGame() {
   _playLoadingBeep(240, 0.10, 0.18);
   _playLoadingBeep(160, 0.08, 0.38);
 
-  // Show the shutdown overlay
+  // Show the shutdown overlay immediately
+  sd.style.transition = 'none';
   sd.classList.remove('sd-leaving');
   sd.classList.add('sd-active');
+  void sd.offsetWidth;
+  sd.style.transition = '';
 
-  const SHUTDOWN_DURATION = 3500; // 3.5 seconds
+  const SHUTDOWN_DURATION = 3200; // 3.2 seconds
 
-  // Mid-point note transition at 1.7s
+  // Mid-point note transition at 1.6s
   const midTimer = setTimeout(() => {
     if (noteWrap && noteEl) {
       noteWrap.classList.add('transitioning');
       setTimeout(() => {
-        noteEl.textContent = 'Shutting down CyberZerØ terminal… Goodbye, Detective.';
+        noteEl.textContent = 'Shutting down CyberZerØ terminal… Returning to Main Menu.';
         noteWrap.classList.remove('transitioning');
       }, 300);
     }
-  }, 1700);
+  }, 1600);
 
-  // After full duration: fade to black, then close browser
+  // After duration: smooth fade out of shutdown screen directly to Main Menu
   setTimeout(() => {
     clearTimeout(midTimer);
 
-    // Fade overlay to full black
+    // Keep desktop hidden
+    if (desktop) {
+      desktop.style.visibility = 'hidden';
+      desktop.style.opacity = '0';
+    }
+
+    // Ensure Main Menu is active and ready underneath
+    showMainMenu();
+
+    // Fade overlay out
     sd.classList.add('sd-leaving');
 
     setTimeout(() => {
-      // Remove overlay and blank out the page
+      // Remove overlay classes
       sd.classList.remove('sd-active', 'sd-leaving');
-      document.body.style.background = '#000';
-      document.body.innerHTML = '';
-
-      // Close the browser tab
-      try {
-        window.close();
-      } catch(e) {
-        // If browser blocks it, the page is already blanked to solid black
-      }
-    }, 900);
+    }, 800);
 
   }, SHUTDOWN_DURATION);
 }
@@ -11022,17 +11275,8 @@ document.addEventListener('pointerdown', (e) => {
   }
 }, true);
 
-// Keyboard typing sound on input/textarea keydown
-document.addEventListener('keydown', (e) => {
-  if (typeof AudioManager === 'undefined') return;
-  const tag = e.target && e.target.tagName;
-  if (tag === 'INPUT' || tag === 'TEXTAREA') {
-    // Ignore modifier-only keys, arrows, shift, ctrl, alt, meta, tab, escape
-    if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Enter') {
-      AudioManager.playTypingKey();
-    }
-  }
-}, true);
+// Keyboard typing sound on input/textarea keydown — DISABLED
+// (removed to silence key-press audio as requested)
 
 // ═══════════════════════════════════════════════════════════
 // INIT
@@ -11228,10 +11472,14 @@ function mainMenuStart() {
   }, 200);
 }
 
-/** Story Selection — BACK button → go to Main Menu */
+/** Story Selection — BACK button → go to Main Menu with smooth crossfade */
 function storySelectBack() {
   const ss = document.getElementById('overlay-story-select');
   if (!ss) return;
+
+  if (typeof AudioManager !== 'undefined') {
+    try { AudioManager.playClick(); } catch(e) {}
+  }
 
   // Deselect cards and clean up buttons
   document.querySelectorAll('.ss-card').forEach(c => {
@@ -11242,11 +11490,21 @@ function storySelectBack() {
     if (bd) bd.remove();
   });
 
-  // Animate out
-  ss.style.transition = 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.4,0,0.2,1)';
-  ss.style.opacity = '0';
-  ss.style.transform = 'scale(0.97)';
+  // 1. Immediately reveal Main Menu underneath Story Selection for seamless cross-fade
+  const mm = document.getElementById('overlay-main-menu');
+  if (mm) {
+    mm.style.display = 'flex';
+    mm.style.opacity = '1';
+    mm.classList.add('active');
+    const mmNav = mm.querySelector('.mm-nav');
+    if (mmNav) mmNav.classList.remove('mm-nav-exiting');
+  }
 
+  // 2. Smoothly fade out Story Selection over the Main Menu
+  ss.style.transition = 'opacity 0.45s ease';
+  ss.style.opacity = '0';
+
+  // 3. Complete transition and clean up
   setTimeout(() => {
     ss.style.transition = '';
     ss.style.opacity = '';
@@ -11254,9 +11512,9 @@ function storySelectBack() {
     ss.classList.remove('active');
     ss.style.display = 'none';
 
-    // Show Main Menu (not Enter Name)
+    // Fully sync and reset Main Menu state
     showMainMenu();
-  }, 420);
+  }, 460);
 }
 
 /**
@@ -11340,31 +11598,61 @@ function selectStoryCard(cardEl, categoryId, chapterNum) {
 /** Story Selection — play unlocked chapter */
 function storySelectPlay(categoryId) {
   const ss = document.getElementById('overlay-story-select');
-  if (ss) {
-    ss.style.transition = 'opacity 0.4s ease';
-    ss.style.opacity = '0';
-    setTimeout(() => {
-      ss.style.transition = '';
-      ss.style.opacity = '';
-      ss.classList.remove('active');
-      ss.style.display = 'none';
+  if (!ss) return;
 
-      // Show Enter Name screen if player has no name yet, otherwise go straight to story
-      const playerNameSet = (typeof playerName !== 'undefined' && playerName && playerName !== 'Student');
-      if (!playerNameSet) {
-        const tm = document.getElementById('overlay-title-menu');
-        if (tm) { tm.style.display = ''; tm.classList.add('active'); }
-        // Store pending chapter so we launch it after sign-in
-        window._pendingStoryChapter = categoryId;
+  // Fade out story selection overlay
+  ss.style.transition = 'opacity 0.4s ease';
+  ss.style.opacity = '0';
+
+  setTimeout(() => {
+    ss.style.transition = '';
+    ss.style.opacity = '';
+    ss.classList.remove('active');
+    ss.style.display = 'none';
+
+    // Retrieve chapter info dynamically
+    const cat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.id === categoryId)) || { num: 1, title: 'THE FIRST DAY' };
+    const ccNum = document.getElementById('cc-chapter-num');
+    const ccTitle = document.getElementById('cc-chapter-title');
+    if (ccNum) ccNum.textContent = `CHAPTER ${cat.num}`;
+    if (ccTitle) ccTitle.textContent = cat.title;
+
+    // Show Cinematic Chapter Title Card (matching user's design reference)
+    const cc = document.getElementById('overlay-chapter-card');
+    if (cc) {
+      cc.style.display = 'flex';
+      void cc.offsetWidth; // force layout
+      cc.classList.add('active', 'visible');
+
+      // Hold title card for 1.8s, then smoothly transition into Enter Name
+      setTimeout(() => {
+        cc.classList.remove('visible');
+
         setTimeout(() => {
-          const inp = document.getElementById('ls-name-input');
-          if (inp) inp.focus();
-        }, 380);
-      } else {
-        startCategoryChapter(categoryId);
-      }
-    }, 420);
-  }
+          cc.classList.remove('active');
+          cc.style.display = 'none';
+
+          // Proceed to Alex sign-in screen
+          window._pendingStoryChapter = categoryId;
+          const tm = document.getElementById('overlay-title-menu');
+          if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+          setTimeout(() => {
+            const inp = document.getElementById('ls-name-input');
+            if (inp) { inp.value = ''; inp.focus(); }
+          }, 380);
+        }, 450);
+      }, 1800);
+    } else {
+      // Fallback
+      window._pendingStoryChapter = categoryId;
+      const tm = document.getElementById('overlay-title-menu');
+      if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+      setTimeout(() => {
+        const inp = document.getElementById('ls-name-input');
+        if (inp) { inp.value = ''; inp.focus(); }
+      }, 380);
+    }
+  }, 420);
 }
 
 /** Story Selection — clicked a locked chapter */
