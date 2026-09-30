@@ -11194,52 +11194,36 @@ function mainMenuStart() {
       if (t < 1) {
         requestAnimationFrame(stepProgress);
       } else {
-        // 4. Complete — stay cyan, trigger transition
+        // Complete — stay consistent, just trigger transition
         barFill.style.width = '100%';
-        if (pctVal) pctVal.textContent = '100%';
-        if (barShell) barShell.classList.add('loading-complete');
-        if (statusText) statusText.classList.add('loading-complete');
-        setTimeout(doTransition, 450);
+        setTimeout(doTransition, 400);
       }
     }
 
     requestAnimationFrame(stepProgress);
 
-    // 5. Professional wipe transition into Story Selection
+    // Simple fade transition into Story Selection
     function doTransition() {
-      // Cyan radial flash wipe
-      if (flashOverlay) {
-        flashOverlay.classList.remove('flashing');
-        void flashOverlay.offsetWidth;
-        flashOverlay.classList.add('flashing');
-      }
+      loadScreen.style.transition = 'opacity 0.5s ease';
+      loadScreen.style.opacity = '0';
 
-      // After flash fires, fade the entire loading screen to white then cut to Story Selection
       setTimeout(() => {
-        loadScreen.style.transition = 'opacity 0.6s ease, filter 0.6s ease';
-        loadScreen.style.opacity = '0';
-        loadScreen.style.filter = 'brightness(3) blur(0px)';
+        loadScreen.style.transition = '';
+        loadScreen.style.opacity = '';
+        loadScreen.classList.remove('active', 'exiting');
+        loadScreen.style.display = 'none';
 
-        setTimeout(() => {
-          // Clean up loading screen
-          loadScreen.style.transition = '';
-          loadScreen.style.opacity = '';
-          loadScreen.style.filter = '';
-          loadScreen.classList.remove('active', 'exiting');
-          loadScreen.style.display = 'none';
-
-          // Show Story Selection screen
-          const ss = document.getElementById('overlay-story-select');
-          if (ss) {
-            ss.style.display = 'flex';
-            void ss.offsetWidth;
-            ss.classList.add('active');
-            refreshStorySelectLocks();
-          }
-          const bd = document.getElementById('overlay-backdrop');
-          if (bd) bd.classList.add('active');
-        }, 620);
-      }, 180);
+        // Show Story Selection screen
+        const ss = document.getElementById('overlay-story-select');
+        if (ss) {
+          ss.style.display = 'flex';
+          void ss.offsetWidth;
+          ss.classList.add('active');
+          refreshStorySelectLocks();
+        }
+        const bd = document.getElementById('overlay-backdrop');
+        if (bd) bd.classList.add('active');
+      }, 520);
     }
   }, 200);
 }
