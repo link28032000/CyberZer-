@@ -1544,8 +1544,42 @@ function completeCategory(catId, score, rank) {
       showToast(`🎉 Unlocked Chapter ${CATEGORIES[idx + 1].chapterRange}: ${CATEGORIES[idx + 1].title}!`, 'success');
     }
   }
+  saveCategoriesProgress();
   updateAppLockStates();
   renderCategoryHub();
+}
+
+/** Save CATEGORIES completion state to localStorage */
+function saveCategoriesProgress() {
+  try {
+    const data = CATEGORIES.map(c => ({
+      id: c.id,
+      completed: c.completed,
+      unlocked: c.unlocked,
+      score: c.score,
+      rank: c.rank
+    }));
+    localStorage.setItem('cyberzero_categories', JSON.stringify(data));
+  } catch(e) { /* ignore */ }
+}
+
+/** Load CATEGORIES completion state from localStorage */
+function loadCategoriesProgress() {
+  try {
+    const saved = localStorage.getItem('cyberzero_categories');
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    if (!Array.isArray(data)) return;
+    data.forEach(saved => {
+      const cat = CATEGORIES.find(c => c.id === saved.id);
+      if (cat) {
+        if (saved.completed) cat.completed = true;
+        if (saved.unlocked) cat.unlocked = true;
+        if (saved.score) cat.score = Math.max(cat.score || 0, saved.score || 0);
+        if (saved.rank) cat.rank = saved.rank;
+      }
+    });
+  } catch(e) { /* ignore */ }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -11284,6 +11318,7 @@ document.addEventListener('pointerdown', (e) => {
 
 // Start game with Title Menu on load
 window.addEventListener('DOMContentLoaded', () => {
+  loadCategoriesProgress();
   initTitleParticles();
   initPreAssessment();
   // Show main menu first (before name input)
@@ -11350,12 +11385,14 @@ function hideMainMenu() {
   if (mm) mm.classList.remove('active');
   // Close any open sub-modals
   closeMainMenuAbout();
+  closeMainMenuAchievement();
   closeMainMenuExit();
 }
 
 /** START button — 5s loading, professional wipe transition into Enter Name */
 function mainMenuStart() {
   closeMainMenuAbout();
+  closeMainMenuAchievement();
   closeMainMenuExit();
 
   const mm = document.getElementById('overlay-main-menu');
@@ -11726,6 +11763,154 @@ function mainMenuAbout() {
 function closeMainMenuAbout() {
   const modal = document.getElementById('mm-about-modal');
   if (modal) modal.classList.add('hidden');
+}
+
+/** ACHIEVEMENT button — show the Achievements modal */
+function mainMenuAchievement() {
+  if (typeof AudioManager !== 'undefined') {
+    try { AudioManager.playClick(); } catch(e) {}
+  }
+  renderMainMenuAchievements();
+  const modal = document.getElementById('mm-achievement-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+/** Close Achievement modal */
+function closeMainMenuAchievement() {
+  if (typeof AudioManager !== 'undefined') {
+    try { AudioManager.playClick(); } catch(e) {}
+  }
+  const modal = document.getElementById('mm-achievement-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+/** Render list of chapter and master achievements.
+ *  Empty state when nothing completed; ribbon/trophy cards for each completed chapter. */
+function renderMainMenuAchievements() {
+  const listEl = document.getElementById('mm-ach-list');
+  if (!listEl) return;
+
+  // Achievement definitions — maps CATEGORIES ids to award metadata
+  const achData = [
+    {
+      catId: 'phishing',
+      icon: '🎣',
+      awardType: 'ribbon',           // ribbon = 🎖️ | trophy = 🏆
+      awardLabel: 'PHISHING SENTINEL',
+      awardFull:  'Phishing Sentinel Ribbon',
+      chapter: 'Chapter 1 · The First Day',
+      desc: 'Exposed deceptive emails, identified fraudulent sender addresses, and reported all phishing traps.'
+    },
+    {
+      catId: 'malware',
+      icon: '🛡️',
+      awardType: 'trophy',
+      awardLabel: 'MALWARE HUNTER',
+      awardFull:  'Malware Hunter Trophy',
+      chapter: 'Chapter 2 · The Digital Trap',
+      desc: 'Isolated disguised executable payloads, ran anti-virus sweeps, and secured the quarantine chamber.'
+    },
+    {
+      catId: 'social_engineering',
+      icon: '🎭',
+      awardType: 'ribbon',
+      awardLabel: 'SOCIAL SHIELD',
+      awardFull:  'Social Shield Ribbon',
+      chapter: 'Chapter 3 · The System Collapse',
+      desc: 'Defended against pretexting, vishing, and credential harvesting schemes.'
+    },
+    {
+      catId: 'ransomware',
+      icon: '🔒',
+      awardType: 'trophy',
+      awardLabel: 'VAULT GUARDIAN',
+      awardFull:  'Vault Guardian Trophy',
+      chapter: 'Chapter 4 · The Last Login',
+      desc: 'Isolated ransomware vectors, recovered encrypted project nodes, and restored all backups.'
+    }
+  ];
+
+  // Collect completed chapter achievements
+  const earned = [];
+  achData.forEach(ach => {
+    if (typeof CATEGORIES === 'undefined') return;
+    const cat = CATEGORIES.find(c => c.id === ach.catId);
+    if (cat && cat.completed) {
+      earned.push({ ...ach, score: cat.score || 0, rank: cat.rank || 'S' });
+    }
+  });
+
+  // Check grand master (all 4 done)
+  const allDone = typeof CATEGORIES !== 'undefined' && CATEGORIES.every(c => c.completed);
+  if (allDone) {
+    earned.push({
+      catId: null,
+      icon: '🌟',
+      awardType: 'grand',
+      awardLabel: 'GRAND DETECTIVE',
+      awardFull:  'CyberZerØ Grand Detective Trophy',
+      chapter: 'Grand Finale Accolade',
+      desc: 'All threat scenarios cleared with distinguished detective honors. Master Certificate awarded.',
+      score: CATEGORIES.reduce((s, c) => s + (c.score || 0), 0),
+      rank: 'S'
+    });
+  }
+
+  // ── Empty state ──
+  if (earned.length === 0) {
+    listEl.innerHTML = `
+      <div class="mm-ach-empty-state">
+        <div class="mm-ach-empty-icon">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+            <path d="M14 9 H42 V23 C42 31.8 35.7 38 28 38 C20.3 38 14 31.8 14 23 Z"
+                  fill="none" stroke="#00b4f0" stroke-width="2.5" stroke-dasharray="5 3"/>
+            <path d="M14 15 H9 C6.8 15 5 16.8 5 19 V21.5 C5 26.5 8.5 30.5 13.5 31"
+                  stroke="#00b4f0" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"/>
+            <path d="M42 15 H47 C49.2 15 51 16.8 51 19 V21.5 C51 26.5 47.5 30.5 42.5 31"
+                  stroke="#00b4f0" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"/>
+            <path d="M28 38 V46 M18 46 H38" stroke="#00b4f0" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 3"/>
+          </svg>
+        </div>
+        <div class="mm-ach-empty-title">NO ACHIEVEMENTS YET</div>
+        <div class="mm-ach-empty-sub">Complete mission chapters to earn honorary ribbons and trophies</div>
+      </div>
+    `;
+    return;
+  }
+
+  // ── Render earned award cards ──
+  let html = '';
+  earned.forEach(ach => {
+    const isGrand   = ach.awardType === 'grand';
+    const isTrophy  = ach.awardType === 'trophy' || isGrand;
+    const awardEmoji = isGrand ? '🌟🏆' : (isTrophy ? '🏆' : '🎖️');
+    const cardClass  = isGrand ? 'mm-ach-item ach-completed ach-grand'
+                     : isTrophy ? 'mm-ach-item ach-completed ach-trophy'
+                     : 'mm-ach-item ach-completed ach-ribbon';
+
+    const rankDisplay = ach.rank ? `Rank <strong>${ach.rank}</strong>` : '';
+    const scoreDisplay = ach.score ? `${ach.score.toLocaleString()} pts` : '';
+    const metaLine = [rankDisplay, scoreDisplay].filter(Boolean).join(' &nbsp;·&nbsp; ');
+
+    html += `
+      <div class="${cardClass}">
+        <div class="mm-ach-award-badge" title="${ach.awardFull}">${awardEmoji}</div>
+        <div class="mm-ach-info">
+          <div class="mm-ach-name-row">
+            <span class="mm-ach-name">${ach.awardLabel}</span>
+            <span class="mm-ach-badge">${ach.chapter}</span>
+          </div>
+          <p class="mm-ach-desc">${ach.desc}</p>
+          ${metaLine ? `<div class="mm-ach-meta">${metaLine}</div>` : ''}
+        </div>
+        <div class="mm-ach-award-tag ${isGrand ? 'award-grand' : isTrophy ? 'award-trophy' : 'award-ribbon'}">
+          ${isGrand ? '🌟 MASTER' : isTrophy ? '🏆 TROPHY' : '🎖️ RIBBON'}
+        </div>
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
 }
 
 /** EXIT button — show exit confirmation modal */
