@@ -24,7 +24,7 @@
   <div class="desktop-icons">
     <!-- Column 1: Main / Unlocked Apps -->
     <div class="desktop-icons-col">
-      <div class="desktop-icon" id="icon-gmail" onclick="openApp('gmail')" title="Email — Phishing Investigation (Ace)">
+      <div class="desktop-icon" id="icon-gmail" onclick="openApp('gmail')" title="Email — Phishing Investigation">
         <div class="icon-img"><img src="assets/icons/apps/mail.svg" alt="Email"></div>
         <span>Email</span>
       </div>
@@ -1113,7 +1113,7 @@
         <div class="rw-banner-icon">🚨</div>
         <div class="rw-banner-info">
           <div class="rw-banner-title">CRITICAL INCIDENT: RANSOMWARE EXTORTION DETECTED</div>
-          <div class="rw-banner-sub">Jonald's school project vault is under attack! Isolate infected storage nodes, kill active payload droppers, and restore immutable backups.</div>
+          <div class="rw-banner-sub">The school network storage vault is under attack! Isolate infected storage nodes, kill active payload droppers, and restore immutable backups.</div>
         </div>
         <div class="rw-health-gauge">
           <div class="rw-gauge-title">VAULT RECOVERY</div>
@@ -1158,7 +1158,7 @@
       </button>
     </div>
     <div class="taskbar-apps">
-      <button type="button" class="taskbar-app-btn" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email — Phishing Investigation (Ace)">
+      <button type="button" class="taskbar-app-btn" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email — Phishing Investigation">
         <span><img src="assets/icons/apps/mail.svg" alt="Email" class="taskbar-icon-img"></span> Email
       </button>
       <button type="button" class="taskbar-app-btn" id="taskbar-browser" onclick="taskbarClick('browser')" title="Browser — Cyber-Net Web Search">
@@ -1537,7 +1537,7 @@
               <span class="notif-card-time">Just now</span>
             </div>
             <div class="notif-card-title">CyberZerØ Simulation Ready</div>
-            <div class="notif-card-body">Follow Ace, Nishren, Phillip &amp; Jonald on their cybersecurity journey. Complete the pre-assessment to begin.</div>
+            <div class="notif-card-body">Follow Alex, IT Support Trainee, on a realistic cybersecurity investigation. Complete the pre-assessment to begin.</div>
           </div>
           <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-1')" title="Dismiss notification">✕</button>
         </div>
@@ -1549,8 +1549,8 @@
               <span class="notif-card-source">Email Client</span>
               <span class="notif-card-time">12m ago</span>
             </div>
-            <div class="notif-card-title">Ace's Urgent Email — Phishing Alert</div>
-            <div class="notif-card-body">Ace received a suspicious email claiming his school account will be suspended. Help him inspect the sender domain and links!</div>
+            <div class="notif-card-title">Student Support Request — Phishing Alert</div>
+            <div class="notif-card-body">A student reported receiving a suspicious scholarship email. Help Alex inspect the sender domain and links!</div>
           </div>
           <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-2')" title="Dismiss notification">✕</button>
         </div>
@@ -1883,6 +1883,219 @@
   </div>
 </div>
 
+<!-- ── GAME LOADING SCREEN (Before Enter Name) ── -->
+<div id="overlay-loading" class="overlay" style="display: none;">
+  <!-- Same Background image as main menu -->
+  <div class="mm-bg"></div>
+  <div class="mm-scanlines"></div>
+
+  <!-- Floating particles -->
+  <div class="mm-particles" aria-hidden="true">
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+  </div>
+
+  <!-- Cinematic Flash Transition Overlay -->
+  <div class="loading-flash-overlay" id="loading-flash-overlay" aria-hidden="true"></div>
+
+  <!-- Center Content -->
+  <div class="loading-center">
+    <!-- Logo Block: Same Combined CyberZerO Logo -->
+    <div class="loading-logo-wrap" aria-hidden="true">
+      <img src="assets/logo/cyber_logo1.png" alt="CyberZerØ" class="loading-logo-img">
+    </div>
+
+    <!-- Sci-Fi Chamfered Loading Bar Frame -->
+    <div class="loading-bar-shell" id="loading-bar-shell" aria-hidden="true">
+      <!-- Left cyan bracket accent -->
+      <div class="loading-bracket loading-bracket-left">
+        <svg width="16" height="36" viewBox="0 0 16 36" fill="none">
+          <path d="M13 3L3 18L13 33" stroke="#00f8ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill" id="loading-bar-fill"></div>
+      </div>
+
+      <!-- Right cyan bracket accent -->
+      <div class="loading-bracket loading-bracket-right">
+        <svg width="16" height="36" viewBox="0 0 16 36" fill="none">
+          <path d="M3 3L13 18L3 33" stroke="#00f8ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Status text hidden — bar only -->
+    <div class="loading-status-wrap" style="display:none;">
+      <div class="loading-status-text" id="loading-status-text">
+        <span class="loading-status-label" id="loading-status-label"></span>
+        <span class="loading-pct-val" id="loading-pct-val">0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STORY SELECTION SCREEN ── -->
+<div id="overlay-story-select" class="overlay" style="display:none;">
+  <!-- Same blue cyber background as loading / main menu -->
+  <div class="mm-bg"></div>
+  <div class="mm-scanlines"></div>
+
+  <!-- Floating particles -->
+  <div class="mm-particles" aria-hidden="true">
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+    <span class="mm-particle"></span>
+  </div>
+
+  <!-- BACK button (top-left) -->
+  <button class="ss-back-btn" id="ss-back-btn" onclick="storySelectBack()" aria-label="Back to main menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    BACK
+  </button>
+
+  <!-- Main content wrapper -->
+  <div class="ss-content">
+
+    <!-- Logo -->
+    <div class="ss-logo-wrap">
+      <img src="assets/logo/cyber_logo1.png" alt="CyberZerØ" class="ss-logo-img">
+    </div>
+
+    <!-- "STORY SELECTION" banner -->
+    <div class="ss-title-banner">
+      <span class="ss-title-chevron ss-chevron-left">&#x00AB;&#x00AB;</span>
+      <span class="ss-title-text">STORY SELECTION</span>
+      <span class="ss-title-chevron ss-chevron-right">&#x00BB;&#x00BB;</span>
+    </div>
+
+    <!-- Chapter Cards Grid -->
+    <div class="ss-cards-row" id="ss-cards-row">
+
+      <!-- Chapter 1 — Unlocked -->
+      <div class="ss-card ss-card-unlocked" id="ss-card-1" onclick="selectStoryCard(this,'phishing',1)">
+        <div class="ss-card-frame">
+          <!-- Corner targeting brackets -->
+          <div class="ss-corner ss-corner-tl"></div>
+          <div class="ss-corner ss-corner-tr"></div>
+          <div class="ss-corner ss-corner-bl"></div>
+          <div class="ss-corner ss-corner-br"></div>
+          <!-- Scan line overlay -->
+          <div class="ss-scan-line"></div>
+          <div class="ss-card-thumb">
+            <img src="assets/01Cover.png" alt="Chapter 1 scene" class="ss-thumb-img">
+            <div class="ss-card-glow"></div>
+          </div>
+          <div class="ss-card-footer">
+            <div class="ss-chapter-label">CHAPTER 1</div>
+            <div class="ss-chapter-title">THE FIRST CLICK</div>
+            <div class="ss-card-dots">
+              <span class="ss-dot ss-dot-active"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter 2 — Locked -->
+      <div class="ss-card ss-card-locked" id="ss-card-2" onclick="selectStoryCard(this,null,2)">
+        <div class="ss-card-frame">
+          <div class="ss-corner ss-corner-tl"></div>
+          <div class="ss-corner ss-corner-tr"></div>
+          <div class="ss-corner ss-corner-bl"></div>
+          <div class="ss-corner ss-corner-br"></div>
+          <div class="ss-scan-line"></div>
+          <div class="ss-card-thumb ss-thumb-locked">
+            <div class="ss-lock-overlay">
+              <svg class="ss-lock-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="#1a4fa0" stroke="#4ea8ff" stroke-width="2.5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#4ea8ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="32" r="3" fill="#4ea8ff"/></svg>
+            </div>
+          </div>
+          <div class="ss-card-footer">
+            <div class="ss-chapter-label">CHAPTER 2</div>
+            <div class="ss-chapter-title">THE DIGITAL TRAP</div>
+            <div class="ss-lock-label">
+              <svg width="13" height="13" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="none" stroke="#8ab4d8" stroke-width="3"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#8ab4d8" stroke-width="3" stroke-linecap="round"/></svg>
+              LOCKED
+            </div>
+            <div class="ss-card-dots">
+              <span class="ss-dot"></span>
+              <span class="ss-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter 3 — Locked -->
+      <div class="ss-card ss-card-locked" id="ss-card-3" onclick="selectStoryCard(this,null,3)">
+        <div class="ss-card-frame">
+          <div class="ss-corner ss-corner-tl"></div>
+          <div class="ss-corner ss-corner-tr"></div>
+          <div class="ss-corner ss-corner-bl"></div>
+          <div class="ss-corner ss-corner-br"></div>
+          <div class="ss-scan-line"></div>
+          <div class="ss-card-thumb ss-thumb-locked">
+            <div class="ss-lock-overlay">
+              <svg class="ss-lock-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="#1a4fa0" stroke="#4ea8ff" stroke-width="2.5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#4ea8ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="32" r="3" fill="#4ea8ff"/></svg>
+            </div>
+          </div>
+          <div class="ss-card-footer">
+            <div class="ss-chapter-label">CHAPTER 3</div>
+            <div class="ss-chapter-title">THE SYSTEM COLLAPSE</div>
+            <div class="ss-lock-label">
+              <svg width="13" height="13" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="none" stroke="#8ab4d8" stroke-width="3"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#8ab4d8" stroke-width="3" stroke-linecap="round"/></svg>
+              LOCKED
+            </div>
+            <div class="ss-card-dots">
+              <span class="ss-dot"></span>
+              <span class="ss-dot"></span>
+              <span class="ss-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter 4 — Locked -->
+      <div class="ss-card ss-card-locked" id="ss-card-4" onclick="selectStoryCard(this,null,4)">
+        <div class="ss-card-frame">
+          <div class="ss-corner ss-corner-tl"></div>
+          <div class="ss-corner ss-corner-tr"></div>
+          <div class="ss-corner ss-corner-bl"></div>
+          <div class="ss-corner ss-corner-br"></div>
+          <div class="ss-scan-line"></div>
+          <div class="ss-card-thumb ss-thumb-locked">
+            <div class="ss-lock-overlay">
+              <svg class="ss-lock-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="#1a4fa0" stroke="#4ea8ff" stroke-width="2.5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#4ea8ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="32" r="3" fill="#4ea8ff"/></svg>
+            </div>
+          </div>
+          <div class="ss-card-footer">
+            <div class="ss-chapter-label">CHAPTER 4</div>
+            <div class="ss-chapter-title">THE LAST LOGIN</div>
+            <div class="ss-lock-label">
+              <svg width="13" height="13" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="none" stroke="#8ab4d8" stroke-width="3"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#8ab4d8" stroke-width="3" stroke-linecap="round"/></svg>
+              LOCKED
+            </div>
+            <div class="ss-card-dots">
+              <span class="ss-dot"></span>
+              <span class="ss-dot"></span>
+              <span class="ss-dot"></span>
+              <span class="ss-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.ss-cards-row -->
+
+  </div><!-- /.ss-content -->
+</div><!-- /#overlay-story-select -->
+
 <!-- ── MAIN MENU / TITLE SCREEN (Windows 10 Login Style) ── -->
 <div id="overlay-title-menu" class="overlay">
   <!-- Windows 10 Background Wallpaper -->
@@ -1936,7 +2149,7 @@
       <div class="exit-modal-icon">⚠️</div>
       <h3 class="exit-modal-title">TERMINAL SESSION SUSPENSION</h3>
       <p class="exit-modal-msg">
-        Cybersecurity is for everyone — especially students. Ace, Nishren, Phillip, and Jonald are counting on you to stay aware. Learn. Detect. Defend.
+        Cybersecurity is for everyone. Every threat has a story. Every decision matters. Every person deserves digital protection.
       </p>
       <p class="exit-modal-sub">Are you sure you want to exit CyberZerØ?</p>
       <div class="exit-modal-actions">
@@ -1967,10 +2180,10 @@
         <div class="intro-section intro-narrator-box">
           <div class="intro-section-title">🎙️ NARRATOR'S BRIEFING</div>
           <p class="intro-text">
-            Welcome to <strong>CyberZerØ</strong> — an interactive web simulation game designed to enhance <strong>cybersecurity knowledge and awareness for students</strong>.
+            Welcome to <strong>CyberZerØ</strong> — an interactive web simulation game designed to enhance <strong>cybersecurity knowledge and awareness</strong>.
           </p>
           <p class="intro-text">
-            Follow the story of four senior high school students — <strong>Ace, Nishren, Phillip, and Jonald</strong> — as they discover <strong>CyberZerØ</strong>, an AI cybersecurity guide, and learn to defend themselves against real digital threats.
+            Step into the role of <strong>Alex</strong>, an IT Support Trainee at a local school. Guided by <strong>CyberZerØ</strong>, investigate real digital incidents directly from your computer desktop.
           </p>
         </div>
 
@@ -2809,7 +3022,7 @@
     <div class="results-badge results-badge-green">CHAPTER 2 COMPLETE</div>
     <div class="results-rank-circle rank-s" id="malware-results-rank">S</div>
     <div class="results-rank-label" id="malware-results-rank-label">MASTER MALWARE HUNTER</div>
-    <p class="results-desc">Nishren learned how to inspect disguised files, run Anti-Virus scans, and quarantine malware threats!</p>
+    <p class="results-desc">Alex successfully investigated disguised files, ran ShieldAV scans, and quarantined all malware threats!</p>
     <div class="results-grid">
       <div class="results-stat">
         <span class="results-stat-label">Malware Quarantined</span>
@@ -2842,7 +3055,7 @@
     <div class="results-badge results-badge-purple">CHAPTER 3 COMPLETE</div>
     <div class="results-rank-circle rank-s" id="social-results-rank">S</div>
     <div class="results-rank-label" id="social-results-rank-label">SOCIAL DEFENSE MASTER</div>
-    <p class="results-desc">Phillip identified fake IT calls (vishing), urgent SMS scams (smishing), and credential pretexting with CyberZerØ!</p>
+    <p class="results-desc">Alex successfully analyzed fake IT calls (vishing), urgent SMS scams (smishing), and credential pretexting attempts!</p>
     <div class="results-grid">
       <div class="results-stat">
         <span class="results-stat-label">Threats Blocked</span>
@@ -2875,7 +3088,7 @@
     <div class="results-badge results-badge-red">CHAPTER 4 COMPLETE</div>
     <div class="results-rank-circle rank-s" id="ransomware-results-rank">S</div>
     <div class="results-rank-label" id="ransomware-results-rank-label">RANSOMWARE INCIDENT COMMANDER</div>
-    <p class="results-desc">Jonald contained the ransomware payload, isolated network shares, and restored all project data from clean backups!</p>
+    <p class="results-desc">Alex contained the ransomware payload, isolated compromised network shares, and restored critical systems from clean backups!</p>
     <div class="results-grid">
       <div class="results-stat">
         <span class="results-stat-label">Storage Recovered</span>
@@ -2917,7 +3130,7 @@
         </div>
 
         <p class="grand-cert-statement">
-          This certifies that Student <strong id="grand-cert-name" class="cert-name-cyan">Ace</strong> has successfully guided <strong>Ace, Nishren, Phillip, and Jonald</strong> through all realistic threat simulations, demonstrating mastery over:
+          This certifies that IT Support Trainee <strong id="grand-cert-name" class="cert-name-cyan">Alex</strong> has successfully investigated all 12 incidents across 4 realistic threat chapters, demonstrating mastery over:
         </p>
 
         <!-- 4 Badges Matrix -->
@@ -2925,22 +3138,22 @@
           <div class="grand-cert-pill">
             <span class="gcp-icon">🎣</span>
             <span class="gcp-title">Phishing Detection</span>
-            <span class="gcp-char">Ace</span>
+            <span class="gcp-char">Chapters 1–3</span>
           </div>
           <div class="grand-cert-pill">
             <span class="gcp-icon">🦠</span>
             <span class="gcp-title">Malware Analysis</span>
-            <span class="gcp-char">Nishren</span>
+            <span class="gcp-char">Chapters 4–6</span>
           </div>
           <div class="grand-cert-pill">
             <span class="gcp-icon">🎭</span>
             <span class="gcp-title">Social Engineering</span>
-            <span class="gcp-char">Phillip</span>
+            <span class="gcp-char">Chapters 7–9</span>
           </div>
           <div class="grand-cert-pill">
             <span class="gcp-icon">🔒</span>
             <span class="gcp-title">Ransomware Response</span>
-            <span class="gcp-char">Jonald</span>
+            <span class="gcp-char">Chapters 10–12</span>
           </div>
         </div>
 
@@ -2956,27 +3169,15 @@
           </div>
         </div>
 
-        <!-- 4 Friends Photo Strip -->
-        <div class="grand-team-strip">
-          <div class="team-avatar-box">
-            <img src="assets/Ace.png" alt="Ace" class="team-avatar-img">
-            <span class="team-name">Ace</span>
-          </div>
-          <div class="team-avatar-box">
-            <img src="assets/Nishren.png" alt="Nishren" class="team-avatar-img">
-            <span class="team-name">Nishren</span>
-          </div>
-          <div class="team-avatar-box">
-            <img src="assets/Phillip.png" alt="Phillip" class="team-avatar-img">
-            <span class="team-name">Phillip</span>
-          </div>
-          <div class="team-avatar-box">
-            <img src="assets/Jonald.png" alt="Jonald" class="team-avatar-img">
-            <span class="team-name">Jonald</span>
-          </div>
+        <!-- CyberZerO Team Strip -->
+        <div class="grand-team-strip" style="justify-content:center;gap:30px;">
           <div class="team-avatar-box cyberzero-avatar-box">
             <img src="assets/CyberZerØ.png" alt="CyberZerØ" class="team-avatar-img">
-            <span class="team-name">CyberZerØ</span>
+            <span class="team-name">CyberZerØ (AI Guide)</span>
+          </div>
+          <div class="team-avatar-box">
+            <div style="width:50px;height:50px;border-radius:50%;background:rgba(0,229,255,0.15);border:2px solid var(--accent-cyan);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 6px;">👨‍💻</div>
+            <span class="team-name">Alex (IT Support)</span>
           </div>
         </div>
 

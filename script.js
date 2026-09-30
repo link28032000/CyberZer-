@@ -1210,7 +1210,7 @@ function submitPreAssessment() {
 
 function proceedFromPreAssessmentToCategories() {
   const nameInput = document.getElementById('exam-input-name');
-  const playerName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Ace';
+  const playerName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Alex';
   if (!gameState.playerName || gameState.playerName === 'Student') {
     gameState.playerName = playerName;
   }
@@ -1225,7 +1225,7 @@ function proceedFromPreAssessmentToVN() {
 
 function skipPreAssessment() {
   const nameInput = document.getElementById('exam-input-name');
-  const playerName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Ace';
+  const playerName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Alex';
   if (!gameState.playerName || gameState.playerName === 'Student') {
     gameState.playerName = playerName;
   }
@@ -1239,7 +1239,7 @@ function skipPreAssessment() {
 
 function skipPreAssessmentFromIntro() {
   if (!gameState.playerName || gameState.playerName === 'Student') {
-    gameState.playerName = 'Ace';
+    gameState.playerName = 'Alex';
   }
   if (typeof AudioManager !== 'undefined') {
     AudioManager.playNotification();
@@ -1276,16 +1276,16 @@ const CATEGORIES = [
   {
     id: 'phishing',
     num: 1,
-    chapterRange: '1–3',
-    chapterTag: 'CHAPTER 1–3',
-    title: 'Phishing, Online Scams & Suspicious Links',
-    subtitle: 'Chapters 1–3',
+    chapterRange: '1-3',
+    chapterTag: 'CHAPTER 1-3',
+    title: 'THE FIRST CLICK',
+    subtitle: 'Chapters 1-3',
     accent: '#00e5ff',
-    desc: 'Detect deceptive phishing emails, fraudulent online scams, and suspicious links to prevent credential theft.',
+    desc: 'A student clicked a suspicious scholarship email. Investigate the phishing trap, remove malware from the attachment, and recover the compromised account.',
     specs: {
-      threatType: 'Email Phishing & Fake Links',
+      threatType: 'Email Phishing & Credential Theft',
       app: '📧 Email & 🌐 Browser',
-      objective: '5 Threats Analyzed'
+      objective: '3 Incidents Resolved'
     },
     unlocked: true,
     completed: false,
@@ -1295,16 +1295,16 @@ const CATEGORIES = [
   {
     id: 'malware',
     num: 2,
-    chapterRange: '4–6',
-    chapterTag: 'CHAPTER 4–6',
-    title: 'Malware, Weak passwords & identity theft',
-    subtitle: 'Chapters 4–6',
+    chapterRange: '4-6',
+    chapterTag: 'CHAPTER 4-6',
+    title: 'THE DIGITAL TRAP',
+    subtitle: 'Chapters 4-6',
     accent: '#00e676',
-    desc: 'Spot disguised malware infections, eliminate weak passwords, and defend against identity theft.',
+    desc: 'More incidents arrive. Investigate a fake delivery SMS, expose a fraudulent online store, and recover a hijacked school account.',
     specs: {
-      threatType: 'Malware & Password Breaches',
-      app: '📂 Folder & 🛡️ Anti-Virus',
-      objective: '4 Threats Quarantined'
+      threatType: 'SMS Scam & Account Hijacking',
+      app: '📱 Messages & 🌐 Browser',
+      objective: '3 Threats Neutralized'
     },
     unlocked: false,
     completed: false,
@@ -1314,18 +1314,18 @@ const CATEGORIES = [
   {
     id: 'social_engineering',
     num: 3,
-    chapterRange: '7–9',
-    chapterTag: 'CHAPTER 7–9',
-    title: 'Unsafe Public Wifi, Social Engineering & Malicious Download',
-    subtitle: 'Chapters 7–9',
+    chapterRange: '7-9',
+    chapterTag: 'CHAPTER 7-9',
+    title: 'THE SYSTEM COLLAPSE',
+    subtitle: 'Chapters 7-9',
     accent: '#ea80fc',
-    desc: 'Stay safe on public Wi-Fi networks, counter social engineering tactics, and block malicious file downloads.',
+    desc: 'A local business reports ransomware. Investigate locked files, uncover spyware, and respond to suspicious network activity targeting the school.',
     specs: {
-      threatType: 'Wi-Fi Hijacking & Rogue Downloads',
-      app: '📱 Phone Link & 📶 Wi-Fi Settings',
-      objective: '5 Stages Investigated'
+      threatType: 'Ransomware & Network Intrusion',
+      app: '📂 Files & 🛡️ Anti-Virus',
+      objective: '3 Systems Secured'
     },
-    unlocked: true,
+    unlocked: false,
     completed: false,
     score: 0,
     rank: null
@@ -1333,16 +1333,16 @@ const CATEGORIES = [
   {
     id: 'ransomware',
     num: 4,
-    chapterRange: '10–12',
-    chapterTag: 'CHAPTER 10–12',
-    title: 'Account Security, Ransomware & Online Privacy',
-    subtitle: 'Chapters 10–12',
+    chapterRange: '10-12',
+    chapterTag: 'CHAPTER 10-12',
+    title: 'THE LAST LOGIN',
+    subtitle: 'Chapters 10-12',
     accent: '#ff5252',
-    desc: 'Fortify overall account security, neutralize ransomware attacks, and safeguard your online privacy.',
+    desc: 'The final investigation. Trace the leaked data, secure compromised accounts, and submit the complete incident report to close the case.',
     specs: {
-      threatType: 'Ransomware & Privacy Exposure',
+      threatType: 'Data Breach & Incident Response',
       app: '🔒 Security Console',
-      objective: '100% Vault Secured'
+      objective: 'Final Report Submitted'
     },
     unlocked: false,
     completed: false,
@@ -1541,116 +1541,58 @@ const VN_CHARACTER_MAP = {
   'CYBERZERO':   'assets/CyberZerØ.png',
   'ZERO':        'assets/CyberZerØ.png',
   'AI GUIDE ZERO':'assets/CyberZerØ.png',
-  'ACE':         'assets/Ace.png',
-  'ACE (ALT)':   'assets/Ace1.png',
-  'NISHREN':     'assets/Nishren.png',
-  'NISHREN (ALT)':'assets/Nishren1.png',
-  'PHILLIP':     'assets/Phillip.png',
-  'PHILLIP (ALT)':'assets/Phillip1.png',
-  'JONALD':      'assets/Jonald.png',
-  'JONALD (ALT)':'assets/Jonald1.png',
   'SYSTEM':      null,
+  'ALEX':        null,
+  'IT SUPPORT':  null,
 };
 
 const VN_STORIES = {
   prologue: [
     {
       speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
+      tag: '🤖 AI SECURITY GUIDE',
       bg: 'assets/Cover.png',
-      text: 'Greetings, Student. Welcome to CYBERZERØ — an interactive cybersecurity simulation where you will transform from zero knowledge into an alert cyber defender.',
+      text: 'Greetings, Trainee. Welcome to CYBERZERØ: THE LAST LOGIN — a realistic cybersecurity desktop simulation where you will investigate real-world digital threats from inside a simulated computer.',
       speed: 24,
       scene: 'story'
     },
     {
       speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
+      tag: '🤖 AI SECURITY GUIDE',
       bg: 'assets/Cover.png',
-      text: 'I am CyberZerØ — or simply Zero. As your personal AI Guide and Narrator, I will mentor you through real-world digital investigations and teach you how to protect yourself online.',
+      text: 'I am CyberZerØ — your AI Security Guide. I will assist you as you investigate cybersecurity incidents, examine digital evidence, and make decisions that protect the school and its students.',
       speed: 24,
       scene: 'story'
     },
     {
       speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
+      tag: '🤖 AI SECURITY GUIDE',
       bg: 'assets/Cover.png',
-      text: 'Today, students rely heavily on online learning, school portals, and digital communications. But malicious adversaries constantly deploy deceptive traps to compromise student accounts and devices.',
+      text: 'You are Alex — an IT support trainee at a local school. One morning, the incidents begin. A student clicked a suspicious email. Their account may be compromised. Your investigation starts now.',
       speed: 24,
       scene: 'story'
     },
     {
       speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
+      tag: '🤖 AI SECURITY GUIDE',
       bg: 'assets/Cover.png',
-      text: 'In our simulation, you will join four senior high school friends — Ace, Nishren, Phillip, and Jonald — as they encounter four major categories of cyber threats.',
-      speed: 24,
-      scene: 'story'
-    },
-    {
-      speaker: 'ACE',
-      tag: '🎓 STUDENT • CHAPTER 1 DEFENDER',
-      bg: 'assets/01Cover.png',
-      text: '"Hey! I\'m Ace. In Chapter 1, I received an urgent email claiming my school account was suspended. Zero taught me how to inspect fake sender domains, spot false urgency, and uncover Phishing scams!"',
-      speed: 26,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'NISHREN',
-      tag: '🎓 STUDENT • CHAPTER 2 DEFENDER',
-      bg: 'assets/01Cover.png',
-      text: '"Hi, I\'m Nishren! In Chapter 2, I downloaded what looked like a class syllabus, but it was disguised as bonus_payroll.pdf.exe! With Zero\'s guidance, you\'ll hunt and quarantine hidden Malware."',
-      speed: 26,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'PHILLIP',
-      tag: '🎓 STUDENT • CHAPTER 3 DEFENDER',
-      bg: 'assets/01Cover.png',
-      text: '"I\'m Phillip. In Chapter 3, attackers impersonated school IT staff via urgent phone calls (Vishing) and text messages (Smishing). Together, we must defend against Social Engineering manipulation!"',
-      speed: 26,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'JONALD',
-      tag: '🎓 STUDENT • CHAPTER 4 DEFENDER',
-      bg: 'assets/01Cover.png',
-      text: '"And I\'m Jonald. In Chapter 4, our entire group project was encrypted by a Bitcoin extortionist! Zero guided us through isolating the network and restoring clean backups to defeat Ransomware."',
-      speed: 26,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
-      bg: 'assets/Cover.png',
-      text: 'To neutralize these threats, you will operate our simulated Desktop Environment: inspecting inboxes in Email, searching the Web Browser, examining files in Folder Explorer, running ShieldAV Anti-Virus, and taking command in the Incident Console.',
+      text: 'Your simulated desktop contains everything you need: Email, Browser, File Explorer, Anti-Virus, Messages, and the Activity Log. Each application is part of the investigation.',
       speed: 24,
       scene: 'story'
     },
     {
       speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
+      tag: '🤖 AI SECURITY GUIDE',
       bg: 'assets/Cover.png',
-      text: 'Now, before I deploy you into the live simulation workstations, there is a crucial first requirement.',
+      text: 'The story unfolds through the desktop — new emails arrive, files appear in Downloads, notifications warn you of threats, and your decisions shape the outcome of each incident.',
       speed: 24,
       scene: 'story'
     },
     {
       speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
+      tag: '🤖 AI SECURITY GUIDE',
       bg: 'assets/Cover.png',
-      text: 'To tailor your training and accurately measure your learning journey from zero knowledge to cyber awareness, we need to know your baseline knowledge of cyber threats.',
-      speed: 24,
-      scene: 'story'
-    },
-    {
-      speaker: 'ZERO',
-      tag: '🤖 AI CYBER GUIDE & NARRATOR',
-      bg: 'assets/Cover.png',
-      text: 'You will now take our official 10-Question Cyber Threat Pre-Assessment Exam. Write your name on the test paper, analyze each question carefully, and do your best.\n\nStudent... are you ready?',
+      text: 'Four chapters. Twelve incidents. One final report. Every threat has a story. Every decision matters. Every person deserves digital protection.\n\nTrainee — are you ready to begin?',
       speed: 24,
       scene: 'story'
     }
@@ -1659,72 +1601,30 @@ const VN_STORIES = {
   phishing: [
     {
       speaker: 'NARRATOR',
-      text: 'CHAPTER 1: The Video Call & Phishing Threat\n\nAfter school, four senior high school friends — Ace, Nishren, Phillip, and Jonald — connect on a video call to finish their group project.',
+      text: 'CHAPTER 1: THE FIRST CLICK\n\nMonday, 7:48 AM. Alex, IT Support Trainee, logs in to start the week. A support request is already waiting.',
       speed: 26,
-      scene: 'chapter1_intro'
-    },
-    {
-      speaker: 'ACE',
-      text: '"Alright team! Let\'s finish this project before the deadline!"',
-      speed: 28,
-      mood: 'happy',
-      scene: 'videocall'
-    },
-    {
-      speaker: 'PHILLIP',
-      text: '"You said that last week."',
-      speed: 28,
-      mood: 'neutral',
-      scene: 'videocall'
-    },
-    {
-      speaker: 'JONALD',
-      text: '"And then disappeared for three hours."',
-      speed: 28,
-      mood: 'neutral',
-      scene: 'videocall'
-    },
-    {
-      speaker: 'NISHREN',
-      text: '"You mean gaming."',
-      speed: 28,
-      mood: 'happy',
-      scene: 'videocall'
-    },
-    {
-      speaker: 'ACE',
-      text: '"Researching games!" Everyone laughs.',
-      speed: 28,
-      mood: 'happy',
-      scene: 'videocall'
-    },
-    {
-      speaker: 'NARRATOR',
-      text: '📺 BREAKING NEWS: "Cyber threats targeting students continue to increase as online learning activities expand."',
-      speed: 26,
-      mood: 'neutral',
-      scene: 'videocall',
-      newsAlert: true
-    },
-    {
-      speaker: 'CYBERZERO',
-      text: 'Hello, students. I am CyberZerØ — your AI Guide for Cybersecurity Knowledge and Awareness.\n\nLearn. Detect. Defend.',
-      speed: 26,
-      mood: 'neutral',
       scene: 'story'
     },
     {
-      speaker: 'ACE',
-      text: '"Wait, I just received an urgent email saying my school account will be suspended in 30 minutes! Should I click the link?"',
-      speed: 28,
-      mood: 'worried',
+      speaker: 'SYSTEM',
+      text: '📧 NEW SUPPORT REQUEST\nFrom: librarian@northfield.edu.ph\nSubject: Student reported clicking a suspicious email\n\n"Hi IT Support, a Grade 11 student came to me concerned. She clicked a link in an email claiming to offer a ₱50,000 scholarship. Her account may be compromised. Please investigate."',
+      speed: 26,
       scene: 'story'
     },
     {
-      speaker: 'CYBERZERO',
-      text: 'Stop, Ace! Check the sender address and hover over the link. Attackers use urgency to make you panic. Let\'s investigate together on your desktop!',
-      speed: 26,
-      mood: 'neutral',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Alex, open your Email application. A phishing email targeting students is in the inbox. Examine the sender address, check for false urgency, and identify any suspicious links.',
+      speed: 24,
+      scene: 'story'
+    },
+    {
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Remember: Phishing emails use fake sender domains, create panic with deadlines, and redirect victims to credential-harvesting websites. Use your detective tools — flag every piece of evidence you find.',
+      speed: 24,
       scene: 'story'
     }
   ],
@@ -1732,36 +1632,30 @@ const VN_STORIES = {
   malware: [
     {
       speaker: 'NARRATOR',
-      text: 'CHAPTER 2: Nishren and the Disguised Software\n\nFollowing Ace\'s phishing investigation, Nishren searches online for free tools to compile the group project files.',
+      text: 'CHAPTER 2: THE DIGITAL TRAP\n\nThe scholarship phishing investigation revealed an attachment that was downloaded. Alex opens File Explorer to investigate what was installed.',
       speed: 26,
       scene: 'story'
     },
     {
-      speaker: 'NISHREN',
-      text: '"I found a free file compression tool online! It says \'bonus_payroll.pdf.exe\'. Let me double-click it..."',
-      speed: 28,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'CYBERZERO',
-      text: 'Warning! Notice the double extension: .pdf.exe! Windows executes the .exe binary, launching a hidden Trojan onto your system.',
+      speaker: 'SYSTEM',
+      text: '📧 NEW SUPPORT REQUEST\nFrom: student.r.deleon@northfield.edu.ph\nSubject: My computer is acting strange after opening an email\n\n"Hi, I opened an attachment from a scholarship email. Now there are strange files in my Downloads and my browser keeps redirecting. Please help."',
       speed: 26,
-      mood: 'neutral',
       scene: 'story'
     },
     {
-      speaker: 'NISHREN',
-      text: '"Uh-oh... my computer is slowing down and suspicious script files (.vbs) appeared in my Downloads folder!"',
-      speed: 28,
-      mood: 'worried',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Open File Explorer and check the Downloads folder. The attachment installed hidden files. Look for double extensions like .pdf.exe, suspicious .vbs scripts, and unknown executables.',
+      speed: 24,
       scene: 'story'
     },
     {
-      speaker: 'CYBERZERO',
-      text: 'Open the Folder app and ShieldAV Anti-Virus. Inspect true file extensions, run diagnostic scans, and quarantine all 4 malware threats!',
-      speed: 26,
-      mood: 'neutral',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Once you identify the malware, use ShieldAV Anti-Virus to scan and quarantine every threat. Do not open any suspicious file — scan first, quarantine second.',
+      speed: 24,
       scene: 'story'
     }
   ],
@@ -1769,104 +1663,82 @@ const VN_STORIES = {
   social_engineering: [
     {
       speaker: 'NARRATOR',
-      text: 'CHAPTER 3: Group 4 Multimedia Project\n\nGroup 4 is working outside the school because the school network is temporarily unavailable. You use your laptop to continue the multimedia project, communicate with group members, and upload project files.',
+      text: 'CHAPTER 3: THE SYSTEM COLLAPSE\n\nA local business connected to the school reports that their files are locked. A ransom note appeared on their screen. The school network may also be affected.',
       speed: 26,
       scene: 'story',
       bg: 'assets/background/Coffe shop.png'
     },
     {
-      speaker: 'NARRATOR',
-      text: '“Before you begin this chapter, watch a short 30-second awareness video. It introduces three cybersecurity threats you may encounter: unsafe public Wi-Fi, social engineering, and malicious downloads.\n\nPay attention to the warning signs and safety practices. You will use what you learn to investigate the situation yourself.”',
+      speaker: 'SYSTEM',
+      text: '🚨 SECURITY ALERT — HIGH PRIORITY\nFrom: IT Department\nSubject: Ransomware detected on school-connected business network\n\n"Files on the business server have been encrypted. A ransom note demands payment in cryptocurrency. Suspicious network traffic detected from inside the school building."',
       speed: 26,
       scene: 'story',
       bg: 'assets/background/Coffe shop.png'
+    },
+    {
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Before you proceed, review the incident context. A suspicious device connected to the school network may have introduced the ransomware. Open the Security Settings and investigate the network.',
+      speed: 24,
+      scene: 'story'
     }
   ],
 
   ransomware: [
     {
       speaker: 'NARRATOR',
-      text: 'CHAPTER 4: Jonald and the Ransomware Extortion\n\nOn the night before final project submission, Jonald checks the team\'s shared project drive.',
+      text: 'CHAPTER 4: THE LAST LOGIN\n\nMultiple incidents. One connected campaign. Alex must review all collected evidence, secure the remaining compromised accounts, and submit the final incident report.',
       speed: 26,
       scene: 'story'
     },
     {
-      speaker: 'JONALD',
-      text: '"NO! All our project files are locked with a .locky extension! A ransom note popped up demanding Bitcoin payment!"',
-      speed: 28,
-      mood: 'worried',
-      scene: 'story'
-    },
-    {
-      speaker: 'CYBERZERO',
-      text: 'Don\'t panic, Jonald, and NEVER pay the ransom! We have incident response procedures and immutable cloud backups.',
+      speaker: 'SYSTEM',
+      text: '🚨 CRITICAL SECURITY NOTIFICATION\nFrom: School Principal\nSubject: Urgent — Student data may be exposed\n\n"We have received reports that student personal information from the school database may have been leaked. IT Support is required to investigate immediately and secure all affected systems."',
       speed: 26,
-      mood: 'neutral',
       scene: 'story'
     },
     {
-      speaker: 'JONALD',
-      text: '"How do we stop it from spreading to the rest of the school network?"',
-      speed: 28,
-      mood: 'worried',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Alex, this is the final stage. Use everything you have learned. Investigate the breach using the Incident Console, isolate affected systems, restore secure access, and prepare the final incident report.',
+      speed: 24,
       scene: 'story'
     },
     {
-      speaker: 'CYBERZERO',
-      text: 'Open the Incident Console. Isolate compromised storage nodes, terminate malicious background dropper processes, and restore clean snapshots to achieve 100% recovery!',
-      speed: 26,
-      mood: 'neutral',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Every threat in this investigation was connected. The scholarship phishing → stolen credentials → ransomware → data breach. Contain the final threat and close the case.',
+      speed: 24,
       scene: 'story'
     }
   ],
 
   grand_finale: [
     {
-      speaker: 'NARRATOR',
-      text: 'FINAL CHAPTER: The Virtual Classroom\n\nAfter successfully neutralizing all threats across Phishing, Malware, Social Engineering, and Ransomware, the four students gather in CyberZerØ\'s virtual classroom.',
-      speed: 26,
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'Investigation complete. All 12 incidents documented. The school network has been secured. Compromised accounts have been recovered. The final incident report has been submitted.',
+      speed: 24,
       scene: 'story'
     },
     {
-      speaker: 'CYBERZERO',
-      text: 'Outstanding work, Ace, Nishren, Phillip, and Jonald! What have we learned on our cybersecurity journey?',
-      speed: 26,
-      mood: 'neutral',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: 'You successfully traced a coordinated scam campaign — from a single suspicious email click, through malware, ransomware, and a data breach — and contained every threat.',
+      speed: 24,
       scene: 'story'
     },
     {
-      speaker: 'ACE',
-      text: '"How to spot phishing: verify sender addresses, never rush, and hover over every link!"',
-      speed: 28,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'NISHREN',
-      text: '"How to stop malware: check hidden file extensions, avoid unverified downloads, and scan with Anti-Virus!"',
-      speed: 28,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'PHILLIP',
-      text: '"How to defend against social engineering: never share passwords or MFA codes over calls or SMS!"',
-      speed: 28,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'JONALD',
-      text: '"How to respond to ransomware: isolate infected shares immediately and restore from immutable backups!"',
-      speed: 28,
-      mood: 'happy',
-      scene: 'story'
-    },
-    {
-      speaker: 'CYBERZERO',
-      text: 'Knowledge is your strongest shield. Cybersecurity is for everyone — especially students.\n\n— CyberZerØ: Learn. Detect. Defend. —',
-      speed: 26,
-      mood: 'neutral',
+      speaker: 'ZERO',
+      tag: '🤖 AI SECURITY GUIDE',
+      bg: 'assets/Cover.png',
+      text: '"Every threat has a story. Every decision matters. Every person deserves digital protection."\n\nWell done, Alex. Your first assignment as IT Support is complete.',
+      speed: 24,
       scene: 'story'
     }
   ]
@@ -4678,7 +4550,7 @@ function renderMalwareIntelSite() {
                 Disguised as beneficial, free, or legitimate software (converters, games, PDF viewers). Once executed by the victim, it silently deploys backdoors, disables security software, or downloads secondary malware droppers.
               </p>
               <div class="threat-card-case">
-                <strong>Field Case (Chapter 3):</strong> Nishren downloaded a "free project tool" online. Moments later, his machine slowed down as the trojan installed unauthorized remote access tools.
+                <strong>Field Case (Incident 3):</strong> A student downloaded a "free project tool" online. Moments later, their machine slowed down as the trojan installed unauthorized remote access tools.
               </div>
             </div>
 
@@ -4691,7 +4563,7 @@ function renderMalwareIntelSite() {
                 Infiltrates the operating system and encrypts user documents, spreadsheets, and databases using strong military-grade cryptography (.locked, .crypted). Attackers demand cryptocurrency payments for the decryption key.
               </p>
               <div class="threat-card-case">
-                <strong>Field Case (Chapter 5):</strong> Jonald opened an infected invoice file, triggering instant file encryption across his school workstation.
+                <strong>Field Case (Incident 5):</strong> A school staff member opened an infected invoice file, triggering instant file encryption across their workstation.
               </div>
             </div>
 
@@ -6889,7 +6761,7 @@ Status: DEVICE HARDWARE IS HEALTHY AND AUTHORIZED FOR USE.
           <div style="font-size:32px">🕵️</div>
         </div>
         <div class="word-doc-meta-strip">
-          <span><strong>Investigator:</strong> Nishren</span>
+          <span><strong>Investigator:</strong> Alex (IT Support Trainee)</span>
           <span><strong>Location:</strong> Campus Library & Server Room Perimeter</span>
           <span><strong>Security:</strong> AES-256 Passphrase Protected</span>
         </div>
@@ -6921,7 +6793,7 @@ Status: DEVICE HARDWARE IS HEALTHY AND AUTHORIZED FOR USE.
       </div>
 
       <div class="word-doc-meta-strip">
-        <span><strong>Author:</strong> Nishren (Lead Investigator)</span>
+        <span><strong>Author:</strong> Alex (IT Support Trainee)</span>
         <span><strong>Reviewer:</strong> Ms. Santos (IT Dept)</span>
         <span><strong>Classification:</strong> VERIFIED CLEAN</span>
         <span><strong>Status:</strong> Approved</span>
@@ -7566,7 +7438,7 @@ const COMMS_ITEMS = [
     address: 'Internal Ext 9921',
     time: '2:15 PM',
     subject: 'Emergency Server Migration — Password Verification',
-    audioTranscript: '"Hello Phillip, this is Academy IT Support. We are performing an emergency server migration right now. We need you to state your account password and read out the 6-digit MFA code sent to your phone immediately so we can preserve your profile."',
+    audioTranscript: '"Hello, this is Campus IT Support. We are performing an emergency server migration right now. We need you to state your account password and read out the 6-digit MFA code sent to your phone immediately so we can preserve your profile."',
     isSocialEngineering: true,
     threatVector: 'Vishing (Voice Call Impersonation)',
     tactic: 'Fake Authority & Urgent Credential Harvesting',
@@ -7596,11 +7468,11 @@ const COMMS_ITEMS = [
     type: 'impersonation',
     icon: '👥',
     channel: 'Direct Message',
-    sender: 'Nishren (Backup)',
-    address: 'nishren.backup@tempmail.io',
+    sender: 'Classmate (Backup)',
+    address: 'classmate.backup@tempmail.io',
     time: '2:45 PM',
     subject: 'Lost Project Files — Send Login',
-    messageText: 'Hey Phillip! My PC crashed and I lost our project files. Can you send me your student portal password real quick so I can copy the research slides before class?',
+    messageText: 'Hey! My PC crashed and I lost our project files. Can you send me your student portal password real quick so I can copy the research slides before class?',
     isSocialEngineering: true,
     threatVector: 'Pretexting & Identity Impersonation',
     tactic: 'Friend Impersonation & Credential Sharing',
@@ -9078,7 +8950,7 @@ function showGrandCertificate() {
   hideAllOverlays();
 
   const nameEl = document.getElementById('grand-cert-name');
-  if (nameEl) nameEl.textContent = gameState.playerName || 'Ace';
+  if (nameEl) nameEl.textContent = gameState.playerName || 'Alex';
 
   const totalScore = CATEGORIES.reduce((sum, c) => sum + (c.score || 0), 0) + gameState.score;
   const scoreEl = document.getElementById('grand-total-score');
@@ -9301,6 +9173,17 @@ function lsSignIn() {
   const name    = rawName.length > 0 ? rawName : 'Student';
 
   applyPlayerName(name);
+
+  // If the player came here via Story Selection → Chapter card, go straight to that chapter
+  if (window._pendingStoryChapter) {
+    const catId = window._pendingStoryChapter;
+    window._pendingStoryChapter = null;
+    const tm = document.getElementById('overlay-title-menu');
+    if (tm) tm.classList.remove('active');
+    startCategoryChapter(catId);
+    return;
+  }
+
   startFromTitleMenu();
 }
 
@@ -11186,10 +11069,35 @@ function showMainMenu() {
     mm.style.visibility = '';
     mm.style.transform = '';
     mm.classList.add('active');
+    // Restore the nav buttons if they were mid-exit
+    const mmNav = mm.querySelector('.mm-nav');
+    if (mmNav) mmNav.classList.remove('mm-nav-exiting');
   }
-  // Make sure title-menu & others are hidden
+  // Make sure title-menu & story-select are hidden
   const tm = document.getElementById('overlay-title-menu');
   if (tm) tm.classList.remove('active');
+  const ss = document.getElementById('overlay-story-select');
+  if (ss) { ss.classList.remove('active'); ss.style.display = 'none'; }
+
+  // ── Reset loading bar so START plays cleanly next time ──
+  const barFill  = document.getElementById('loading-bar-fill');
+  const barShell = document.getElementById('loading-bar-shell');
+  const statusText = document.getElementById('loading-status-text');
+  const statusLabel = document.getElementById('loading-status-label');
+  const pctVal   = document.getElementById('loading-pct-val');
+  const loadScreen = document.getElementById('overlay-loading');
+  if (barFill)   { barFill.style.width = '0%'; barFill.style.background = ''; barFill.style.boxShadow = ''; }
+  if (pctVal)    {
+    pctVal.textContent = '0%';
+    pctVal.style.color = '#00f0ff';
+    pctVal.style.borderColor = 'rgba(0, 240, 255, 0.6)';
+    pctVal.style.boxShadow = '0 0 16px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.25)';
+    pctVal.style.textShadow = '0 0 14px rgba(0, 240, 255, 0.9)';
+  }
+  // statusLabel removed
+  if (barShell)  { barShell.classList.remove('loading-complete'); }
+  if (statusText){ statusText.classList.remove('loading-complete'); }
+  if (loadScreen){ loadScreen.style.display = 'none'; loadScreen.classList.remove('active', 'exiting'); loadScreen.style.opacity = ''; loadScreen.style.filter = ''; }
 }
 
 /** Hide the main menu overlay */
@@ -11201,37 +11109,340 @@ function hideMainMenu() {
   closeMainMenuExit();
 }
 
-/** START button — go to name input screen */
+/** START button — 5s loading, professional wipe transition into Enter Name */
 function mainMenuStart() {
-  // Force-hide main menu immediately (bypasses CSS transition delay)
-  const mm = document.getElementById('overlay-main-menu');
-  if (mm) {
-    mm.classList.remove('active');
-    mm.style.display = 'none';       // ensure it's fully gone
-    mm.style.pointerEvents = 'none'; // no interaction
-    mm.style.zIndex = '-1';          // sink below everything
-  }
-  // Close any open sub-modals
   closeMainMenuAbout();
   closeMainMenuExit();
 
-  // Show name input screen (overlay-title-menu)
-  const tm = document.getElementById('overlay-title-menu');
-  if (tm) {
-    tm.style.display = '';           // clear any inline override
-    tm.classList.add('active');
+  const mm = document.getElementById('overlay-main-menu');
+  const mmNav = document.querySelector('.mm-nav');
+  const loadScreen = document.getElementById('overlay-loading');
+  const barFill = document.getElementById('loading-bar-fill');
+  const barShell = document.getElementById('loading-bar-shell');
+  const statusText = document.getElementById('loading-status-text');
+  const statusLabel = document.getElementById('loading-status-label');
+  const pctVal = document.getElementById('loading-pct-val');
+  const flashOverlay = document.getElementById('loading-flash-overlay');
+
+  if (!loadScreen || !barFill) {
+    if (mm) mm.classList.remove('active');
+    // Fallback: show story select if it exists, otherwise title menu
+    const ss = document.getElementById('overlay-story-select');
+    if (ss) { ss.style.display = 'flex'; ss.classList.add('active'); refreshStorySelectLocks(); }
+    else {
+      const tm = document.getElementById('overlay-title-menu');
+      if (tm) tm.classList.add('active');
+    }
+    return;
   }
 
-  // Show backdrop
-  const bd = document.getElementById('overlay-backdrop');
-  if (bd) bd.classList.add('active');
+  // 1. Slide & blur out the main menu buttons
+  if (mmNav) mmNav.classList.add('mm-nav-exiting');
 
-  // Auto-focus name input after CSS transition
+  // Reset state
+  barFill.style.width = '0%';
+  barFill.style.background = '';
+  barFill.style.boxShadow = '';
+  if (barShell) barShell.classList.remove('loading-complete');
+  if (statusText) statusText.classList.remove('loading-complete');
+  if (pctVal) {
+    pctVal.textContent = '0%';
+    pctVal.style.color = '#00f0ff';
+    pctVal.style.borderColor = 'rgba(0, 240, 255, 0.6)';
+    pctVal.style.boxShadow = '0 0 16px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.25)';
+    pctVal.style.textShadow = '0 0 14px rgba(0, 240, 255, 0.9)';
+  }
+  loadScreen.classList.remove('exiting');
+
+  // 2. Fade in loading screen over the main menu
   setTimeout(() => {
-    const inp = document.getElementById('ls-name-input');
-    if (inp) inp.focus();
-  }, 400);
+    loadScreen.style.display = 'flex';
+    void loadScreen.offsetWidth;
+    loadScreen.classList.add('active');
+
+    // Hide main menu behind once loading screen is visible
+    setTimeout(() => {
+      if (mm) { mm.style.display = 'none'; }
+      if (mmNav) mmNav.classList.remove('mm-nav-exiting');
+    }, 450);
+
+    // 3. Animate progress bar over 5 seconds
+    const startTime = performance.now();
+    const duration = 5000; // 5 seconds
+
+    function stepProgress(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+
+      // Authentic sci-fi 3-stage curve: fast → plateau → final burst
+      let pct;
+      if (t < 0.3) {
+        pct = (t / 0.3) * 42;               // 0–42% fast initial load
+      } else if (t < 0.7) {
+        pct = 42 + ((t - 0.3) / 0.4) * 38; // 42–80% steady middle
+      } else {
+        pct = 80 + ((t - 0.7) / 0.3) * 20; // 80–100% final burst
+      }
+      pct = Math.min(pct, 100);
+      barFill.style.width = pct.toFixed(1) + '%';
+      
+      const currentPct = Math.min(Math.floor(pct), 100);
+      if (pctVal) {
+        pctVal.textContent = currentPct + '%';
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(stepProgress);
+      } else {
+        // 4. Complete — stay cyan, trigger transition
+        barFill.style.width = '100%';
+        if (pctVal) pctVal.textContent = '100%';
+        if (barShell) barShell.classList.add('loading-complete');
+        if (statusText) statusText.classList.add('loading-complete');
+        setTimeout(doTransition, 450);
+      }
+    }
+
+    requestAnimationFrame(stepProgress);
+
+    // 5. Professional wipe transition into Story Selection
+    function doTransition() {
+      // Cyan radial flash wipe
+      if (flashOverlay) {
+        flashOverlay.classList.remove('flashing');
+        void flashOverlay.offsetWidth;
+        flashOverlay.classList.add('flashing');
+      }
+
+      // After flash fires, fade the entire loading screen to white then cut to Story Selection
+      setTimeout(() => {
+        loadScreen.style.transition = 'opacity 0.6s ease, filter 0.6s ease';
+        loadScreen.style.opacity = '0';
+        loadScreen.style.filter = 'brightness(3) blur(0px)';
+
+        setTimeout(() => {
+          // Clean up loading screen
+          loadScreen.style.transition = '';
+          loadScreen.style.opacity = '';
+          loadScreen.style.filter = '';
+          loadScreen.classList.remove('active', 'exiting');
+          loadScreen.style.display = 'none';
+
+          // Show Story Selection screen
+          const ss = document.getElementById('overlay-story-select');
+          if (ss) {
+            ss.style.display = 'flex';
+            void ss.offsetWidth;
+            ss.classList.add('active');
+            refreshStorySelectLocks();
+          }
+          const bd = document.getElementById('overlay-backdrop');
+          if (bd) bd.classList.add('active');
+        }, 620);
+      }, 180);
+    }
+  }, 200);
 }
+
+/** Story Selection — BACK button → go to Main Menu */
+function storySelectBack() {
+  const ss = document.getElementById('overlay-story-select');
+  if (!ss) return;
+
+  // Deselect cards and clean up buttons
+  document.querySelectorAll('.ss-card').forEach(c => {
+    c.classList.remove('ss-card-selected');
+    const b = c.querySelector('.ss-play-btn');
+    if (b) b.remove();
+    const bd = c.querySelector('.ss-selected-badge');
+    if (bd) bd.remove();
+  });
+
+  // Animate out
+  ss.style.transition = 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.4,0,0.2,1)';
+  ss.style.opacity = '0';
+  ss.style.transform = 'scale(0.97)';
+
+  setTimeout(() => {
+    ss.style.transition = '';
+    ss.style.opacity = '';
+    ss.style.transform = '';
+    ss.classList.remove('active');
+    ss.style.display = 'none';
+
+    // Show Main Menu (not Enter Name)
+    showMainMenu();
+  }, 420);
+}
+
+/**
+ * Story Selection — Select a chapter card with corner targeting borders & effects
+ */
+let _selectedStoryCard = null;
+
+function selectStoryCard(cardEl, categoryId, chapterNum) {
+  if (!cardEl) return;
+
+  const isAlreadySelected = cardEl.classList.contains('ss-card-selected');
+  const isLocked = cardEl.classList.contains('ss-card-locked') || !categoryId;
+
+  // If already selected and clicked again:
+  if (isAlreadySelected) {
+    if (isLocked) {
+      // Re-trigger locked shake & sound
+      cardEl.classList.remove('ss-card-selected');
+      void cardEl.offsetWidth;
+      cardEl.classList.add('ss-card-selected');
+      if (typeof AudioManager !== 'undefined') {
+        try { AudioManager.playWrong(); } catch(e) {}
+      }
+      storySelectLocked(chapterNum);
+    } else {
+      storySelectPlay(categoryId);
+    }
+    return;
+  }
+
+  // Deselect all cards and remove previous dynamic elements
+  document.querySelectorAll('.ss-card').forEach(c => {
+    c.classList.remove('ss-card-selected');
+    const existingBtn = c.querySelector('.ss-play-btn');
+    if (existingBtn) existingBtn.remove();
+    const existingBadge = c.querySelector('.ss-selected-badge');
+    if (existingBadge) existingBadge.remove();
+  });
+
+  // Select this card
+  cardEl.classList.add('ss-card-selected');
+  _selectedStoryCard = { element: cardEl, categoryId, chapterNum };
+
+  // Retrigger scan line animation
+  const scanLine = cardEl.querySelector('.ss-scan-line');
+  if (scanLine) {
+    scanLine.style.animation = 'none';
+    void scanLine.offsetWidth;
+    scanLine.style.animation = '';
+  }
+
+  if (isLocked) {
+    // Sound & toast for locked
+    if (typeof AudioManager !== 'undefined') {
+      try { AudioManager.playWrong(); } catch(e) {}
+    }
+    storySelectLocked(chapterNum);
+  } else {
+    // Cyber chime sound for unlocked target lock
+    if (typeof AudioManager !== 'undefined') {
+      try { AudioManager.playChime(); } catch(e) {}
+    }
+
+    // (TARGET LOCKED badge removed per user preference)
+
+    // Add START MISSION button in footer
+    const footer = cardEl.querySelector('.ss-card-footer');
+    if (footer && !footer.querySelector('.ss-play-btn')) {
+      const playBtn = document.createElement('button');
+      playBtn.className = 'ss-play-btn';
+      playBtn.innerHTML = `<span>START MISSION</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+      playBtn.onclick = (e) => {
+        e.stopPropagation();
+        storySelectPlay(categoryId);
+      };
+      footer.appendChild(playBtn);
+    }
+  }
+}
+
+/** Story Selection — play unlocked chapter */
+function storySelectPlay(categoryId) {
+  const ss = document.getElementById('overlay-story-select');
+  if (ss) {
+    ss.style.transition = 'opacity 0.4s ease';
+    ss.style.opacity = '0';
+    setTimeout(() => {
+      ss.style.transition = '';
+      ss.style.opacity = '';
+      ss.classList.remove('active');
+      ss.style.display = 'none';
+
+      // Show Enter Name screen if player has no name yet, otherwise go straight to story
+      const playerNameSet = (typeof playerName !== 'undefined' && playerName && playerName !== 'Student');
+      if (!playerNameSet) {
+        const tm = document.getElementById('overlay-title-menu');
+        if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+        // Store pending chapter so we launch it after sign-in
+        window._pendingStoryChapter = categoryId;
+        setTimeout(() => {
+          const inp = document.getElementById('ls-name-input');
+          if (inp) inp.focus();
+        }, 380);
+      } else {
+        startCategoryChapter(categoryId);
+      }
+    }, 420);
+  }
+}
+
+/** Story Selection — clicked a locked chapter */
+function storySelectLocked(chapterNum) {
+  const messages = {
+    2: '🔒 Complete Chapter 1 first to unlock Chapter 2!',
+    3: '🔒 Complete Chapters 1–2 first to unlock Chapter 3!',
+    4: '🔒 Complete all previous chapters to unlock Chapter 4!'
+  };
+  showToast(messages[chapterNum] || '🔒 This chapter is locked.', 'warning');
+}
+
+/** Refresh Story Selection card states based on CATEGORIES unlock data */
+function refreshStorySelectLocks() {
+  CATEGORIES.forEach((cat, idx) => {
+    const chapterNum = idx + 1;
+    const card = document.getElementById(`ss-card-${chapterNum}`);
+    if (!card) return;
+
+    const isUnlocked = !!(cat.unlocked || cat.completed);
+
+    const titleEl = card.querySelector('.ss-chapter-title');
+    if (titleEl && cat.title) {
+      titleEl.textContent = cat.title;
+    }
+
+    if (isUnlocked) {
+      card.classList.remove('ss-card-locked');
+      card.classList.add('ss-card-unlocked');
+      card.setAttribute('onclick', `selectStoryCard(this, '${cat.id}', ${chapterNum})`);
+      // Remove lock label if present
+      const lockLabel = card.querySelector('.ss-lock-label');
+      if (lockLabel) lockLabel.style.display = 'none';
+    } else {
+      card.classList.remove('ss-card-unlocked');
+      card.classList.add('ss-card-locked');
+      card.setAttribute('onclick', `selectStoryCard(this, null, ${chapterNum})`);
+      const lockLabel = card.querySelector('.ss-lock-label');
+      if (lockLabel) lockLabel.style.display = '';
+    }
+
+    // Dynamic dots: Chapter 1 has 1 dot, Chapter 2 has 2 dots, Chapter 3 has 3 dots, Chapter 4 has 4 dots
+    // When opened/unlocked, all dots illuminate in bright neon cyan
+    const dotsContainer = card.querySelector('.ss-card-dots');
+    if (dotsContainer) {
+      dotsContainer.innerHTML = '';
+      for (let d = 0; d < chapterNum; d++) {
+        const dot = document.createElement('span');
+        dot.className = isUnlocked ? 'ss-dot ss-dot-active' : 'ss-dot';
+        dotsContainer.appendChild(dot);
+      }
+    }
+  });
+
+  // Automatically select the first unlocked card for immediate tactile feedback
+  const firstUnlocked = document.querySelector('.ss-card-unlocked');
+  if (firstUnlocked && !document.querySelector('.ss-card-selected')) {
+    const catId = (typeof CATEGORIES !== 'undefined' && CATEGORIES[0] && CATEGORIES[0].id) ? CATEGORIES[0].id : 'phishing';
+    selectStoryCard(firstUnlocked, catId, 1);
+  }
+}
+
 
 /** ABOUT button — show the About modal */
 function mainMenuAbout() {
