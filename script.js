@@ -2100,7 +2100,8 @@ function vnFinish() {
   if (activeCategoryStory === 'prologue') {
     proceedFromIntroToExam();
   } else if (activeCategoryStory === 'phishing') {
-    startMission(false);
+    // Show the Chapter 1 comic strip before starting the mission
+    showComicStrip();
   } else if (activeCategoryStory === 'malware') {
     startMalwareDemo();
   } else if (activeCategoryStory === 'social_engineering') {
@@ -2112,6 +2113,260 @@ function vnFinish() {
   } else {
     openCategoryHub();
   }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHAPTER 1 COMIC STRIP VIEWER (PRO PANEL-BY-PANEL)
+// ═══════════════════════════════════════════════════════════
+
+const COMIC_PANEL_COUNT = 6;
+const comicState = {
+  panel: 0,
+  autoTimer: null,
+  isFinished: false,
+  keyHandlerAttached: false
+};
+
+// Panel read durations in milliseconds for automatic show
+const COMIC_PANEL_DELAYS = [2700, 2400, 2400, 2400, 2600, 2500];
+
+/** Play a subtle futuristic chime when revealing each panel */
+function _playComicPanelSound(index) {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    if (!window._comicAudioCtx) {
+      window._comicAudioCtx = new AudioCtx();
+    }
+    const ctx = window._comicAudioCtx;
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    // Harmonic arpeggio scale for panels 1 through 6
+    const notes = [329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+    const freq = notes[index] || 440;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+    gain.gain.setValueAtTime(0.09, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.24);
+  } catch (e) {
+    // Audio context may be restricted before user gesture
+  }
+}
+
+/** Global keyboard handler for comic viewer */
+function _comicKeyHandler(e) {
+  const overlay = document.getElementById('overlay-comic-strip');
+  if (!overlay || !overlay.classList.contains('active')) return;
+
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    comicStripAdvance();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    comicStripFinish();
+  }
+}
+
+/** Open the Chapter 1 Comic Strip Viewer and start automatic playback */
+function showComicStrip() {
+  const overlay = document.getElementById('overlay-comic-strip');
+  if (!overlay) {
+    _proceedToAlexPassword();
+    return;
+  }
+
+  // Hide desktop behind overlay
+  const desktop = document.getElementById('desktop');
+  if (desktop) desktop.style.visibility = 'hidden';
+
+  // Deactivate any other overlays cleanly
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+  overlay.classList.add('active');
+
+  // Clear any existing timer
+  if (comicState.autoTimer) {
+    clearTimeout(comicState.autoTimer);
+    comicState.autoTimer = null;
+  }
+
+  comicState.panel = 0;
+  comicState.isFinished = false;
+
+  // Reset the finish button to hidden
+  const finishWrap = document.getElementById('comic-finish-wrap');
+  if (finishWrap) {
+    finishWrap.style.opacity = '0';
+    finishWrap.style.pointerEvents = 'none';
+  }
+
+  // Reset all panel card states
+  for (let i = 0; i < COMIC_PANEL_COUNT; i++) {
+    const card = document.getElementById(`comic-panel-${i}`);
+    if (card) {
+      card.classList.remove('revealed', 'active');
+    }
+  }
+
+  // Attach keyboard controls once
+  if (!comicState.keyHandlerAttached) {
+    window.addEventListener('keydown', _comicKeyHandler);
+    comicState.keyHandlerAttached = true;
+  }
+
+  // Reset scroll position to top
+  const stage = document.getElementById('comic-stage');
+  if (stage) stage.scrollTop = 0;
+
+  // Reveal the first panel automatically
+  comicStripShowPanel(0);
+}
+
+/** Show a specific comic panel (0-indexed: 0 to 5) and schedule the next panel automatically */
+function comicStripShowPanel(index) {
+  if (index < 0 || index >= COMIC_PANEL_COUNT) return;
+  comicState.panel = index;
+
+  // Update panel card states — revealed panels stay visible (dimmed), active panel glows
+  for (let i = 0; i < COMIC_PANEL_COUNT; i++) {
+    const card = document.getElementById(`comic-panel-${i}`);
+    if (!card) continue;
+    if (i < index) {
+      card.classList.add('revealed');
+      card.classList.remove('active');
+    } else if (i === index) {
+      card.classList.add('revealed', 'active');
+    } else {
+      card.classList.remove('revealed', 'active');
+    }
+  }
+
+  // Update panel counter (e.g. "2 / 6")
+  const counter = document.getElementById('comic-panel-counter');
+  if (counter) {
+    counter.textContent = `${index + 1} / ${COMIC_PANEL_COUNT}`;
+    counter.classList.add('visible');
+  }
+
+
+  // Play audio chime
+  _playComicPanelSound(index);
+
+  // Clear any existing auto-timer before scheduling next
+  if (comicState.autoTimer) {
+    clearTimeout(comicState.autoTimer);
+    comicState.autoTimer = null;
+  }
+
+  // If this is the last panel (all panels shown)
+  if (index === COMIC_PANEL_COUNT - 1) {
+    // Reveal the "Tap to continue" button with desktop icon after a brief pause
+    comicState.autoTimer = setTimeout(() => {
+      _showComicFinishButton();
+    }, 900);
+  } else {
+    // Show tap hint on first panel, hide afterwards
+    const hint = document.getElementById('comic-tap-hint');
+    if (hint) {
+      if (index === 0) {
+        setTimeout(() => hint.classList.add('visible'), 1200);
+      } else {
+        hint.classList.remove('visible');
+      }
+    }
+    // Automatically advance to the next panel after delay
+    const delay = COMIC_PANEL_DELAYS[index] || 2500;
+    comicState.autoTimer = setTimeout(() => {
+      comicStripShowPanel(index + 1);
+    }, delay);
+  }
+}
+
+/** Reveal the finish button (Tap to continue + desktop icon) */
+function _showComicFinishButton() {
+  comicState.isFinished = true;
+  const finishWrap = document.getElementById('comic-finish-wrap');
+  if (finishWrap) {
+    finishWrap.style.opacity = '1';
+    finishWrap.style.pointerEvents = 'auto';
+  }
+  // Hide tap hint when finish button appears
+  const hint = document.getElementById('comic-tap-hint');
+  if (hint) hint.classList.remove('visible');
+}
+
+/** Advance to next panel on tap/click or finish if all panels are done */
+function comicStripAdvance(e) {
+  // If all panels are finished, any tap finishes and proceeds to workstation
+  if (comicState.isFinished) {
+    comicStripFinish();
+    return;
+  }
+
+  // If still revealing panels, tapping allows user to advance immediately without waiting
+  if (comicState.autoTimer) {
+    clearTimeout(comicState.autoTimer);
+    comicState.autoTimer = null;
+  }
+
+  const next = comicState.panel + 1;
+  if (next >= COMIC_PANEL_COUNT) {
+    _showComicFinishButton();
+  } else {
+    comicStripShowPanel(next);
+  }
+}
+
+/** Finish comic strip and proceed to Alex password sign-in */
+function comicStripFinish() {
+  if (comicState.autoTimer) {
+    clearTimeout(comicState.autoTimer);
+    comicState.autoTimer = null;
+  }
+
+  const overlay = document.getElementById('overlay-comic-strip');
+  if (overlay) overlay.classList.remove('active');
+
+  // Reset counter and hint
+  const counter = document.getElementById('comic-panel-counter');
+  if (counter) counter.classList.remove('visible');
+  const hint = document.getElementById('comic-tap-hint');
+  if (hint) hint.classList.remove('visible');
+
+  // Remove keydown handler
+  if (comicState.keyHandlerAttached) {
+    window.removeEventListener('keydown', _comicKeyHandler);
+    comicState.keyHandlerAttached = false;
+  }
+
+  // Proceed directly to the Windows 10 Alex password login screen
+  _proceedToAlexPassword();
+}
+
+/** Helper to show the Windows 10 login screen for Alex to enter password */
+function _proceedToAlexPassword() {
+  window._pendingStoryChapter = 'phishing';
+  const tm = document.getElementById('overlay-title-menu');
+  if (tm) {
+    tm.style.display = '';
+    tm.classList.add('active');
+  }
+  setTimeout(() => {
+    const inp = document.getElementById('ls-name-input');
+    if (inp) {
+      inp.value = '';
+      inp.focus();
+    }
+  }, 380);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2724,7 +2979,8 @@ function startMission(openGmail = false) {
   updateFolderCounts();
   updateAppLockStates();
 
-  document.getElementById('hud').classList.remove('hidden');
+  const hudEl = document.getElementById('hud');
+  if (hudEl) hudEl.classList.remove('hidden');
 
   // Close all open apps so the desktop starts completely clean
   ['gmail', 'browser', 'folder', 'antivirus', 'comms', 'ransomware', 'wifi-settings', 'docviewer', 'imageviewer', 'videoplayer'].forEach(a => {
@@ -2751,8 +3007,6 @@ function startMission(openGmail = false) {
     updateStickyNoteForPhase('phishing');
     setTimeout(showStickyNote, 700);
   }
-
-  showToast('🕵️ Welcome to your desktop, Alex. Mission ready.', 'success');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3942,7 +4196,8 @@ function playAgain(showVN = false) {
   });
   updateTaskbar();
 
-  document.getElementById('hud').classList.add('hidden');
+  const hudEl = document.getElementById('hud');
+  if (hudEl) hudEl.classList.add('hidden');
 
   // Reset email list view
   document.getElementById('email-detail-view').classList.remove('active');
@@ -11669,25 +11924,34 @@ function storySelectPlay(categoryId) {
           cc.classList.remove('active');
           cc.style.display = 'none';
 
-          // Proceed to Alex sign-in screen
+          // Proceed to Chapter 1 Comic Strip or Alex sign-in screen
           window._pendingStoryChapter = categoryId;
-          const tm = document.getElementById('overlay-title-menu');
-          if (tm) { tm.style.display = ''; tm.classList.add('active'); }
-          setTimeout(() => {
-            const inp = document.getElementById('ls-name-input');
-            if (inp) { inp.value = ''; inp.focus(); }
-          }, 380);
+          if (categoryId === 'phishing') {
+            // Show comic strip first BEFORE Alex enters password!
+            showComicStrip();
+          } else {
+            const tm = document.getElementById('overlay-title-menu');
+            if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+            setTimeout(() => {
+              const inp = document.getElementById('ls-name-input');
+              if (inp) { inp.value = ''; inp.focus(); }
+            }, 380);
+          }
         }, 450);
       }, 1800);
     } else {
       // Fallback
       window._pendingStoryChapter = categoryId;
-      const tm = document.getElementById('overlay-title-menu');
-      if (tm) { tm.style.display = ''; tm.classList.add('active'); }
-      setTimeout(() => {
-        const inp = document.getElementById('ls-name-input');
-        if (inp) { inp.value = ''; inp.focus(); }
-      }, 380);
+      if (categoryId === 'phishing') {
+        showComicStrip();
+      } else {
+        const tm = document.getElementById('overlay-title-menu');
+        if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+        setTimeout(() => {
+          const inp = document.getElementById('ls-name-input');
+          if (inp) { inp.value = ''; inp.focus(); }
+        }, 380);
+      }
     }
   }, 420);
 }

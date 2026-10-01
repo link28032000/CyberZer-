@@ -320,23 +320,10 @@ p { line-height: 1.6; }
 }
 
 /* ═══════════════════════════════════════════════
-   HUD
+   HUD (Removed / Hidden)
 ═══════════════════════════════════════════════ */
 #hud {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  background: rgba(8, 16, 40, 0.88);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  backdrop-filter: blur(16px);
-  padding: 10px 18px;
-  gap: 8px;
-  box-shadow: var(--glass-shadow);
+  display: none !important;
 }
 .hud-item {
   display: flex;
@@ -3151,6 +3138,310 @@ p { line-height: 1.6; }
 .btn-success:hover { background: linear-gradient(135deg, #1b5e20, #2e7d32); transform: translateY(-1px); }
 
 .btn-sm { padding: 6px 14px; font-size: 12px; letter-spacing: 0.3px; }
+
+/* ══════════════════════════════════════════════════════════
+   CHAPTER 1 COMIC STRIP VIEWER (CINEMATIC AUTOMATIC)
+══════════════════════════════════════════════════════════ */
+.comic-strip-overlay {
+  background: #000000 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  z-index: 9200;
+  transform: none !important;
+  overflow: hidden;
+  user-select: none;
+}
+.comic-strip-overlay.active {
+  pointer-events: all;
+  opacity: 1;
+  visibility: visible;
+  transform: none !important;
+}
+
+/* Deep cinematic black backdrop */
+.comic-bg-black {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(14, 18, 28, 0.7) 0%, #030305 70%, #000000 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── STAGE VIEWPORT: full screen, centers comic strip page ── */
+.comic-stage {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* ── COMIC STRIP CONTAINER: authentic comic book page layout ── */
+.comic-strip-container {
+  display: flex;
+  flex-direction: column;
+  width: min(96vw, calc((100vh - 40px) * (1515 / 962)));
+  max-height: calc(100vh - 40px);
+  aspect-ratio: 1515 / 962;
+  background: #000000;
+  padding: 7px;
+  gap: 7px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95);
+  user-select: none;
+}
+
+/* ── ROWS: exact height proportions matching original artwork ── */
+.comic-row {
+  display: flex;
+  gap: 7px;
+  width: 100%;
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* Row 1: Panel 1 (1650 x 290) */
+.comic-row-1, .comic-strip-container > .comic-row:nth-child(1) {
+  flex: 290 1 0;
+}
+/* Row 2: Panel 2 (755 x 221) & Panel 3 (760 x 216) */
+.comic-row-2, .comic-strip-container > .comic-row:nth-child(2) {
+  flex: 221 1 0;
+}
+/* Row 3: Panel 4 (1536 x 172) */
+.comic-row-3, .comic-strip-container > .comic-row:nth-child(3) {
+  flex: 172 1 0;
+}
+/* Row 4: Panel 5 (721 x 277) & Panel 6 (794 x 280) */
+.comic-row-4, .comic-strip-container > .comic-row:nth-child(4) {
+  flex: 279 1 0;
+}
+
+.comic-row-wide { flex-direction: row; }
+.comic-row-wide .comic-panel-card { width: 100%; flex: 1 1 0; }
+
+.comic-row-split { flex-direction: row; }
+
+/* Precise column flex ratios for Row 2 */
+.comic-row-2 .panel-left,
+.comic-strip-container > .comic-row:nth-child(2) .panel-left {
+  flex: 755 1 0;
+}
+.comic-row-2 .panel-right,
+.comic-strip-container > .comic-row:nth-child(2) .panel-right {
+  flex: 760 1 0;
+}
+
+/* Precise column flex ratios for Row 4 */
+.comic-row-4 .panel-left,
+.comic-strip-container > .comic-row:nth-child(4) .panel-left {
+  flex: 721 1 0;
+}
+.comic-row-4 .panel-right,
+.comic-strip-container > .comic-row:nth-child(4) .panel-right {
+  flex: 794 1 0;
+}
+
+/* ── INDIVIDUAL PANEL CARDS ── */
+.comic-panel-card {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #000000;
+  border: 2px solid #111111;
+  border-radius: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  /* Start hidden before reveal */
+  opacity: 0;
+  transform: scale(0.98);
+  filter: blur(2px);
+  pointer-events: none;
+  transition:
+    opacity   0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    filter    0.35s ease,
+    border-color 0.35s ease,
+    box-shadow   0.35s ease;
+}
+
+/* Previously revealed panels: stay 100% visible, crisp and clean comic page */
+.comic-panel-card.revealed:not(.active) {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+  border-color: #111111;
+  pointer-events: auto;
+}
+
+/* Current active panel: full brightness without blue border */
+.comic-panel-card.active {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  filter: blur(0) !important;
+  border-color: #111111 !important;
+  box-shadow: none !important;
+  z-index: 10;
+  pointer-events: auto;
+  animation: comicPanelPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes comicPanelPop {
+  0%   { opacity: 0; transform: scale(0.96); filter: blur(3px); }
+  70%  { opacity: 1; transform: scale(1.01); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1);    filter: blur(0); }
+}
+
+/* Panel image — completely fills panel box without black bars or letterboxing */
+.comic-panel-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  background: #000000;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── PANEL COUNTER (removed) ── */
+.comic-panel-counter {
+  display: none !important;
+}
+
+.comic-panel-highlight-border {
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ── FINISH ACTION: CORNER OVERLAY (bottom-right corner over panels) ── */
+.comic-finish-wrap {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Comic-book continue button — clean button with no speech bubble tail on top */
+.comic-tap-continue-btn {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 3px solid #111111;
+  color: #111111;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 5px 5px 0px #111111;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+  animation: comicBtnPulse 2s ease-in-out infinite;
+}
+
+@keyframes comicBtnPulse {
+  0%, 100% { transform: scale(1); box-shadow: 5px 5px 0px #111111; }
+  50%       { transform: scale(1.04) translateY(-2px); box-shadow: 6px 7px 0px #111111; }
+}
+
+.comic-tap-continue-btn:hover {
+  animation: none;
+  transform: translateY(-3px);
+  box-shadow: 6px 8px 0px #111111;
+  background: #f0f0f0;
+}
+
+.comic-tap-continue-btn:active {
+  animation: none;
+  transform: translateY(1px);
+  box-shadow: 2px 2px 0px #111111;
+}
+
+.comic-desktop-icon {
+  width: 20px;
+  height: 20px;
+  color: #111111;
+  flex-shrink: 0;
+}
+
+/* ── TAP HINT (bottom-center, first panel only) ── */
+.comic-tap-hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9300;
+  color: rgba(255,255,255,0.55);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
+}
+.comic-tap-hint.visible {
+  opacity: 1;
+  animation: comicHintPulse 2.5s ease-in-out infinite;
+}
+@keyframes comicHintPulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .comic-stage {
+    padding: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+  .comic-strip-container {
+    width: 98vw;
+    padding: 4px;
+    gap: 4px;
+  }
+  .comic-row {
+    gap: 4px;
+  }
+  .comic-panel-card {
+    border-width: 1.5px;
+  }
+  .comic-finish-wrap { bottom: 14px; right: 14px; }
+  .comic-panel-counter { bottom: 14px; left: 14px; font-size: 11px; padding: 5px 12px; }
+  .comic-tap-hint { bottom: 14px; font-size: 11px; }
+  .comic-tap-continue-btn { font-size: 12px; padding: 10px 16px; gap: 8px; }
+}
 
 /* ── TRAINING CARD ── */
 .training-card {
@@ -7313,44 +7604,29 @@ p { line-height: 1.6; }
 /* ── User Avatar ── */
 .ls-user-avatar {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  background: #5b626a;
+  background: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.2);
   margin-bottom: 22px;
   flex-shrink: 0;
   overflow: hidden;
-  transition: background 0.3s ease;
+  user-select: none;
 }
 
-.ls-user-avatar svg {
+.ls-user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
   display: block;
-}
-
-.ls-avatar-initials {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 54px;
-  font-weight: 300;
-  color: #ffffff;
+  user-select: none;
   pointer-events: none;
-  display: none;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.ls-user-avatar.has-name .ls-avatar-initials {
-  display: block;
-}
-
-.ls-user-avatar.has-name svg {
-  display: none;
 }
 
 /* ── "Enter your Name" Title ── */
@@ -8820,15 +9096,26 @@ p { line-height: 1.6; }
   cursor: default;
 }
 .start-avatar {
-  font-size: 18px;
-  background: rgba(79, 195, 247, 0.15);
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(79, 195, 247, 0.3);
+  border: 1.5px solid rgba(79, 195, 247, 0.4);
+  background: #ffffff;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.start-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  user-select: none;
+  pointer-events: none;
 }
 .start-user-details {
   display: flex;
