@@ -72,10 +72,8 @@ p { line-height: 1.6; }
 #desktop {
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(76,29,149,0.35) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(30,64,175,0.4) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 50%, #0d1b3e 0%, #060d1f 100%);
+  background: url('assets/Desktop/Desktop Wallpaper.png') no-repeat center center;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   /* Hidden on load — revealed by JS after overlays close */
@@ -514,11 +512,10 @@ p { line-height: 1.6; }
   min-height: 320px;
   max-width: calc(100vw - 32px);
   max-height: calc(100vh - 64px);
-  background: var(--win-body-bg);
+  background: #07122a;
   border: 1px solid var(--win-border);
   border-radius: var(--radius-md);
   box-shadow: var(--glass-shadow), 0 0 0 1px rgba(0,0,0,0.4);
-  backdrop-filter: blur(24px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -650,7 +647,7 @@ p { line-height: 1.6; }
 .gmail-sidebar {
   width: 200px;
   min-width: 200px;
-  background: rgba(5, 12, 32, 0.6);
+  background: #050c20;
   border-right: 1px solid rgba(79,195,247,0.1);
   display: flex;
   flex-direction: column;
@@ -727,7 +724,7 @@ p { line-height: 1.6; }
   gap: 10px;
   padding: 10px 16px;
   border-bottom: 1px solid rgba(79,195,247,0.1);
-  background: rgba(5, 12, 32, 0.5);
+  background: #06102a;
   flex-shrink: 0;
 }
 
@@ -905,6 +902,7 @@ p { line-height: 1.6; }
   flex: 1;
   overflow-y: auto;
   padding: 24px 28px;
+  background: #07122a;
   scrollbar-width: thin;
   scrollbar-color: rgba(79,195,247,0.2) transparent;
 }
@@ -7473,7 +7471,7 @@ p { line-height: 1.6; }
 .lock-paused-bg {
   position: absolute;
   inset: 0;
-  background: url('assets/lockscreen_spotlight.jpg') no-repeat center center;
+  background: url('assets/Desktop/Lockscreen.png') no-repeat center center;
   background-size: cover;
   z-index: 1;
 }
@@ -7582,7 +7580,7 @@ p { line-height: 1.6; }
 .ls-win10-bg {
   position: absolute;
   inset: 0;
-  background: url('assets/win10_wallpaper.jpg') no-repeat center center;
+  background: url('assets/Desktop/Login.png') no-repeat center center;
   background-size: cover;
   z-index: 1;
 }
