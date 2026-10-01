@@ -2165,14 +2165,23 @@ function _playComicPanelSound(index) {
 
 /**
  * Image fallback handler for GitHub / Linux servers where case sensitivity matters (.png vs .PNG vs .jpg)
+ * Also tries alternate folder casing (e.g. Character vs character).
  */
 function imgCaseFallback(img, basePath, baseName) {
   if (!img) return;
   const currentSrc = img.getAttribute('src') || '';
   const step = parseInt(img.dataset.fallbackStep || '0', 10);
+  // Build alternate folder path (toggle first-letter case)
+  const altPath = basePath.replace(/([^/]+)$/, seg =>
+    seg[0] === seg[0].toUpperCase()
+      ? seg[0].toLowerCase() + seg.slice(1)
+      : seg[0].toUpperCase() + seg.slice(1)
+  );
   const candidates = [
-    `${basePath}/${baseName}.PNG`,
     `${basePath}/${baseName}.png`,
+    `${basePath}/${baseName}.PNG`,
+    `${altPath}/${baseName}.png`,
+    `${altPath}/${baseName}.PNG`,
     `${basePath}/${baseName.toLowerCase()}.png`,
     `${basePath}/${baseName.toLowerCase()}.PNG`,
     `${basePath}/${baseName}.jpg`,
@@ -2190,7 +2199,7 @@ function comicPanelFallback(img, panelName) {
 }
 
 function profileAvatarFallback(img) {
-  imgCaseFallback(img, 'assets/character', 'Alex');
+  imgCaseFallback(img, 'assets/Character', 'Alex');
 }
 
 /** Global keyboard handler for comic viewer */
