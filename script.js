@@ -2163,6 +2163,36 @@ function _playComicPanelSound(index) {
   }
 }
 
+/**
+ * Image fallback handler for GitHub / Linux servers where case sensitivity matters (.png vs .PNG vs .jpg)
+ */
+function imgCaseFallback(img, basePath, baseName) {
+  if (!img) return;
+  const currentSrc = img.getAttribute('src') || '';
+  const step = parseInt(img.dataset.fallbackStep || '0', 10);
+  const candidates = [
+    `${basePath}/${baseName}.PNG`,
+    `${basePath}/${baseName}.png`,
+    `${basePath}/${baseName.toLowerCase()}.png`,
+    `${basePath}/${baseName.toLowerCase()}.PNG`,
+    `${basePath}/${baseName}.jpg`,
+    `${basePath}/${baseName}.JPG`
+  ].filter(src => src !== currentSrc);
+
+  if (step < candidates.length) {
+    img.dataset.fallbackStep = String(step + 1);
+    img.src = candidates[step];
+  }
+}
+
+function comicPanelFallback(img, panelName) {
+  imgCaseFallback(img, 'assets/Chapter1', panelName);
+}
+
+function profileAvatarFallback(img) {
+  imgCaseFallback(img, 'assets/character', 'Alex');
+}
+
 /** Global keyboard handler for comic viewer */
 function _comicKeyHandler(e) {
   const overlay = document.getElementById('overlay-comic-strip');

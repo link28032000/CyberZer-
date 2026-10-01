@@ -1284,7 +1284,7 @@
   <div class="start-menu-footer">
     <div class="start-user-profile">
       <div class="start-avatar">
-        <img src="assets/character/Alex.png" alt="Alex" class="start-avatar-img">
+        <img src="assets/character/Alex.png" alt="Alex" class="start-avatar-img" onerror="profileAvatarFallback(this)">
       </div>
       <div class="start-user-details">
         <span class="start-user-name" id="start-user-name">Alex</span>
@@ -2146,7 +2146,7 @@
 
     <!-- User Avatar (Alex profile image) -->
     <div class="ls-user-avatar" id="ls-user-avatar">
-      <img src="assets/character/Alex.png" alt="Alex" class="ls-user-avatar-img">
+      <img src="assets/character/Alex.png" alt="Alex" class="ls-user-avatar-img" onerror="profileAvatarFallback(this)">
     </div>
 
     <!-- Username display -->
@@ -2513,7 +2513,7 @@
       <!-- Row 1: Panel 1 (Wide panel - Alex arrives at TechSolutions) -->
       <div class="comic-row comic-row-wide comic-row-1">
         <div class="comic-panel-card" id="comic-panel-0" data-panel="0">
-          <img src="assets/Chapter1/Panel1.png" alt="Panel 1" class="comic-panel-img" draggable="false">
+          <img src="assets/Chapter1/Panel1.png" alt="Panel 1" class="comic-panel-img" draggable="false" onerror="comicPanelFallback(this, 'Panel1')">
           <div class="comic-panel-highlight-border"></div>
         </div>
       </div>
@@ -2521,11 +2521,11 @@
       <!-- Row 2: Panel 2 (Left) & Panel 3 (Right) -->
       <div class="comic-row comic-row-split comic-row-2">
         <div class="comic-panel-card panel-left" id="comic-panel-1" data-panel="1">
-          <img src="assets/Chapter1/Panel2.png" alt="Panel 2" class="comic-panel-img" draggable="false">
+          <img src="assets/Chapter1/Panel2.png" alt="Panel 2" class="comic-panel-img" draggable="false" onerror="comicPanelFallback(this, 'Panel2')">
           <div class="comic-panel-highlight-border"></div>
         </div>
         <div class="comic-panel-card panel-right" id="comic-panel-2" data-panel="2">
-          <img src="assets/Chapter1/Panel3.png" alt="Panel 3" class="comic-panel-img" draggable="false">
+          <img src="assets/Chapter1/Panel3.png" alt="Panel 3" class="comic-panel-img" draggable="false" onerror="comicPanelFallback(this, 'Panel3')">
           <div class="comic-panel-highlight-border"></div>
         </div>
       </div>
@@ -2533,7 +2533,7 @@
       <!-- Row 3: Panel 4 (Wide panel - Workstation introduction) -->
       <div class="comic-row comic-row-wide comic-row-3">
         <div class="comic-panel-card" id="comic-panel-3" data-panel="3">
-          <img src="assets/Chapter1/Panel4.png" alt="Panel 4" class="comic-panel-img" draggable="false">
+          <img src="assets/Chapter1/Panel4.png" alt="Panel 4" class="comic-panel-img" draggable="false" onerror="comicPanelFallback(this, 'Panel4')">
           <div class="comic-panel-highlight-border"></div>
         </div>
       </div>
@@ -2541,11 +2541,11 @@
       <!-- Row 4: Panel 5 (Left) & Panel 6 (Right) -->
       <div class="comic-row comic-row-split comic-row-4">
         <div class="comic-panel-card panel-left" id="comic-panel-4" data-panel="4">
-          <img src="assets/Chapter1/Panel5.png" alt="Panel 5" class="comic-panel-img" draggable="false">
+          <img src="assets/Chapter1/Panel5.png" alt="Panel 5" class="comic-panel-img" draggable="false" onerror="comicPanelFallback(this, 'Panel5')">
           <div class="comic-panel-highlight-border"></div>
         </div>
         <div class="comic-panel-card panel-right" id="comic-panel-5" data-panel="5">
-          <img src="assets/Chapter1/Panel6.png" alt="Panel 6" class="comic-panel-img" draggable="false">
+          <img src="assets/Chapter1/Panel6.png" alt="Panel 6" class="comic-panel-img" draggable="false" onerror="comicPanelFallback(this, 'Panel6')">
           <div class="comic-panel-highlight-border"></div>
         </div>
       </div>
