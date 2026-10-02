@@ -1107,7 +1107,7 @@
   ══════════════════════════════════════════════════════ -->
   <div id="taskbar">
     <div class="taskbar-start">
-      <button type="button" class="start-btn" id="start-btn" onclick="toggleStartMenu(event)" title="Windows Start Menu (Search apps, settings &amp; tools)" aria-label="Start Menu">
+      <button type="button" class="start-btn" id="start-btn" onclick="toggleStartMenu(event)" title="Windows Start Menu" aria-label="Start Menu">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
           <rect width="7" height="7" fill="#4FC3F7"/>
           <rect x="9" width="7" height="7" fill="#81D4FA"/>
@@ -1116,30 +1116,54 @@
         </svg>
       </button>
     </div>
+
+    <!-- ── TASKBAR SEARCH BAR ── -->
+    <div class="taskbar-search-wrap" id="taskbar-search-wrap">
+      <div class="taskbar-search-box" id="taskbar-search-box" onclick="document.getElementById('taskbar-search-input').focus()">
+        <span class="taskbar-search-icon">
+          <img src="assets/icons/apps/search.svg" alt="Search" class="taskbar-search-icon-img">
+        </span>
+        <input type="text" id="taskbar-search-input" class="taskbar-search-input"
+               placeholder="Search"
+               autocomplete="off" spellcheck="false"
+               oninput="taskbarSearchInput(this.value)"
+               onfocus="taskbarSearchFocus()"
+               onblur="taskbarSearchBlur()"
+               onkeydown="taskbarSearchKeydown(event)">
+        <button type="button" class="taskbar-search-clear" id="taskbar-search-clear"
+                onclick="taskbarSearchClear()" title="Clear">✕</button>
+      </div>
+      <!-- Results dropdown -->
+      <div class="taskbar-search-results hidden" id="taskbar-search-results" role="listbox"></div>
+    </div>
+
     <div class="taskbar-apps">
-      <button type="button" class="taskbar-app-btn" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email — Phishing Investigation">
-        <span><img src="assets/icons/apps/mail.svg" alt="Email" class="taskbar-icon-img"></span> Email
+      <button type="button" class="taskbar-app-btn icon-only" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email">
+        <span><img src="assets/icons/apps/mail.svg" alt="Email" class="taskbar-icon-img-lg"></span>
       </button>
-      <button type="button" class="taskbar-app-btn" id="taskbar-browser" onclick="taskbarClick('browser')" title="Browser — Cyber-Net Web Search">
-        <span><img src="assets/icons/apps/browser.svg" alt="Browser" class="taskbar-icon-img"></span> Browser
+      <button type="button" class="taskbar-app-btn icon-only" id="taskbar-browser" onclick="taskbarClick('browser')" title="Browser">
+        <span><img src="assets/icons/apps/browser.svg" alt="Browser" class="taskbar-icon-img-lg"></span>
       </button>
-      <button type="button" class="taskbar-app-btn locked" id="taskbar-folder" onclick="taskbarClick('folder')" title="File Explorer — Complete Chapter 1 (Phishing) to unlock">
-        <span><img src="assets/icons/apps/folder.svg" alt="File Explorer" class="taskbar-icon-img"></span> File Explorer
+      <button type="button" class="taskbar-app-btn icon-only locked" id="taskbar-folder" onclick="taskbarClick('folder')" title="File Explorer — Complete Chapter 1 to unlock">
+        <span><img src="assets/icons/apps/folder.svg" alt="File Explorer" class="taskbar-icon-img-lg"></span>
       </button>
-      <button type="button" class="taskbar-app-btn locked" id="taskbar-antivirus" onclick="taskbarClick('antivirus')" title="ShieldAV Anti-Virus — Complete Chapter 1 (Phishing) to unlock">
-        <span><img src="assets/icons/apps/windows_defender.svg" alt="Anti-Virus" class="taskbar-icon-img"></span> Anti-Virus
+      <button type="button" class="taskbar-app-btn icon-only locked" id="taskbar-antivirus" onclick="taskbarClick('antivirus')" title="Antivirus — Complete Chapter 1 to unlock">
+        <span><img src="assets/icons/apps/windows_defender.svg" alt="Antivirus" class="taskbar-icon-img-lg"></span>
       </button>
-      <button type="button" class="taskbar-app-btn" id="taskbar-comms" onclick="taskbarClick('comms')" title="Phone Link">
-        <span><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" class="taskbar-icon-img"></span> Phone Link
+      <button type="button" class="taskbar-app-btn icon-only" id="taskbar-comms" onclick="taskbarClick('comms')" title="Phone Link">
+        <span><img src="assets/icons/apps/Smartphone.svg" alt="Phone Link" class="taskbar-icon-img-lg"></span>
       </button>
-      <button type="button" class="taskbar-app-btn hidden" id="taskbar-docviewer" onclick="taskbarClick('docviewer')" title="Microsoft Word">
-        <span>📄</span> Word
+      <button type="button" class="taskbar-app-btn icon-only" id="taskbar-notes" onclick="toggleStickyNote()" title="Sticky Notes">
+        <span><img src="assets/icons/apps/note.svg" alt="Sticky Notes" class="taskbar-icon-img-lg"></span>
       </button>
-      <button type="button" class="taskbar-app-btn hidden" id="taskbar-imageviewer" onclick="taskbarClick('imageviewer')" title="Photos">
-        <span>🖼️</span> Photos
+      <button type="button" class="taskbar-app-btn icon-only hidden" id="taskbar-docviewer" onclick="taskbarClick('docviewer')" title="Microsoft Word">
+        <span style="font-size:22px;">📄</span>
       </button>
-      <button type="button" class="taskbar-app-btn hidden" id="taskbar-videoplayer" onclick="taskbarClick('videoplayer')" title="Media Player">
-        <span>🎬</span> Media Player
+      <button type="button" class="taskbar-app-btn icon-only hidden" id="taskbar-imageviewer" onclick="taskbarClick('imageviewer')" title="Photos">
+        <span style="font-size:22px;">🖼️</span>
+      </button>
+      <button type="button" class="taskbar-app-btn icon-only hidden" id="taskbar-videoplayer" onclick="taskbarClick('videoplayer')" title="Media Player">
+        <span style="font-size:22px;">🎬</span>
       </button>
     </div>
     <div class="taskbar-tray">
@@ -1147,7 +1171,7 @@
       <button type="button" class="tray-btn" id="tray-volume-btn" onclick="toggleVolumeFlyout(event)" title="🔊 Sound &amp; Audio Volume Settings" aria-label="Speakers / Sound Settings">
         <span id="tray-volume-icon" class="tray-icon"><img src="assets/icons/networks/audio.svg" alt="Sound" class="taskbar-icon-img"></span>
       </button>
-      <button type="button" class="tray-btn" id="tray-wifi-btn" onclick="toggleNetworkFlyout(event)" title="📶 Cyber-Net Wi-Fi, Bluetooth &amp; Quick Settings" aria-label="Network &amp; Quick Settings">
+      <button type="button" class="tray-btn" id="tray-wifi-btn" onclick="toggleNetworkFlyout(event)" title="📶 Wi-Fi, Bluetooth &amp; Quick Settings" aria-label="Wi-Fi, Bluetooth &amp; Quick Settings">
         <span id="tray-wifi-icon" class="tray-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="taskbar-icon-img"></span>
       </button>
       <button type="button" class="taskbar-clock" id="taskbar-clock-btn" onclick="toggleCalendarFlyout(event)" title="📅 View Calendar, Date in Words &amp; Notifications" aria-label="System Clock, Calendar and Notifications">
