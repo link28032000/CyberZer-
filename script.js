@@ -12686,7 +12686,7 @@ const RYAN_DIALOGUES = {
   welcome: [
     { text: "Hi! I'm Ryan, your IT Support Mentor. I'll be guiding you through your training and teaching you how to recognize common cyber threats.", state: 'speaking' },
     { text: "Your mission today: investigate suspicious emails arriving in the company inbox. What would you do in a real workplace? Always verify before acting.", state: 'thinking' },
-    { text: "Open Gmail from the taskbar when you're ready. I'll be right here coaching you along the way.", state: 'speaking' }
+    { text: "Open Email app from the taskbar when you're ready. I'll be right here coaching you along the way.", state: 'speaking' }
   ],
 
   // First time opening Gmail
