@@ -10750,10 +10750,10 @@ function wsUpdateWifiTab() {
       label.textContent = 'Disabled by Airplane Mode';
       label.style.color = '#fb923c';
     } else if (isOn) {
-      label.textContent = networkSettings.currentSsid ? `On — Connected to ${networkSettings.currentSsid}` : 'On — Disconnected';
+      label.textContent = 'On';
       label.style.color = 'var(--text-muted)';
     } else {
-      label.textContent = 'Off — Wireless network hardware disabled';
+      label.textContent = 'Off';
       label.style.color = 'var(--text-muted)';
     }
   }
