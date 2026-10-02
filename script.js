@@ -8107,7 +8107,7 @@ function renderG4WiFiSettings() {
     <div class="wifi-net-item connected" id="ws-wifi-item-cybernet">
       <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
       <div class="wifi-net-details">
-        <div class="wifi-net-name">CYBER-NET (WPA3-Enterprise)</div>
+        <div class="wifi-net-name">HomeNetwork_5G</div>
         <div class="wifi-net-meta">Connected, secured • 5.0 GHz • 1200 Mbps</div>
       </div>
       <button class="wifi-net-action-btn disconnect" onclick="toggleCybernetConnect()">Disconnect</button>
@@ -10614,7 +10614,7 @@ let networkSettings = {
   bluetooth: true,
   airplane: false,
   guard: true,
-  currentSsid: 'CYBER-NET (WPA3-Enterprise)'
+  currentSsid: 'HomeNetwork_5G'
 };
 
 function toggleNetworkFlyout(event) {
@@ -10892,6 +10892,9 @@ function updateNetworkUI() {
     }
   }
 
+  // Live sync flyout Wi-Fi list items
+  updateFlyoutWifiList();
+
   // Live sync Settings window tabs with current network state
   wsUpdateWifiTab();
   wsUpdateAirplaneTab();
@@ -10906,7 +10909,7 @@ function toggleWifiSetting() {
   networkSettings.wifi = !networkSettings.wifi;
   updateNetworkUI();
   if (typeof AudioManager !== 'undefined') AudioManager.playMouseClick();
-  showToast(networkSettings.wifi ? '📶 Wi-Fi turned On. Connected to CYBER-NET.' : '📶 Wi-Fi turned Off.', networkSettings.wifi ? 'success' : 'info');
+  showToast(networkSettings.wifi ? '📶 Wi-Fi turned On.' : '📶 Wi-Fi turned Off.', networkSettings.wifi ? 'success' : 'info');
 }
 
 function toggleBluetoothSetting() {
@@ -10939,26 +10942,60 @@ function toggleGuardSetting() {
   showToast(networkSettings.guard ? '🛡️ Cyber Defense Shield Active.' : '⚠️ Cyber Defense Shield Paused.', networkSettings.guard ? 'success' : 'warning');
 }
 
+function updateFlyoutWifiList() {
+  const list = document.getElementById('wifi-networks-list');
+  if (list) {
+    const items = list.querySelectorAll('.wifi-net-item');
+    items.forEach(item => {
+      const nameEl = item.querySelector('.wifi-net-name');
+      const btn = item.querySelector('.wifi-net-action-btn');
+      if (!nameEl || !btn) return;
+      const name = nameEl.textContent.trim();
+      const isCurrent = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === name);
+      if (isCurrent) {
+        item.classList.add('connected');
+        btn.textContent = 'Disconnect';
+        btn.className = 'wifi-net-action-btn disconnect';
+      } else {
+        item.classList.remove('connected');
+        btn.textContent = 'Connect';
+        btn.className = 'wifi-net-action-btn connect';
+      }
+    });
+  }
+
+  // Also sync Stage 1 Settings window if it's open
+  const wsCyber = document.getElementById('ws-wifi-item-cybernet');
+  if (wsCyber) {
+    const wsBtn = wsCyber.querySelector('.wifi-net-action-btn');
+    const wsMeta = wsCyber.querySelector('.wifi-net-meta');
+    const isConn = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === 'HomeNetwork_5G' || networkSettings.currentSsid === 'CYBER-NET (WPA3-Enterprise)');
+    wsCyber.classList.toggle('connected', !!isConn);
+    if (wsBtn) {
+      wsBtn.textContent = isConn ? 'Disconnect' : 'Connect';
+      wsBtn.className = isConn ? 'wifi-net-action-btn disconnect' : 'wifi-net-action-btn connect';
+    }
+    if (wsMeta) {
+      wsMeta.textContent = isConn ? 'Connected, secured • 5.0 GHz • 1200 Mbps' : 'Saved, secured • 5.0 GHz • 1200 Mbps';
+    }
+  }
+}
+
 function toggleCybernetConnect() {
-  const btn = document.getElementById('btn-cybernet-action');
-  const cyberItem = document.getElementById('wifi-item-cybernet');
-  if (networkSettings.currentSsid === 'CYBER-NET (WPA3-Enterprise)') {
+  if (networkSettings.currentSsid === 'HomeNetwork_5G' || networkSettings.currentSsid === 'CYBER-NET (WPA3-Enterprise)') {
     networkSettings.currentSsid = null;
-    if (btn) { btn.textContent = 'Connect'; btn.className = 'wifi-net-action-btn connect'; }
-    if (cyberItem) cyberItem.classList.remove('connected');
-    showToast('🔌 Disconnected from CYBER-NET.', 'info');
   } else {
-    networkSettings.currentSsid = 'CYBER-NET (WPA3-Enterprise)';
-    if (btn) { btn.textContent = 'Disconnect'; btn.className = 'wifi-net-action-btn disconnect'; }
-    if (cyberItem) cyberItem.classList.add('connected');
-    showToast('📶 Connected to CYBER-NET (WPA3-Enterprise).', 'success');
+    networkSettings.currentSsid = 'HomeNetwork_5G';
   }
   updateNetworkUI();
 }
 
 function connectToWifi(ssid) {
-  networkSettings.currentSsid = ssid;
-  showToast(`📶 Connected to ${ssid}. Encrypted gateway established.`, 'success');
+  if (networkSettings.currentSsid === ssid) {
+    networkSettings.currentSsid = null;
+  } else {
+    networkSettings.currentSsid = ssid;
+  }
   updateNetworkUI();
 }
 
