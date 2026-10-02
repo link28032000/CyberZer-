@@ -184,29 +184,6 @@
           </div>
         </div>
 
-        <!-- Bookmarks Toolbar -->
-        <div class="browser-bookmarks-bar">
-          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.cisa.gov/topics/malware')" title="Official Malware Threat Intelligence &amp; Classifications">
-            <span class="b-icon">🦠</span>
-            <span>Malware Intel &amp; Defense</span>
-          </button>
-          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.cisa.gov')" title="Cybersecurity &amp; Infrastructure Security Agency">
-            <span class="b-icon">🛡️</span>
-            <span>CISA Cyber Defense</span>
-          </button>
-          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.consumer.ftc.gov/articles/how-recognize-phishing')" title="Phishing Scam Detection &amp; Prevention Guide">
-            <span class="b-icon">🎣</span>
-            <span>Phishing Recognition Guide</span>
-          </button>
-          <button type="button" class="bookmark-btn" onclick="browserGo('https://www.google.com/search?q=ransomware+protection+guide')" title="Ransomware Protection Guide">
-            <span class="b-icon">🔒</span>
-            <span>Ransomware Guide</span>
-          </button>
-          <button type="button" class="bookmark-btn" onclick="browserGoHome()" title="Google Search Home">
-            <span class="b-icon">🌐</span>
-            <span>Google Home</span>
-          </button>
-        </div>
       </div>
 
       <div id="browser-content" class="browser-content">
@@ -282,10 +259,6 @@
               <span class="cmd-icon">⊞</span>
             </button>
           </div>
-          <button type="button" class="cmd-btn cmd-btn-tutorial" onclick="startMalwareDemo()" title="How to Play Malware Tutorial">
-            <span class="cmd-icon">❓</span>
-            <span class="cmd-label">Tutorial</span>
-          </button>
         </div>
       </div>
 
@@ -403,8 +376,6 @@
           <span id="explorer-status-selected">0 items selected</span>
         </div>
         <div class="status-right">
-          <span class="status-shield" id="explorer-shield-status">🛡️ ShieldAV Real-Time: ON</span>
-          <span class="status-sep">|</span>
           <button type="button" class="status-view-btn active" id="stat-btn-details" onclick="setExplorerViewMode('details')" title="Details view">📄</button>
           <button type="button" class="status-view-btn" id="stat-btn-grid" onclick="setExplorerViewMode('grid')" title="Large icons view">⊞</button>
         </div>
@@ -690,7 +661,7 @@
     <div class="win-titlebar" id="titlebar-antivirus">
       <div class="win-title">
         <span class="win-icon">🛡️</span>
-        <span>ShieldAV — CyberZero Security Center</span>
+        <span>Antivirus</span>
       </div>
       <div class="win-controls">
         <button type="button" class="win-btn win-minimize" onclick="minimizeApp('antivirus')" title="Minimize">─</button>
@@ -717,7 +688,6 @@
         <div class="av-stats-badge" id="av-stats-badge">
           <span id="av-quarantine-count">0</span> / 4 QUARANTINED
         </div>
-        <button type="button" class="btn-ghost btn-sm btn-av-tutorial" onclick="startMalwareDemo()" title="How to Play Malware Tutorial">❓ Tutorial</button>
       </div>
 
       <!-- AV Main Content -->
