@@ -2319,63 +2319,11 @@
             Submit
           </button>
           <button type="button" class="btn-success exam-proceed-btn hidden" id="btn-proceed-vn" onclick="proceedFromPreAssessmentToCategories()">
-            CHOOSE THREAT CATEGORY ➔
+            STORY SELECTION ➔
           </button>
         </div>
       </div>
 
-    </div>
-  </div>
-</div>
-
-<!-- ── THREAT CATEGORIES SELECTION HUB ── -->
-<div id="overlay-category-select" class="overlay">
-
-  <div class="cat-hub-container">
-    <!-- Cyber Decorative Framing -->
-    <div class="cat-cyber-grid"></div>
-    <div class="cat-corner cat-corner-tl"></div>
-    <div class="cat-corner cat-corner-tr"></div>
-    <div class="cat-corner cat-corner-bl"></div>
-    <div class="cat-corner cat-corner-br"></div>
-
-    <div class="cat-hub-shell">
-      <!-- Inside Top Bar: Back to Menu button & Replay VN -->
-      <div class="cat-hub-inner-topbar cat-hub-topbar">
-        <button type="button" class="cat-top-btn" id="cat-hub-back-btn" onclick="closeCategoryHubBack()" title="Go back">
-          <span class="cat-top-btn-icon">◀</span>
-          <span id="cat-hub-back-label">BACK TO MENU</span>
-        </button>
-        <button type="button" class="cat-top-btn cat-replay-btn" id="cat-hub-replay-intro" onclick="replayPrologueVN()" title="Replay the Visual Novel introduction with AI Guide Zero">
-          <span class="cat-top-btn-icon">🎬</span>
-          <span>REPLAY ZERO'S INTRO</span>
-        </button>
-      </div>
-
-      <!-- Header Banner -->
-      <div class="cat-hub-header">
-        <h1 class="cat-hub-title">CHOOSE THREAT CATEGORY</h1>
-        <p class="cat-hub-subtitle">
-          Select a category to begin simulation. Complete each chapter to master cybersecurity defenses with CyberZerØ!
-        </p>
-
-        <!-- Stats Bar -->
-        <div class="cat-hub-stats-bar">
-          <div class="cat-stat-chip">
-            <span class="stat-lbl">Progress:</span>
-            <strong id="cat-hub-progress-text">0 / 4 Modules Completed</strong>
-          </div>
-          <div class="cat-stat-chip">
-            <span class="stat-lbl">Overall Score:</span>
-            <strong id="cat-hub-score-val" class="cat-score-val">0 pts</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4 Threat Category Cards Grid -->
-      <div class="cat-cards-grid" id="cat-cards-grid">
-        <!-- Dynamically rendered by renderCategoryHub() in script.js -->
-      </div>
     </div>
   </div>
 </div>
@@ -3116,9 +3064,29 @@
       <span class="results-score-max">out of <span id="res-max-score">625</span> possible</span>
     </div>
 
+    <!-- Ryan Mentor Final Debrief -->
+    <div class="ryan-results-card">
+      <div class="ryan-results-portrait-wrap">
+        <div class="ryan-results-portrait">
+          <img src="assets/Character Ryan.Png" alt="Ryan, IT Support Mentor" class="ryan-portrait-img">
+        </div>
+      </div>
+      <div class="ryan-results-dialogue">
+        <div class="ryan-name-row">
+          <span class="ryan-name">RYAN</span>
+          <span class="ryan-role">IT SUPPORT MENTOR</span>
+        </div>
+        <p class="ryan-results-quote">“Great work today. You didn't just learn what phishing is. You practiced how to recognize it.”</p>
+        <div class="ryan-results-mantra">
+          <span class="ryan-mantra-badge">MENTOR RULE</span>
+          <span>Remember: <strong>Stop. Check. Verify. Report.</strong></span>
+        </div>
+      </div>
+    </div>
+
     <div class="results-action-row">
-      <button type="button" class="btn-primary" id="btn-next-malware" onclick="proceedToNextCategory('malware')">🦠 PROCEED TO CHAPTER 2 (MALWARE) →</button>
-      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-primary" id="btn-next-malware" onclick="proceedToNextCategory('malware')">CONTINUE TO NEXT MISSION (MALWARE) →</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📖 Story Selection</button>
       <button type="button" class="btn-ghost" onclick="playAgain()">🔄 Replay Phishing</button>
     </div>
   </div>
@@ -3151,7 +3119,7 @@
     </div>
     <div class="results-action-row-20">
       <button type="button" class="btn-primary" onclick="proceedToNextCategory('social_engineering')">🎭 PROCEED TO CHAPTER 3 (SOCIAL ENG) →</button>
-      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📖 Story Selection</button>
       <button type="button" class="btn-ghost" onclick="startMalwareMission()">🔄 Replay Malware</button>
     </div>
   </div>
@@ -3184,7 +3152,7 @@
     </div>
     <div class="results-action-row-20">
       <button type="button" class="btn-primary" onclick="proceedToNextCategory('ransomware')">🔒 PROCEED TO CHAPTER 4 (RANSOMWARE) →</button>
-      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📖 Story Selection</button>
       <button type="button" class="btn-ghost" onclick="startSocialEngineeringMission()">🔄 Replay Social Defense</button>
     </div>
   </div>
@@ -3217,7 +3185,7 @@
     </div>
     <div class="results-action-row-20">
       <button type="button" class="btn-primary" onclick="showGrandCertificate()">🏆 VIEW GRAND MASTER CERTIFICATE →</button>
-      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📁 Threat Categories Hub</button>
+      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📖 Story Selection</button>
     </div>
   </div>
 </div>
@@ -3295,7 +3263,7 @@
 
         <!-- Certificate Footer Actions -->
         <div class="grand-cert-actions">
-          <button type="button" class="btn-primary" onclick="openCategoryHub()">📁 RETURN TO CATEGORIES HUB</button>
+          <button type="button" class="btn-primary" onclick="openCategoryHub()">📖 RETURN TO STORY SELECTION</button>
           <button type="button" class="btn-ghost" onclick="restartEntireGame()">🔄 RESTART FULL ADVENTURE</button>
         </div>
       </div>
@@ -3400,6 +3368,40 @@
     </div>
 
   </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     RYAN GUIDE SYSTEM — IT Support Mentor
+══════════════════════════════════════════════════════════ -->
+<div id="ryan-guide-overlay" class="ryan-guide-overlay hidden" aria-live="polite" aria-label="Ryan IT Mentor Guidance">
+
+  <!-- Ryan's circular portrait -->
+  <div class="ryan-portrait-wrap" id="ryan-portrait-wrap">
+    <div class="ryan-portrait-ring" id="ryan-portrait-ring"></div>
+    <div class="ryan-portrait" id="ryan-portrait">
+      <img src="assets/Character Ryan.Png" alt="Ryan, IT Support Mentor" class="ryan-portrait-img" id="ryan-portrait-img">
+    </div>
+  </div>
+
+  <!-- Dialogue box -->
+  <div class="ryan-dialogue-box" id="ryan-dialogue-box">
+    <div class="ryan-name-row">
+      <span class="ryan-name">RYAN</span>
+      <span class="ryan-role">IT SUPPORT MENTOR</span>
+    </div>
+    <div class="ryan-text" id="ryan-dialogue-text"></div>
+
+    <!-- Optional multiple-choice answers -->
+    <div class="ryan-choices hidden" id="ryan-choices"></div>
+
+    <!-- Continue prompt (hidden when choices shown) -->
+    <button type="button" class="ryan-continue-btn" id="ryan-continue-btn" onclick="RyanGuide.advance()">
+      <span id="ryan-continue-label">TAP / CLICK TO CONTINUE</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
 </div>
 
 <script src="script.js"></script>

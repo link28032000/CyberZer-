@@ -571,13 +571,22 @@ function centerWindow(appName) {
   const taskbar = document.getElementById('taskbar');
   if (!win || !desktop) return;
 
-  const w = win.offsetWidth || 800;
-  const h = win.offsetHeight || 560;
+  const w = win.offsetWidth || 840;
+  const h = win.offsetHeight || 520;
   const viewportW = desktop.clientWidth;
   const viewportH = desktop.clientHeight - (taskbar ? taskbar.offsetHeight : 48);
 
   let left = Math.max(20, Math.round((viewportW - w) / 2));
-  let top = Math.max(20, Math.round((viewportH - h) / 2));
+
+  // Clearance for Ryan IT Support guide overlay (sits above taskbar at bottom 58px with ~120px height)
+  // so app windows are neatly positioned above Ryan without overlapping or covering
+  const ryanTopBoundary = viewportH - 180;
+  let top = Math.round((ryanTopBoundary - h) / 2);
+  top = Math.max(24, Math.min(52, top));
+
+  if (top + h > ryanTopBoundary && top > 18) {
+    top = Math.max(16, ryanTopBoundary - h);
+  }
 
   win.style.left = left + 'px';
   win.style.top = top + 'px';
@@ -1232,7 +1241,7 @@ function proceedFromPreAssessmentToCategories() {
   }
   closeOverlay('overlay-pre-assessment');
   openCategoryHub();
-  showToast('📁 Pre-assessment completed! Select your threat category to begin.', 'success');
+  showToast('📁 Pre-assessment completed! Select your story to begin.', 'success');
 }
 
 function proceedFromPreAssessmentToVN() {
@@ -1250,7 +1259,7 @@ function skipPreAssessment() {
   }
   closeOverlay('overlay-pre-assessment');
   openCategoryHub();
-  showToast('⏩ Assessment skipped — welcome to the Threat Categories Hub.', 'info');
+  showToast('⏩ Assessment skipped — select your story to begin.', 'info');
 }
 
 function skipPreAssessmentFromIntro() {
@@ -1262,7 +1271,7 @@ function skipPreAssessmentFromIntro() {
   }
   closeOverlay('overlay-game-intro');
   openCategoryHub();
-  showToast('⏩ Assessment skipped — choose your threat category.', 'info');
+  showToast('⏩ Assessment skipped — select your story to begin.', 'info');
 }
 
 function retakePreAssessment(silent = false) {
@@ -1379,128 +1388,31 @@ function updateDesktopBackgroundForPhase(phase) {
 }
 
 function openCategoryHub() {
-  // Called from exam/title flow
-  _openCategoryHubInternal(false);
+  _goToStorySelect(false);
 }
 
 function openCategoryHubFromDesktop() {
-  // Called from desktop icon or taskbar
-  _openCategoryHubInternal(true);
+  _goToStorySelect(true);
 }
 
 function _openCategoryHubInternal(fromDesktop) {
-  hideAllOverlays();
-  updateDesktopBackgroundForPhase('hub');
-  renderCategoryHub();
-  showOverlay('overlay-category-select');
-  updateAppLockStates();
-  const label = document.getElementById('cat-hub-back-label');
-  if (label) label.textContent = fromDesktop ? 'BACK TO DESKTOP' : 'TITLE MENU';
-  const btn = document.getElementById('cat-hub-back-btn');
-  if (btn) btn.dataset.fromDesktop = fromDesktop ? '1' : '0';
-  if (typeof AudioManager !== 'undefined') {
-    AudioManager.playWindowSound(true);
-  }
+  _goToStorySelect(fromDesktop);
 }
 
 function closeCategoryHubBack() {
-  const btn = document.getElementById('cat-hub-back-btn');
-  const fromDesktop = btn && btn.dataset.fromDesktop === '1';
-  closeCategoryHub();
-  if (!fromDesktop) {
-    showOverlay('overlay-title-menu');
-  }
+  storySelectBack();
 }
 
 function closeCategoryHub() {
-  closeOverlay('overlay-category-select');
+  const ss = document.getElementById('overlay-story-select');
+  if (ss) {
+    ss.classList.remove('active');
+    ss.style.display = 'none';
+  }
 }
 
-function renderCategoryHub() {
-  const completedCount = CATEGORIES.filter(c => c.completed).length;
-  const progEl = document.getElementById('cat-hub-progress-text');
-  if (progEl) progEl.textContent = `${completedCount} / 4 Modules Completed`;
-
-  const totalScore = CATEGORIES.reduce((sum, c) => sum + (c.score || 0), 0);
-  const scoreEl = document.getElementById('cat-hub-score-val');
-  if (scoreEl) scoreEl.textContent = `${totalScore} pts`;
-
-  const gridEl = document.getElementById('cat-cards-grid');
-  if (!gridEl) return;
-
-  gridEl.innerHTML = CATEGORIES.map((cat, idx) => {
-    let statusClass = 'cat-status-locked';
-    let statusLabel = '🔒 Locked';
-    let btnClass = 'cat-card-btn cat-btn-locked';
-    let btnText = `🔒 CHAPTER ${cat.chapterRange}`;
-    let prevChap = idx > 0 ? CATEGORIES[idx - 1].chapterRange : '1–3';
-    let btnAction = `showToast('🔒 Complete Chapter ${prevChap} first to unlock ${cat.title}!', 'warning')`;
-
-    if (cat.completed) {
-      statusClass = 'cat-status-completed';
-      statusLabel = `✓ Done (${cat.rank || 'S'})`;
-      btnClass = 'cat-card-btn cat-btn-play';
-      btnText = `🔄 Replay Ch. ${cat.chapterRange}`;
-      btnAction = `startCategoryChapter('${cat.id}')`;
-    } else if (cat.unlocked) {
-      statusClass = 'cat-status-unlocked';
-      statusLabel = '● UNLOCKED';
-      btnClass = 'cat-card-btn cat-btn-play';
-      btnText = `▶ PLAY CH. ${cat.chapterRange}`;
-      btnAction = `startCategoryChapter('${cat.id}')`;
-    }
-
-    const cardClass = `cat-card ${cat.completed ? 'completed' : ''} ${!cat.unlocked ? 'locked' : ''}`;
-
-    return `
-      <div class="${cardClass}" style="--card-accent: ${cat.accent}"
-           data-catid="${cat.id}"
-           onclick="selectCategoryCard(this, '${cat.id}')">
-        <div class="cat-card-top">
-          <span class="cat-num-tag">${cat.chapterTag}</span>
-          <span class="cat-status-badge ${statusClass}">${statusLabel}</span>
-        </div>
-
-        <div class="cat-card-body">
-          <h3 class="cat-card-title">${cat.title}</h3>
-          <p class="cat-card-desc">${cat.desc}</p>
-
-          <div class="cat-card-specs">
-            <div class="cat-spec-item"><span>Threat:</span> <strong>${cat.specs.threatType}</strong></div>
-            <div class="cat-spec-item"><span>App:</span> <strong>${cat.specs.app || cat.specs.environment}</strong></div>
-            <div class="cat-spec-item"><span>Goal:</span> <strong>${cat.specs.objective}</strong></div>
-            ${cat.score ? `<div class="cat-spec-item" style="color:${cat.accent}"><span>Score:</span> <strong>${cat.score} pts</strong></div>` : ''}
-          </div>
-
-          <button class="${btnClass}" onclick="event.stopPropagation(); ${btnAction}">
-            ${btnText}
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// Called when a card is clicked — adds flash + selected state
-function selectCategoryCard(cardEl, catId) {
-  const cat = CATEGORIES.find(c => c.id === catId);
-  if (!cat) return;
-
-  // Remove selected from all cards
-  document.querySelectorAll('.cat-card').forEach(c => {
-    c.classList.remove('selected', 'select-flash');
-  });
-
-  // Add flash animation then selected state
-  cardEl.classList.add('select-flash');
-  setTimeout(() => {
-    cardEl.classList.remove('select-flash');
-    cardEl.classList.add('selected');
-  }, 450);
-}
-
-function previewCategoryCard() {}
-function resetCategoryCard() {}
+// renderCategoryHub / selectCategoryCard removed — Story Selection screen
+// (overlay-story-select) is used exclusively via openCategoryHub() → _goToStorySelect()
 
 function startCategoryChapter(categoryId) {
   closeCategoryHub();
@@ -1546,7 +1458,7 @@ function completeCategory(catId, score, rank) {
   }
   saveCategoriesProgress();
   updateAppLockStates();
-  renderCategoryHub();
+  refreshStorySelectLocks(); // keep Story Selection screen in sync
 }
 
 /** Save CATEGORIES completion state to localStorage */
@@ -12502,3 +12414,602 @@ function _htmlEsc(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ===========================================================
+   RYAN GUIDE SYSTEM - IT Support Mentor
+   -----------------------------------------------------------
+   Ryan is the trainee's personal IT Support Mentor.
+   He guides them with professional, patient coaching:
+   "Stop. Check. Verify. Report."
+=========================================================== */
+
+const RyanGuide = (() => {
+  // DOM references
+  const el = () => ({
+    overlay:       document.getElementById('ryan-guide-overlay'),
+    text:          document.getElementById('ryan-dialogue-text'),
+    choices:       document.getElementById('ryan-choices'),
+    continueBtn:   document.getElementById('ryan-continue-btn'),
+    continueLabel: document.getElementById('ryan-continue-label'),
+    portrait:      document.getElementById('ryan-portrait'),
+  });
+
+  // Internal state
+  let _queue          = [];
+  let _typing         = false;
+  let _typeTimeout    = null;
+  let _cursorEl       = null;
+  let _onDoneCallback = null;
+  let _seen           = {};
+  let _dismissTimer   = null;
+
+  const CHAR_DELAY  = 24;  // smooth typing speed
+  const MAX_CHARS   = 220; // instant render if text is very long
+
+  // Show / hide overlay
+  function _show() {
+    const o = el().overlay;
+    if (!o) return;
+    o.classList.remove('hidden', 'ryan-animate-out');
+    void o.offsetHeight; // trigger reflow
+    o.classList.add('ryan-animate-in');
+    o.addEventListener('animationend', () => {
+      o.classList.remove('ryan-animate-in');
+    }, { once: true });
+  }
+
+  function _hide() {
+    const o = el().overlay;
+    if (!o || o.classList.contains('hidden')) return;
+    o.classList.add('ryan-animate-out');
+    o.addEventListener('animationend', () => {
+      o.classList.add('hidden');
+      o.classList.remove('ryan-animate-out', 'ryan-speaking', 'ryan-thinking', 'ryan-concerned', 'ryan-success');
+    }, { once: true });
+  }
+
+  // Portrait state (normal, speaking, thinking, concerned, success)
+  function _setState(state) {
+    const o = el().overlay;
+    if (!o) return;
+    o.classList.remove('ryan-speaking', 'ryan-thinking', 'ryan-concerned', 'ryan-success');
+    if (state && state !== 'normal') {
+      o.classList.add('ryan-' + state);
+    }
+  }
+
+  // Typewriter effect
+  function _typeText(fullText, onComplete) {
+    const textEl = el().text;
+    if (!textEl) return;
+    textEl.innerHTML = '';
+
+    if (fullText.length > MAX_CHARS) {
+      textEl.innerHTML = fullText;
+      if (onComplete) onComplete();
+      return;
+    }
+
+    _typing = true;
+    let i = 0;
+
+    _cursorEl = document.createElement('span');
+    _cursorEl.className = 'ryan-cursor';
+    textEl.appendChild(_cursorEl);
+
+    function tick() {
+      if (i >= fullText.length) {
+        _typing = false;
+        if (_cursorEl && _cursorEl.parentNode) _cursorEl.parentNode.removeChild(_cursorEl);
+        if (onComplete) onComplete();
+        return;
+      }
+      textEl.insertBefore(document.createTextNode(fullText[i]), _cursorEl);
+      i++;
+      _typeTimeout = setTimeout(tick, CHAR_DELAY);
+    }
+    tick();
+  }
+
+  function _skipTyping() {
+    if (!_typing) return;
+    clearTimeout(_typeTimeout);
+    _typing = false;
+    const textEl = el().text;
+    if (!textEl) return;
+    const step = _queue[0];
+    if (_cursorEl && _cursorEl.parentNode) _cursorEl.parentNode.removeChild(_cursorEl);
+    if (step && step._fullText) textEl.innerHTML = step._fullText;
+  }
+
+  // Display current message in queue
+  function _showStep() {
+    if (_queue.length === 0) return;
+    const step = _queue[0];
+    const refs = el();
+
+    _setState(step.state || 'speaking');
+    refs.choices.classList.add('hidden');
+    refs.continueBtn.classList.remove('hidden');
+
+    const isLast = _queue.length === 1;
+    refs.continueLabel.textContent = isLast ? 'TAP / CLICK TO CONTINUE' : 'TAP TO CONTINUE';
+
+    step._fullText = step.text;
+    _typeText(step.text, function() {});
+  }
+
+  // Public API
+
+  /**
+   * Speak a series of coaching statements
+   * @param {Array} messages - [{text, state}] or string[]
+   * @param {Object} [opts] - { onDone, autoDismiss }
+   */
+  function speak(messages, opts) {
+    opts = opts || {};
+    if (!messages || messages.length === 0) return;
+
+    _queue = messages.map(function(m) {
+      return (typeof m === 'string') ? { text: m, state: 'speaking' } : m;
+    });
+    _onDoneCallback = opts.onDone || null;
+
+    _show();
+    _showStep();
+
+    if (opts.autoDismiss) {
+      clearTimeout(_dismissTimer);
+      _dismissTimer = setTimeout(function() { dismiss(); }, opts.autoDismiss);
+    }
+  }
+
+  /**
+   * Advance to next dialogue or close if finished
+   */
+  function advance() {
+    if (_typing) {
+      _skipTyping();
+      return;
+    }
+    _queue.shift();
+    if (_queue.length > 0) {
+      _showStep();
+    } else {
+      const cb = _onDoneCallback;
+      _onDoneCallback = null;
+      _hide();
+      if (cb) setTimeout(cb, 350);
+    }
+  }
+
+  /**
+   * Ask an interactive mentoring question with choices
+   */
+  function ask(question, choices, opts) {
+    opts = opts || {};
+    _queue = [{ text: question, state: 'thinking' }];
+    _onDoneCallback = opts.onDone || null;
+
+    _show();
+    const refs = el();
+    _setState('thinking');
+    refs.continueBtn.classList.add('hidden');
+    refs.choices.classList.add('hidden');
+
+    _typeText(question, function() {
+      refs.choices.innerHTML = '';
+      refs.choices.classList.remove('hidden');
+      choices.forEach(function(choice, idx) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ryan-choice-btn';
+        btn.textContent = choice.label;
+        btn.setAttribute('data-choice-idx', idx);
+        btn.addEventListener('click', function() {
+          _handleChoice(btn, choice, choices);
+        });
+        refs.choices.appendChild(btn);
+      });
+    });
+  }
+
+  function _handleChoice(btn, choice, allChoices) {
+    const refs = el();
+    refs.choices.querySelectorAll('.ryan-choice-btn').forEach(function(b) {
+      b.disabled = true;
+      if (b !== btn) b.style.opacity = '0.45';
+    });
+
+    if (choice.correct) {
+      btn.classList.add('ryan-correct');
+      _setState('success');
+    } else {
+      btn.classList.add('ryan-wrong');
+      _setState('concerned');
+      setTimeout(function() {
+        const btns = refs.choices.querySelectorAll('.ryan-choice-btn');
+        allChoices.forEach(function(c, i) {
+          if (c.correct && btns[i]) btns[i].classList.add('ryan-correct');
+        });
+      }, 500);
+    }
+
+    if (choice.reply) {
+      setTimeout(function() {
+        refs.choices.classList.add('hidden');
+        refs.continueBtn.classList.remove('hidden');
+        refs.continueLabel.textContent = 'TAP / CLICK TO CONTINUE';
+        _queue = [{ text: choice.reply, state: choice.correct ? 'success' : 'concerned' }];
+        _showStep();
+      }, 800);
+    } else {
+      setTimeout(function() {
+        const cb = _onDoneCallback;
+        _onDoneCallback = null;
+        _hide();
+        if (cb) setTimeout(cb, 400);
+      }, 1200);
+    }
+  }
+
+  function dismiss() {
+    clearTimeout(_dismissTimer);
+    clearTimeout(_typeTimeout);
+    _typing = false;
+    _queue = [];
+    _onDoneCallback = null;
+    _hide();
+  }
+
+  function once(key, fn) {
+    if (_seen[key]) return;
+    _seen[key] = true;
+    fn();
+  }
+
+  return { speak, advance, ask, dismiss, once };
+})();
+
+
+/* ===========================================================
+   RYAN GUIDE - Dialogue Scripts (IT Support Mentorship)
+   Featuring Ryan's signature coaching phrases:
+   "Take a closer look." | "What stands out to you?" |
+   "Good observation." | "Don't rush. Verify first." |
+   "That's a good catch." | "Try checking the sender." |
+   "What would you do in a real workplace?"
+=========================================================== */
+
+const RYAN_DIALOGUES = {
+
+  // Welcome on initial desktop display
+  welcome: [
+    { text: "Hi! I'm Ryan, your IT Support Mentor. I'll be guiding you through your training and teaching you how to recognize common cyber threats.", state: 'speaking' },
+    { text: "Your mission today: investigate suspicious emails arriving in the company inbox. What would you do in a real workplace? Always verify before acting.", state: 'thinking' },
+    { text: "Open Gmail from the taskbar when you're ready. I'll be right here coaching you along the way.", state: 'speaking' }
+  ],
+
+  // First time opening Gmail
+  gmailOpen: [
+    { text: "Good observation opening the inbox first. This is where most attacks attempt to breach an organization.", state: 'speaking' },
+    { text: "Take a closer look at the emails waiting in your inbox. What stands out to you about them?", state: 'thinking' }
+  ],
+
+  // First time opening Detective Notes / Sticky Notes
+  stickyNoteOpen: [
+    { text: "Good observation checking your notes. Keep this open as your reference guide.", state: 'speaking' },
+    { text: "Look for fake sender domains, false urgency, and suspicious links. Don't rush. Verify first.", state: 'thinking' }
+  ],
+
+  // First email detail view
+  firstEmailRead: [
+    { text: "Take a closer look at this message. Try checking the sender first.", state: 'speaking' },
+    { text: "Does the sender's actual address match the company they claim to represent? What stands out to you?", state: 'thinking' },
+    { text: "When you spot something suspicious, click 'Flag Mode' to tag the evidence, then submit your report.", state: 'speaking' }
+  ],
+
+  // Player clicked an unverified or phishing link
+  linkClicked: [
+    { text: "Careful! You just clicked a link inside an unverified email.", state: 'concerned' },
+    { text: "In a real workplace, never click links before verifying them. What would you do if this were real malware?", state: 'speaking' },
+    { text: "Hover over links first to inspect the destination domain. Notice how attackers use deceptive lookalike URLs.", state: 'thinking' }
+  ],
+
+  // Player correctly identified and flagged phishing
+  correctPhishing: [
+    { text: "That's a good catch! You identified the phishing indicators and took the right action.", state: 'success' },
+    { text: "Fake sender domains and manufactured urgency are classic social engineering tactics. Excellent investigation.", state: 'speaking' }
+  ],
+
+  // Player missed phishing (marked as legitimate)
+  missedPhishing: [
+    { text: "Let's investigate that before making a final conclusion. That email actually had phishing indicators.", state: 'concerned' },
+    { text: "Notice the sender address and the urgent threat to suspend the account. Attackers create panic so users don't think.", state: 'speaking' },
+    { text: "Don't worry - this is what training is for. Try checking the sender even more closely on the next one.", state: 'thinking' }
+  ],
+
+  // Player marked a legitimate email as phishing (false positive)
+  falsePositive: [
+    { text: "Take a closer look - this was actually a legitimate internal message.", state: 'concerned' },
+    { text: "Not every urgent or administrative notice is malicious. Verify the domain and technical indicators first.", state: 'speaking' },
+    { text: "In IT Support, false alarms disrupt coworkers. You'll get sharper with each email.", state: 'thinking' }
+  ],
+
+  // Player correctly verified a legitimate email
+  correctLegit: [
+    { text: "Good observation. You verified the sender and didn't fall for a false alarm.", state: 'success' },
+    { text: "Knowing what IS safe is just as vital as catching threats in real IT support. Solid work.", state: 'speaking' }
+  ],
+
+  // All emails investigated
+  allEmailsDone: [
+    { text: "Great work today. You've completed your initial inbox investigation.", state: 'speaking' },
+    { text: "You didn't just learn what phishing is. You practiced how to recognize it.", state: 'success' },
+    { text: "Remember: Stop. Check. Verify. Report. Let's see your final report card!", state: 'thinking' }
+  ]
+};
+
+
+/* ===========================================================
+   RYAN GUIDE - Event Hooks & Integration
+=========================================================== */
+
+// Hook: openApp
+(function patchOpenApp() {
+  const _orig = window.openApp;
+  if (typeof _orig !== 'function') return;
+  window.openApp = function(appName) {
+    _orig.apply(this, arguments);
+    if (appName === 'gmail') {
+      RyanGuide.once('gmail-open', function() {
+        setTimeout(function() {
+          RyanGuide.speak(RYAN_DIALOGUES.gmailOpen);
+        }, 700);
+      });
+    }
+  };
+})();
+
+// Hook: toggleStickyNote
+(function patchStickyNote() {
+  const _orig = window.toggleStickyNote;
+  if (typeof _orig !== 'function') return;
+  window.toggleStickyNote = function() {
+    _orig.apply(this, arguments);
+    RyanGuide.once('sticky-open', function() {
+      setTimeout(function() {
+        RyanGuide.speak(RYAN_DIALOGUES.stickyNoteOpen);
+      }, 450);
+    });
+  };
+})();
+
+// Hook: renderEmailContent
+(function patchRenderEmailContent() {
+  const _orig = window.renderEmailContent;
+  if (typeof _orig !== 'function') return;
+  window.renderEmailContent = function(email) {
+    _orig.apply(this, arguments);
+    RyanGuide.once('first-email-read', function() {
+      setTimeout(function() {
+        RyanGuide.speak(RYAN_DIALOGUES.firstEmailRead);
+      }, 750);
+    });
+  };
+})();
+
+// Hook: handleEmailLinkClick
+(function patchEmailLinkClick() {
+  const _orig = window.handleEmailLinkClick;
+  if (typeof _orig !== 'function') return;
+  window.handleEmailLinkClick = function(event, el) {
+    _orig.apply(this, arguments);
+    RyanGuide.once('link-click-warn', function() {
+      setTimeout(function() {
+        RyanGuide.speak(RYAN_DIALOGUES.linkClicked);
+      }, 350);
+    });
+  };
+})();
+
+// Hook: showCapybaraResult
+(function patchCapybaraResult() {
+  const _orig = window.showCapybaraResult;
+  if (typeof _orig !== 'function') return;
+  window.showCapybaraResult = function(result, email) {
+    _orig.apply(this, arguments);
+    const isLast = (typeof gameState !== 'undefined' && typeof EMAILS !== 'undefined')
+                  ? gameState.emailResults.length >= EMAILS.length
+                  : false;
+    let lines;
+    if (isLast) {
+      lines = RYAN_DIALOGUES.allEmailsDone;
+    } else if (result.isPhishing && result.correctDecision) {
+      lines = RYAN_DIALOGUES.correctPhishing;
+    } else if (result.isPhishing && !result.correctDecision) {
+      lines = RYAN_DIALOGUES.missedPhishing;
+    } else if (!result.isPhishing && !result.correctDecision) {
+      lines = RYAN_DIALOGUES.falsePositive;
+    } else {
+      lines = RYAN_DIALOGUES.correctLegit;
+    }
+    setTimeout(function() {
+      RyanGuide.speak(lines);
+    }, 550);
+  };
+})();
+
+// Helper: Check if the desktop view has finished loading onto the screen
+function isDesktopViewFullyLoaded() {
+  const desktop = document.getElementById('desktop');
+  if (!desktop) return false;
+
+  // Desktop must have visibility 'visible', not 'hidden' or 'none'
+  const style = window.getComputedStyle ? window.getComputedStyle(desktop) : desktop.style;
+  if (style.visibility === 'hidden' || style.display === 'none') return false;
+  if (parseFloat(style.opacity || '1') <= 0.1) return false;
+
+  // Loading screen ("Just a moment..." spinning ring) must NOT be active
+  const ls = document.getElementById('overlay-loading-screen');
+  if (ls && (ls.classList.contains('ls-active') || ls.classList.contains('ls-leaving'))) return false;
+
+  // Shutdown screen must not be active
+  const sd = document.getElementById('overlay-shutdown-screen');
+  if (sd && (sd.classList.contains('sd-active') || sd.classList.contains('sd-leaving'))) return false;
+
+  // Full-screen overlays (title menu, lockscreen, comic strip, etc.) must not be active
+  const blockingOverlays = [
+    'overlay-title-menu',
+    'overlay-main-menu',
+    'overlay-comic-strip',
+    'overlay-loading',
+    'overlay-pre-assessment',
+    'overlay-game-intro',
+    'overlay-welcome'
+  ];
+  for (let i = 0; i < blockingOverlays.length; i++) {
+    const o = document.getElementById(blockingOverlays[i]);
+    if (o && o.classList.contains('active')) return false;
+  }
+
+  return true;
+}
+
+// Welcome trigger: ONLY fires in desktop view after loading to screen has finished
+(function initRyanWelcome() {
+  function tryTriggerWelcome() {
+    if (isDesktopViewFullyLoaded()) {
+      RyanGuide.once('welcome', function() {
+        setTimeout(function() {
+          if (isDesktopViewFullyLoaded()) {
+            RyanGuide.speak(RYAN_DIALOGUES.welcome);
+          }
+        }, 1400);
+      });
+      return true;
+    }
+    return false;
+  }
+
+  // Periodic check (every 400ms) until desktop view is ready
+  const pollInterval = setInterval(function() {
+    if (tryTriggerWelcome()) {
+      clearInterval(pollInterval);
+    }
+  }, 400);
+
+  // MutationObserver for instant trigger once desktop styles/classes switch to visible
+  const observer = new MutationObserver(function() {
+    if (tryTriggerWelcome()) {
+      clearInterval(pollInterval);
+      observer.disconnect();
+    }
+  });
+  observer.observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ['class', 'style'] });
+})();
+
+
+/* ===========================================================
+   ICON ATTENTION SYSTEM
+   Adds a simple glowing border to a desktop icon when Ryan
+   tells the player to open an app.
+   Usage:
+     IconAttention.show('gmail')   — glow the Email icon
+     IconAttention.hide('gmail')   — remove glow
+     IconAttention.hideAll()       — clear all
+=========================================================== */
+const IconAttention = (() => {
+  const idMap = { gmail: 'icon-gmail', browser: 'icon-browser', folder: 'icon-folder', antivirus: 'icon-antivirus', comms: 'icon-comms' };
+
+  function _getIcon(appName) {
+    return document.getElementById(idMap[appName] || ('icon-' + appName));
+  }
+
+  function show(appName) {
+    const icon = _getIcon(appName);
+    if (!icon) return;
+    icon.classList.remove('icon-attention', 'icon-attention-dismiss');
+    void icon.offsetWidth; // restart animation
+    icon.classList.add('icon-attention');
+  }
+
+  function hide(appName) {
+    const icon = _getIcon(appName);
+    if (!icon) return;
+    icon.classList.add('icon-attention-dismiss');
+    icon.classList.remove('icon-attention');
+    setTimeout(() => icon.classList.remove('icon-attention-dismiss'), 350);
+  }
+
+  function hideAll() {
+    document.querySelectorAll('.desktop-icon.icon-attention').forEach(el => {
+      el.classList.add('icon-attention-dismiss');
+      el.classList.remove('icon-attention');
+      setTimeout(() => el.classList.remove('icon-attention-dismiss'), 350);
+    });
+  }
+
+  return { show, hide, hideAll };
+})();
+
+
+/* ===========================================================
+   RYAN + ICON ATTENTION — wiring
+   When Ryan says "Open Gmail…" in his welcome sequence,
+   we highlight the Email icon. It clears the moment the
+   player actually opens Gmail.
+=========================================================== */
+(function wireIconAttentionToRyan() {
+
+  // Patch the welcome dialogue: after last slide show() the email icon
+  const _origSpeak = RyanGuide.speak;
+
+  // We intercept openApp('gmail') to auto-dismiss the hint
+  const _origOpen = window.openApp;
+  if (typeof _origOpen === 'function') {
+    window.openApp = function(appName) {
+      if (appName === 'gmail') {
+        IconAttention.hide('gmail');
+      }
+      return _origOpen.apply(this, arguments);
+    };
+  }
+
+  // Trigger attention effect when Ryan finishes the last welcome slide
+  // The welcome dialogue has 3 slides; the last one says "Open Gmail…"
+  // We hook into the welcome 'once' trigger that was already set up.
+  // To do this cleanly, we watch for when the welcome sequence finishes
+  // by observing when #ryan-continue-btn is shown AND the last welcome text is displayed.
+
+  function tryAttachWelcomeWatcher() {
+    const textEl = document.getElementById('ryan-dialogue-text');
+    const continueBtn = document.getElementById('ryan-continue-btn');
+    if (!textEl || !continueBtn) { setTimeout(tryAttachWelcomeWatcher, 500); return; }
+
+    const observer = new MutationObserver(() => {
+      const txt = textEl.textContent || '';
+      // Last slide of welcome dialogue contains "Open Gmail" or "Open Email"
+      if (
+        (txt.includes('Open Gmail') || txt.includes('Open Email') || txt.includes('when you\'re ready')) &&
+        !continueBtn.classList.contains('hidden')
+      ) {
+        // Slight delay so the user first reads Ryan, THEN sees the icon glow
+        setTimeout(() => { IconAttention.show('gmail'); }, 600);
+      } else if (txt.includes('investigating') || txt.includes('mission') || txt.includes('recognize')) {
+        // After welcome, stop hint (shouldn't be needed, but safety net)
+        // don't clear here — wait for gmailOpen
+      }
+    });
+
+    observer.observe(textEl, { childList: true, characterData: true, subtree: true });
+    observer.observe(continueBtn, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // Start watching once DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryAttachWelcomeWatcher);
+  } else {
+    tryAttachWelcomeWatcher();
+  }
+
+})();
