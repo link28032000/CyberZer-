@@ -11367,9 +11367,13 @@ function lockTerminalPaused() {
   if (pausedLockInterval) clearInterval(pausedLockInterval);
   pausedLockInterval = setInterval(updatePausedLockClock, 1000);
 
-  // Reveal paused lock screen
-  lockEl.classList.remove('slide-up');
+  // Reveal paused lock screen — force reflow so CSS transition fires cleanly
   lockEl.classList.remove('hidden');
+  lockEl.classList.remove('is-visible'); // reset in case it was previously visible
+  // eslint-disable-next-line no-unused-expressions
+  lockEl.offsetHeight; // force reflow — triggers CSS paint before transition starts
+  lockEl.classList.remove('slide-up');
+  lockEl.classList.add('is-visible'); // triggers .lock-paused-bg fade-in
 
   if (typeof AudioManager !== 'undefined') {
     AudioManager.playWindowSound(false);
@@ -11402,6 +11406,7 @@ function unlockPausedTerminal() {
   setTimeout(() => {
     lockEl.classList.add('hidden');
     lockEl.classList.remove('slide-up');
+    lockEl.classList.remove('is-visible'); // reset bg opacity for next show
   }, 420);
 }
 
