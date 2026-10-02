@@ -3347,6 +3347,10 @@ p { line-height: 1.6; }
   box-sizing: border-box;
 }
 
+.comic-stage.finished {
+  cursor: default;
+}
+
 /* ── COMIC STRIP CONTAINER: authentic comic book page layout ── */
 .comic-strip-container {
   display: flex;
@@ -7895,6 +7899,64 @@ p { line-height: 1.6; }
   margin-top: 10px;
   letter-spacing: 0.2px;
   user-select: none;
+}
+
+/* ── Windows 10 Error Box (Authentic desktop error dialog) ── */
+.ls-win10-error-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 320px;
+  margin-top: 2px;
+  animation: lsErrorShake 0.35s ease;
+}
+
+.ls-win10-error-box.hidden {
+  display: none !important;
+}
+
+@keyframes lsErrorShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.ls-win10-error-text {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-size: 14.5px;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.45;
+  margin-bottom: 16px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.1px;
+}
+
+.ls-win10-error-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  color: #ffffff;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 38px;
+  border-radius: 0;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ls-win10-error-btn:hover,
+.ls-win10-error-btn:focus {
+  background: rgba(255, 255, 255, 0.34);
+  border-color: #ffffff;
+}
+
+.ls-win10-error-btn:active {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.85);
 }
 
 /* ── Clock block (Hidden by default for identical visual match) ── */

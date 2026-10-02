@@ -2209,7 +2209,9 @@ function _comicKeyHandler(e) {
 
   if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
     e.preventDefault();
-    comicStripAdvance();
+    if (!comicState.isFinished) {
+      comicStripAdvance();
+    }
   } else if (e.key === 'Escape') {
     e.preventDefault();
     comicStripFinish();
@@ -2264,7 +2266,10 @@ function showComicStrip() {
 
   // Reset scroll position to top
   const stage = document.getElementById('comic-stage');
-  if (stage) stage.scrollTop = 0;
+  if (stage) {
+    stage.scrollTop = 0;
+    stage.classList.remove('finished');
+  }
 
   // Reveal the first panel automatically
   comicStripShowPanel(0);
@@ -2338,6 +2343,10 @@ function _showComicFinishButton() {
     finishWrap.style.opacity = '1';
     finishWrap.style.pointerEvents = 'auto';
   }
+  const stage = document.getElementById('comic-stage');
+  if (stage) {
+    stage.classList.add('finished');
+  }
   // Hide tap hint when finish button appears
   const hint = document.getElementById('comic-tap-hint');
   if (hint) hint.classList.remove('visible');
@@ -2345,9 +2354,8 @@ function _showComicFinishButton() {
 
 /** Advance to next panel on tap/click or finish if all panels are done */
 function comicStripAdvance(e) {
-  // If all panels are finished, any tap finishes and proceeds to workstation
+  // If all panels are finished, user must click the "Tap to continue" button directly
   if (comicState.isFinished) {
-    comicStripFinish();
     return;
   }
 
@@ -2371,6 +2379,9 @@ function comicStripFinish() {
     clearTimeout(comicState.autoTimer);
     comicState.autoTimer = null;
   }
+
+  const stage = document.getElementById('comic-stage');
+  if (stage) stage.classList.remove('finished');
 
   const overlay = document.getElementById('overlay-comic-strip');
   if (overlay) overlay.classList.remove('active');
@@ -2399,6 +2410,7 @@ function _proceedToAlexPassword() {
     tm.style.display = '';
     tm.classList.add('active');
   }
+  if (typeof lsDismissError === 'function') lsDismissError();
   setTimeout(() => {
     const inp = document.getElementById('ls-name-input');
     if (inp) {
@@ -9616,7 +9628,65 @@ function applyPlayerName(name) {
   gameState.playerName = name;
 }
 
+function lsShowError() {
+  const inputWrap = document.getElementById('ls-name-input-wrap');
+  const errorBox = document.getElementById('ls-win10-error-box');
+  const hint = document.getElementById('ls-signin-hint');
+  const errorBtn = document.getElementById('ls-win10-error-btn');
+
+  if (typeof AudioManager !== 'undefined' && AudioManager.playWrong) {
+    AudioManager.playWrong();
+  }
+
+  if (inputWrap) inputWrap.style.display = 'none';
+  if (hint) hint.style.display = 'none';
+  if (errorBox) {
+    errorBox.classList.remove('hidden');
+    errorBox.style.display = 'flex';
+  }
+  if (errorBtn) {
+    setTimeout(() => errorBtn.focus(), 60);
+  }
+
+  const handleErrKey = (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+      e.preventDefault();
+      window.removeEventListener('keydown', handleErrKey);
+      lsDismissError();
+    }
+  };
+  window.addEventListener('keydown', handleErrKey, { once: true });
+}
+
+function lsDismissError() {
+  const inputWrap = document.getElementById('ls-name-input-wrap');
+  const errorBox = document.getElementById('ls-win10-error-box');
+  const hint = document.getElementById('ls-signin-hint');
+  const pwdInput = document.getElementById('ls-name-input');
+
+  if (errorBox) {
+    errorBox.classList.add('hidden');
+    errorBox.style.display = 'none';
+  }
+  if (inputWrap) inputWrap.style.display = '';
+  if (hint) hint.style.display = '';
+
+  if (pwdInput) {
+    pwdInput.value = '';
+    pwdInput.focus();
+  }
+}
+
 function lsSignIn() {
+  const pwdInput = document.getElementById('ls-name-input');
+  const password = pwdInput ? pwdInput.value : '';
+
+  // User must enter any password — if empty, show Windows 10 error
+  if (!password || password.trim().length === 0) {
+    lsShowError();
+    return;
+  }
+
   // Name is always Alex — fixed protagonist identity
   const name = 'Alex';
 

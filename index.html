@@ -2164,8 +2164,14 @@
       </button>
     </div>
 
+    <!-- Windows 10 Error Dialog (shown when password is empty or incorrect) -->
+    <div class="ls-win10-error-box hidden" id="ls-win10-error-box">
+      <div class="ls-win10-error-text" id="ls-win10-error-text">The user name or password is incorrect. Try again.</div>
+      <button type="button" class="ls-win10-error-btn" id="ls-win10-error-btn" onclick="lsDismissError()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();lsDismissError();}">OK</button>
+    </div>
+
     <!-- Sign-in hint -->
-    <div class="ls-signin-hint">Enter any password to sign in</div>
+    <div class="ls-signin-hint" id="ls-signin-hint">Enter any password to sign in</div>
 
     <!-- Clock Block (bottom) -->
     <div class="ls-win10-clock-block">
