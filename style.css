@@ -9153,8 +9153,22 @@ p { line-height: 1.6; }
   box-shadow: 0 0 14px rgba(79, 195, 247, 0.3);
 }
 .start-search-icon {
-  font-size: 13px;
-  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.start-search-icon-img {
+  width: 15px;
+  height: 15px;
+  display: block;
+  transform: scaleX(-1);
+  filter: brightness(0) invert(1);
+}
+.start-search-box:focus-within .start-search-icon-img {
+  filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(79,195,247,0.7));
 }
 #start-search-input {
   background: transparent;
