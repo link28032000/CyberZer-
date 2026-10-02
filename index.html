@@ -847,15 +847,8 @@
           <div id="wifi-networks-settings-list" class="wifi-networks-settings-list">
             <!-- Rendered by JS -->
           </div>
-          <!-- Network Properties Panel (shown on inspect) -->
-          <div id="wifi-props-panel" class="wifi-props-panel hidden">
-            <!-- Rendered by JS -->
-          </div>
-          <!-- Narrator Tip -->
-          <div class="g4-narrator-tip hidden-init" id="wifi-narrator-tip">
-            <span class="g4-narrator-icon">🎙️</span>
-            <p>"Don't trust a network simply because its name looks familiar. Verify the network name with the establishment or another trusted source."</p>
-          </div>
+          <!-- Network Properties Panel (hidden) -->
+          <div id="wifi-props-panel" class="wifi-props-panel hidden"></div>
         </div>
 
         <!-- Bluetooth Tab -->
@@ -1457,6 +1450,7 @@
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">HomeNetwork_5G</div>
+          <div class="wifi-net-meta">Connected</div>
         </div>
         <button type="button" class="wifi-net-action-btn disconnect" id="btn-cybernet-action" onclick="event.stopPropagation(); toggleCybernetConnect()">Disconnect</button>
       </div>
@@ -1466,6 +1460,7 @@
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">PLDT-Home-5A3B</div>
+          <div class="wifi-net-meta"></div>
         </div>
         <button type="button" class="wifi-net-action-btn connect" onclick="event.stopPropagation(); connectToWifi('PLDT-Home-5A3B')">Connect</button>
       </div>
@@ -1474,6 +1469,7 @@
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">GLOBE_BROADBAND_2G</div>
+          <div class="wifi-net-meta"></div>
         </div>
         <button type="button" class="wifi-net-action-btn connect" onclick="event.stopPropagation(); connectToWifi('GLOBE_BROADBAND_2G')">Connect</button>
       </div>
@@ -1482,6 +1478,7 @@
         <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="wifi-icon-img"></div>
         <div class="wifi-net-details">
           <div class="wifi-net-name">Free Wifi</div>
+          <div class="wifi-net-meta"></div>
         </div>
         <button type="button" class="wifi-net-action-btn connect" onclick="event.stopPropagation(); connectToWifi('Free Wifi')">Connect</button>
       </div>

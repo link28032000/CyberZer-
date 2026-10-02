@@ -8109,63 +8109,55 @@ function startGroup4Mission() {
 
 function renderG4WiFiSettings() {
   const list = document.getElementById('wifi-networks-settings-list');
-  const narTip = document.getElementById('wifi-narrator-tip');
-  if (narTip) narTip.style.display = 'flex';
-
   if (!list) return;
 
-  // Always-visible base networks (same as the flyout panel)
-  const baseNetworks = `
-    <div class="wifi-net-item connected" id="ws-wifi-item-cybernet">
+  const isHomeConn = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === 'HomeNetwork_5G');
+
+  // Same available networks as taskbar panel: HomeNetwork_5G, PLDT-Home-5A3B, GLOBE_BROADBAND_2G, Free Wifi
+  const homeNetwork = `
+    <div class="wifi-net-item ${isHomeConn ? 'connected' : ''}" id="ws-wifi-item-cybernet" onclick="connectToWifi('HomeNetwork_5G')">
       <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
       <div class="wifi-net-details">
         <div class="wifi-net-name">HomeNetwork_5G</div>
-        <div class="wifi-net-meta">Connected, secured • 5.0 GHz • 1200 Mbps</div>
+        <div class="wifi-net-meta">${isHomeConn ? 'Connected' : ''}</div>
       </div>
-      <button class="wifi-net-action-btn disconnect" onclick="toggleCybernetConnect()">Disconnect</button>
-    </div>
-    <div class="wifi-net-item" onclick="showToast('🔒 HQ-CyberAcademy-Internal requires a Student Key to connect.','info')">
-      <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
-      <div class="wifi-net-details">
-        <div class="wifi-net-name">HQ-CyberAcademy-Internal</div>
-        <div class="wifi-net-meta">Secured (802.1X Student Key)</div>
-      </div>
-      <button class="wifi-net-action-btn connect" onclick="event.stopPropagation();showToast('🔒 Requires Student Key authentication.','info')">Connect</button>
-    </div>
-    <div class="wifi-net-item" onclick="showToast('🔬 Lab-Investigation-Mesh is a forensic sandbox network.','info')">
-      <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
-      <div class="wifi-net-details">
-        <div class="wifi-net-name">Lab-Investigation-Mesh</div>
-        <div class="wifi-net-meta">Secured • Isolated Forensic Sandbox</div>
-      </div>
-      <button class="wifi-net-action-btn connect" onclick="event.stopPropagation();showToast('🔬 Lab network — forensic use only.','info')">Connect</button>
-    </div>
-    <div class="wifi-net-item warning-net" onclick="warnPublicWifi()">
-      <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
-      <div class="wifi-net-details">
-        <div class="wifi-net-name">Free_Public_Unsecured</div>
-        <div class="wifi-net-meta" style="color:var(--accent-red,#f87171)">⚠️ Open • High Risk of Phishing / MITM!</div>
-      </div>
-      <button class="wifi-net-action-btn warn-btn" onclick="event.stopPropagation();warnPublicWifi()">Inspect</button>
+      <button class="wifi-net-action-btn ${isHomeConn ? 'disconnect' : 'connect'}" onclick="event.stopPropagation(); connectToWifi('HomeNetwork_5G')">${isHomeConn ? 'Disconnect' : 'Connect'}</button>
     </div>
   `;
 
-  // Scenario-specific networks (G4 mission networks) with inspect/connect
-  const scenarioNetworks = G4_WIFI_NETWORKS.map(net => `
-    <div class="wifi-net-item ${net.risk === 'high' ? 'warning-net' : ''} ${g4SelectedNetwork === net.id ? 'connected' : ''}" onclick="g4SelectNetwork('${net.id}')">
-      <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
-      <div class="wifi-net-details">
-        <div class="wifi-net-name">${net.name}</div>
-        <div class="wifi-net-meta" style="${net.risk === 'high' ? 'color:var(--accent-red,#f87171)' : ''}">${net.risk === 'high' ? '⚠️ ' : ''}${net.tag}</div>
-      </div>
-      <div style="display:flex;gap:6px;">
-        <button class="wifi-net-action-btn ${net.risk === 'high' ? 'warn-btn' : 'connect'}" onclick="event.stopPropagation(); g4InspectNetwork('${net.id}')">🔍 Inspect</button>
-        <button class="wifi-net-action-btn connect" onclick="event.stopPropagation(); g4ConnectNetwork('${net.id}')">Connect</button>
-      </div>
-    </div>
-  `).join('');
+  const otherNetworks = [
+    {
+      id: 'coffeeshop_secure',
+      name: 'PLDT-Home-5A3B',
+      risk: 'low'
+    },
+    {
+      id: 'sjshs_free',
+      name: 'GLOBE_BROADBAND_2G',
+      risk: 'high'
+    },
+    {
+      id: 'coffeeshop_guest',
+      name: 'Free Wifi',
+      risk: 'high'
+    }
+  ];
 
-  list.innerHTML = baseNetworks + scenarioNetworks;
+  const scenarioNetworks = otherNetworks.map(net => {
+    const isConn = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === net.name);
+    return `
+      <div class="wifi-net-item ${isConn ? 'connected' : ''} ${net.risk === 'high' ? 'warning-net' : ''}" onclick="connectToWifi('${net.name}')">
+        <div class="wifi-net-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" style="width:20px;height:20px;"></div>
+        <div class="wifi-net-details">
+          <div class="wifi-net-name">${net.name}</div>
+          <div class="wifi-net-meta">${isConn ? 'Connected' : ''}</div>
+        </div>
+        <button class="wifi-net-action-btn ${isConn ? 'disconnect' : 'connect'}" onclick="event.stopPropagation(); connectToWifi('${net.name}')">${isConn ? 'Disconnect' : 'Connect'}</button>
+      </div>
+    `;
+  }).join('');
+
+  list.innerHTML = homeNetwork + scenarioNetworks;
 }
 
 function g4SelectNetwork(netId) {
@@ -8215,6 +8207,8 @@ function g4ConnectNetwork(netId) {
   const net = G4_WIFI_NETWORKS.find(n => n.id === netId);
   if (!net) return;
   g4State.wifiChoice = netId;
+  networkSettings.currentSsid = net.name;
+  updateNetworkUI();
 
   const panel = document.getElementById('wifi-props-panel');
   if (panel) {
@@ -11019,6 +11013,7 @@ function updateFlyoutWifiList() {
     items.forEach(item => {
       const nameEl = item.querySelector('.wifi-net-name');
       const btn = item.querySelector('.wifi-net-action-btn');
+      const metaEl = item.querySelector('.wifi-net-meta');
       if (!nameEl || !btn) return;
       const name = nameEl.textContent.trim();
       const isCurrent = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === name);
@@ -11026,52 +11021,63 @@ function updateFlyoutWifiList() {
         item.classList.add('connected');
         btn.textContent = 'Disconnect';
         btn.className = 'wifi-net-action-btn disconnect';
+        if (metaEl) metaEl.textContent = 'Connected';
       } else {
         item.classList.remove('connected');
         btn.textContent = 'Connect';
         btn.className = 'wifi-net-action-btn connect';
+        if (metaEl) metaEl.textContent = '';
       }
     });
   }
 
-  // Also sync Stage 1 Settings window if it's open
-  const wsCyber = document.getElementById('ws-wifi-item-cybernet');
-  if (wsCyber) {
-    const wsBtn = wsCyber.querySelector('.wifi-net-action-btn');
-    const wsMeta = wsCyber.querySelector('.wifi-net-meta');
-    const isConn = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === 'HomeNetwork_5G' || networkSettings.currentSsid === 'CYBER-NET (WPA3-Enterprise)');
-    wsCyber.classList.toggle('connected', !!isConn);
-    if (wsBtn) {
-      wsBtn.textContent = isConn ? 'Disconnect' : 'Connect';
-      wsBtn.className = isConn ? 'wifi-net-action-btn disconnect' : 'wifi-net-action-btn connect';
-    }
-    if (wsMeta) {
-      wsMeta.textContent = isConn ? 'Connected, secured • 5.0 GHz • 1200 Mbps' : 'Saved, secured • 5.0 GHz • 1200 Mbps';
-    }
+  // Also sync Settings window if it's open
+  const settingsList = document.getElementById('wifi-networks-settings-list');
+  if (settingsList) {
+    const items = settingsList.querySelectorAll('.wifi-net-item');
+    items.forEach(item => {
+      const nameEl = item.querySelector('.wifi-net-name');
+      const btn = item.querySelector('.wifi-net-action-btn:last-child');
+      const metaEl = item.querySelector('.wifi-net-meta');
+      if (!nameEl || !btn) return;
+      const name = nameEl.textContent.trim();
+      const isCurrent = networkSettings.wifi && !networkSettings.airplane && (networkSettings.currentSsid === name);
+      if (isCurrent) {
+        item.classList.add('connected');
+        btn.textContent = 'Disconnect';
+        btn.className = 'wifi-net-action-btn disconnect';
+        if (metaEl) metaEl.textContent = 'Connected';
+      } else {
+        item.classList.remove('connected');
+        btn.textContent = 'Connect';
+        btn.className = 'wifi-net-action-btn connect';
+        if (metaEl) metaEl.textContent = '';
+      }
+    });
   }
 }
 
 function toggleCybernetConnect() {
-  if (networkSettings.currentSsid === 'HomeNetwork_5G' || networkSettings.currentSsid === 'CYBER-NET (WPA3-Enterprise)') {
-    networkSettings.currentSsid = null;
-  } else {
-    networkSettings.currentSsid = 'HomeNetwork_5G';
-  }
-  updateNetworkUI();
+  connectToWifi('HomeNetwork_5G');
 }
 
 function connectToWifi(ssid) {
   if (networkSettings.currentSsid === ssid) {
     networkSettings.currentSsid = null;
+    if (typeof g4State !== 'undefined') g4State.wifiChoice = null;
   } else {
     networkSettings.currentSsid = ssid;
+    if (typeof g4State !== 'undefined' && typeof G4_WIFI_NETWORKS !== 'undefined') {
+      const g4Net = G4_WIFI_NETWORKS.find(n => n.name === ssid);
+      if (g4Net) g4State.wifiChoice = g4Net.id;
+    }
   }
   updateNetworkUI();
 }
 
 function warnPublicWifi() {
   if (typeof AudioManager !== 'undefined') AudioManager.playAlert();
-  showToast('⚠️ SECURITY WARNING: Free_Public_Unsecured lacks encryption! Man-in-the-Middle (MITM) attacks can intercept passwords. Never connect without a VPN.', 'warning');
+  showToast('⚠️ SECURITY WARNING: "Free Wifi" lacks encryption! Man-in-the-Middle (MITM) attacks can intercept passwords. Never connect without a VPN.', 'warning');
 }
 
 function refreshWifiNetworks() {
