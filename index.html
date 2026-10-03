@@ -1291,9 +1291,9 @@
         </svg>
       </button>
       <div id="start-power-dropdown" class="power-dropdown hidden">
-        <button type="button" onclick="startMenuPower('restart')">🔄 Restart Mission</button>
+        <button type="button" onclick="startMenuPower('restart')">🔄 Restart (Mission)</button>
         <button type="button" onclick="startMenuPower('lock')">🔒 Lock (Paused)</button>
-        <button type="button" onclick="startMenuPower('shutdown')">⏻ Shutdown (Exit)</button>
+        <button type="button" onclick="startMenuPower('shutdown')">⏻ Shutdown (Save)</button>
       </div>
     </div>
   </div>
@@ -2990,39 +2990,7 @@
   </div>
 </div>
 
-<!-- ── CAPYBARA REVIEW ── -->
-<div id="overlay-review" class="overlay">
-  <div class="review-card">
-    <div class="review-header">
-      <div class="capy-avatar-large">🕵️</div>
-      <div>
-        <div class="review-badge" id="review-badge">INVESTIGATION COMPLETE</div>
-        <h2 id="review-verdict-title">✓ PHISHING CONFIRMED</h2>
-      </div>
-    </div>
 
-    <div id="review-decision-row" class="review-decision-row"></div>
-
-    <div id="review-flags-list" class="review-flags-list">
-      <!-- JS fills -->
-    </div>
-
-    <div id="review-missed" class="review-missed hidden">
-      <!-- JS fills -->
-    </div>
-
-    <div id="review-incorrect-flags" class="review-incorrect-flags hidden">
-      <!-- JS fills -->
-    </div>
-
-    <div class="review-score-row">
-      <span class="review-score-label">SCORE THIS EMAIL</span>
-      <span id="review-score-value" class="review-score-value">+0</span>
-    </div>
-
-    <button type="button" class="btn-primary review-next-btn" id="btn-next-email" onclick="nextEmail()">NEXT EMAIL →</button>
-  </div>
-</div>
 
 <!-- ── FINAL RESULTS ── -->
 <div id="overlay-results" class="overlay">
