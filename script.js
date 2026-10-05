@@ -1312,6 +1312,7 @@ const CATEGORIES = [
       app: '📧 Email & 🌐 Browser',
       objective: '3 Incidents Resolved'
     },
+    character: { name: 'Alex', img: 'assets/Character/Alex.png' },
     unlocked: true,
     completed: false,
     score: 0,
@@ -1331,7 +1332,8 @@ const CATEGORIES = [
       app: '📱 Messages & 🌐 Browser',
       objective: '3 Threats Neutralized'
     },
-    unlocked: false,
+    character: { name: 'Ethan', img: 'assets/Character/Ethan.png' },
+    unlocked: true,
     completed: false,
     score: 0,
     rank: null
@@ -1350,7 +1352,8 @@ const CATEGORIES = [
       app: '📂 Files & 🛡️ Anti-Virus',
       objective: '3 Systems Secured'
     },
-    unlocked: false,
+    character: { name: 'Mia', img: 'assets/Character/Mia.png' },
+    unlocked: true,
     completed: false,
     score: 0,
     rank: null
@@ -1369,12 +1372,38 @@ const CATEGORIES = [
       app: '🔒 Security Console',
       objective: 'Final Report Submitted'
     },
-    unlocked: false,
+    character: { name: 'Ryan', img: 'assets/Character/Ryan.png' },
+    unlocked: true,
     completed: false,
     score: 0,
     rank: null
   }
 ];
+
+/**
+ * Update the login/password screen avatar and username
+ * to match the character for the selected chapter.
+ */
+function updateLoginScreenForChapter(categoryId) {
+  const cat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.id === categoryId));
+  const char = (cat && cat.character) ? cat.character : { name: 'Alex', img: 'assets/Character/Alex.png' };
+
+  const avatarImg = document.querySelector('#ls-user-avatar .ls-user-avatar-img');
+  if (avatarImg) {
+    avatarImg.src = char.img;
+    avatarImg.alt = char.name;
+  }
+
+  const usernameEl = document.getElementById('ls-win10-username-display');
+  if (usernameEl) usernameEl.textContent = char.name;
+
+  // Also keep the start-menu avatar in sync
+  const startAvatar = document.querySelector('.start-avatar-img');
+  if (startAvatar) {
+    startAvatar.src = char.img;
+    startAvatar.alt = char.name;
+  }
+}
 
 let activeCategoryStory = 'phishing';
 
@@ -11881,6 +11910,45 @@ function storySelectBack() {
   }, 460);
 }
 
+/** Enter Password screen — BACK button: return to Story Selection */
+function lsGoBack() {
+  if (typeof AudioManager !== 'undefined') {
+    try { AudioManager.playClick(); } catch(e) {}
+  }
+
+  const tm = document.getElementById('overlay-title-menu');
+  const ss = document.getElementById('overlay-story-select');
+
+  // Clear password input and hide error
+  const inp = document.getElementById('ls-name-input');
+  if (inp) inp.value = '';
+  const errBox = document.getElementById('ls-win10-error-box');
+  if (errBox) errBox.classList.add('hidden');
+
+  // Fade out the login screen
+  if (tm) {
+    tm.style.transition = 'opacity 0.35s ease';
+    tm.style.opacity = '0';
+  }
+
+  setTimeout(() => {
+    if (tm) {
+      tm.style.transition = '';
+      tm.style.opacity = '';
+      tm.classList.remove('active');
+      tm.style.display = 'none';
+    }
+
+    // Reopen Story Selection
+    if (ss) {
+      ss.style.display = 'flex';
+      void ss.offsetWidth;
+      ss.classList.add('active');
+      refreshStorySelectLocks();
+    }
+  }, 360);
+}
+
 /**
  * Story Selection — Select a chapter card with corner targeting borders & effects
  */
@@ -12002,6 +12070,7 @@ function storySelectPlay(categoryId) {
             // Show comic strip first BEFORE Alex enters password!
             showComicStrip();
           } else {
+            updateLoginScreenForChapter(categoryId);
             const tm = document.getElementById('overlay-title-menu');
             if (tm) { tm.style.display = ''; tm.classList.add('active'); }
             setTimeout(() => {
@@ -12017,6 +12086,7 @@ function storySelectPlay(categoryId) {
       if (categoryId === 'phishing') {
         showComicStrip();
       } else {
+        updateLoginScreenForChapter(categoryId);
         const tm = document.getElementById('overlay-title-menu');
         if (tm) { tm.style.display = ''; tm.classList.add('active'); }
         setTimeout(() => {

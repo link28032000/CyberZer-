@@ -124,9 +124,9 @@
         <!-- Email Detail View (Inbox investigation emails) -->
         <div id="email-detail-view" class="gmail-view">
           <div class="gmail-toolbar">
-            <button type="button" class="back-btn" onclick="returnToInbox()">← Back to Inbox</button>
-            <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Evidence</button>
-            <button type="button" id="report-btn" class="report-btn" onclick="showReportDialog()">📋 Report</button>
+            <button type="button" class="back-btn" onclick="returnToInbox()">← Back</button>
+            <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Mode</button>
+            <button type="button" id="report-btn" class="report-btn" onclick="showReportDialog()">Report as Phishing</button>
           </div>
 
           <div id="email-content" class="email-content">
@@ -2033,87 +2033,72 @@
       </div>
 
       <!-- Chapter 2 — Locked -->
-      <div class="ss-card ss-card-locked" id="ss-card-2" onclick="selectStoryCard(this,null,2)">
+      <div class="ss-card ss-card-unlocked" id="ss-card-2" onclick="selectStoryCard(this,'malware',2)">
         <div class="ss-card-frame">
           <div class="ss-corner ss-corner-tl"></div>
           <div class="ss-corner ss-corner-tr"></div>
           <div class="ss-corner ss-corner-bl"></div>
           <div class="ss-corner ss-corner-br"></div>
           <div class="ss-scan-line"></div>
-          <div class="ss-card-thumb ss-thumb-locked">
-            <div class="ss-lock-overlay">
-              <svg class="ss-lock-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="#1a4fa0" stroke="#4ea8ff" stroke-width="2.5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#4ea8ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="32" r="3" fill="#4ea8ff"/></svg>
-            </div>
+          <div class="ss-card-thumb">
+            <img src="assets/Story Selection/Chapter2.png" alt="Chapter 2 scene" class="ss-thumb-img">
+            <div class="ss-card-glow"></div>
           </div>
           <div class="ss-card-footer">
             <div class="ss-chapter-label">CHAPTER 2</div>
             <div class="ss-chapter-title">THE DIGITAL TRAP</div>
-            <div class="ss-lock-label">
-              <svg width="13" height="13" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="none" stroke="#8ab4d8" stroke-width="3"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#8ab4d8" stroke-width="3" stroke-linecap="round"/></svg>
-              LOCKED
-            </div>
             <div class="ss-card-dots">
-              <span class="ss-dot"></span>
-              <span class="ss-dot"></span>
+              <span class="ss-dot ss-dot-active"></span>
+              <span class="ss-dot ss-dot-active"></span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Chapter 3 — Locked -->
-      <div class="ss-card ss-card-locked" id="ss-card-3" onclick="selectStoryCard(this,null,3)">
+      <div class="ss-card ss-card-unlocked" id="ss-card-3" onclick="selectStoryCard(this,'social_engineering',3)">
         <div class="ss-card-frame">
           <div class="ss-corner ss-corner-tl"></div>
           <div class="ss-corner ss-corner-tr"></div>
           <div class="ss-corner ss-corner-bl"></div>
           <div class="ss-corner ss-corner-br"></div>
           <div class="ss-scan-line"></div>
-          <div class="ss-card-thumb ss-thumb-locked">
-            <div class="ss-lock-overlay">
-              <svg class="ss-lock-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="#1a4fa0" stroke="#4ea8ff" stroke-width="2.5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#4ea8ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="32" r="3" fill="#4ea8ff"/></svg>
-            </div>
+          <div class="ss-card-thumb">
+            <img src="assets/Story Selection/Chapter3.png" alt="Chapter 3 scene" class="ss-thumb-img">
+            <div class="ss-card-glow"></div>
           </div>
           <div class="ss-card-footer">
             <div class="ss-chapter-label">CHAPTER 3</div>
             <div class="ss-chapter-title">THE SYSTEM COLLAPSE</div>
-            <div class="ss-lock-label">
-              <svg width="13" height="13" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="none" stroke="#8ab4d8" stroke-width="3"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#8ab4d8" stroke-width="3" stroke-linecap="round"/></svg>
-              LOCKED
-            </div>
             <div class="ss-card-dots">
-              <span class="ss-dot"></span>
-              <span class="ss-dot"></span>
-              <span class="ss-dot"></span>
+              <span class="ss-dot ss-dot-active"></span>
+              <span class="ss-dot ss-dot-active"></span>
+              <span class="ss-dot ss-dot-active"></span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Chapter 4 — Locked -->
-      <div class="ss-card ss-card-locked" id="ss-card-4" onclick="selectStoryCard(this,null,4)">
+      <div class="ss-card ss-card-unlocked" id="ss-card-4" onclick="selectStoryCard(this,'ransomware',4)">
         <div class="ss-card-frame">
           <div class="ss-corner ss-corner-tl"></div>
           <div class="ss-corner ss-corner-tr"></div>
           <div class="ss-corner ss-corner-bl"></div>
           <div class="ss-corner ss-corner-br"></div>
           <div class="ss-scan-line"></div>
-          <div class="ss-card-thumb ss-thumb-locked">
-            <div class="ss-lock-overlay">
-              <svg class="ss-lock-icon" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="#1a4fa0" stroke="#4ea8ff" stroke-width="2.5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#4ea8ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="32" r="3" fill="#4ea8ff"/></svg>
-            </div>
+          <div class="ss-card-thumb">
+            <img src="assets/Story Selection/Chapter4.png" alt="Chapter 4 scene" class="ss-thumb-img">
+            <div class="ss-card-glow"></div>
           </div>
           <div class="ss-card-footer">
             <div class="ss-chapter-label">CHAPTER 4</div>
             <div class="ss-chapter-title">THE LAST LOGIN</div>
-            <div class="ss-lock-label">
-              <svg width="13" height="13" viewBox="0 0 48 48" fill="none"><rect x="10" y="22" width="28" height="20" rx="4" fill="none" stroke="#8ab4d8" stroke-width="3"/><path d="M16 22v-6a8 8 0 0 1 16 0v6" stroke="#8ab4d8" stroke-width="3" stroke-linecap="round"/></svg>
-              LOCKED
-            </div>
             <div class="ss-card-dots">
-              <span class="ss-dot"></span>
-              <span class="ss-dot"></span>
-              <span class="ss-dot"></span>
-              <span class="ss-dot"></span>
+              <span class="ss-dot ss-dot-active"></span>
+              <span class="ss-dot ss-dot-active"></span>
+              <span class="ss-dot ss-dot-active"></span>
+              <span class="ss-dot ss-dot-active"></span>
             </div>
           </div>
         </div>
@@ -2136,6 +2121,12 @@
 <div id="overlay-title-menu" class="overlay">
   <!-- Windows 10 Background Wallpaper -->
   <div class="ls-win10-bg"></div>
+
+  <!-- Back button (top-left) — same style as Story Selection -->
+  <button class="ss-back-btn" id="ls-back-btn" onclick="lsGoBack()" aria-label="Back to story selection">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    BACK
+  </button>
 
   <!-- Login Panel (left-center aligned like Windows 10) -->
   <div class="ls-center-panel">
