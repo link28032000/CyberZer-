@@ -225,7 +225,7 @@ const FAKE_SITES = {
     <div class="fakesite fakesite-bpi">
       <div class="phish-sim-banner">
         <span class="phish-banner-icon">🚨</span>
-        <span class="phish-banner-text"><strong>PHISHING SIMULATION EXAMPLE:</strong> Look at the browser URL bar: <code>bpi-online-security.com</code> is a fake phishing website, NOT the authentic <code>bpi.com.ph</code>!</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>bpi-online-security.com</code> is a fake phishing website, NOT the authentic <code>bpi.com.ph</code>!</span>
       </div>
       <div class="fakesite-header" style="background:linear-gradient(90deg, #8a0011, #b3001b);">
         <div class="fakesite-header-inner">
@@ -275,7 +275,7 @@ const FAKE_SITES = {
     <div class="fakesite fakesite-paypal">
       <div class="phish-sim-banner">
         <span class="phish-banner-icon">🚨</span>
-        <span class="phish-banner-text"><strong>PHISHING SIMULATION EXAMPLE:</strong> Look at the browser URL bar: <code>paypal-account-check.com</code> is a fake clone! Real PayPal is <code>paypal.com</code>.</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>paypal-account-check.com</code> is a fake clone! Real PayPal is <code>paypal.com</code>.</span>
       </div>
       <div class="fakesite-header" style="background:#ffffff;border-bottom:1px solid #e2e8f0;">
         <div class="fakesite-header-inner">
@@ -326,7 +326,7 @@ const FAKE_SITES = {
     <div class="fakesite fakesite-gcash">
       <div class="phish-sim-banner">
         <span class="phish-banner-icon">🚨</span>
-        <span class="phish-banner-text"><strong>PHISHING SIMULATION EXAMPLE:</strong> Look at the browser URL bar: <code>gcash-claim-rewards.com</code> is an MPIN harvesting scam! Authentic GCash is <code>gcash.com</code>.</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>gcash-claim-rewards.com</code> is an MPIN harvesting scam! Authentic GCash is <code>gcash.com</code>.</span>
       </div>
       <div class="fakesite-header" style="background:linear-gradient(90deg,#005cfc,#007dfc);">
         <div class="fakesite-header-inner">
@@ -3416,7 +3416,7 @@ function openSentOrTrashEmail(id, folder) {
   document.getElementById('sent-detail-view').classList.add('active');
 
   const backBtn = document.getElementById('sent-detail-back-btn');
-  backBtn.textContent = folder === 'trash' ? '← Back to Trash' : '← Back to Sent';
+  backBtn.textContent = folder === 'trash' ? '← Back' : '← Back';
 
   const content = document.getElementById('sent-detail-content');
   content.innerHTML = '';
@@ -3459,7 +3459,7 @@ function openSentOrTrashEmail(id, folder) {
     actionBtn.className = 'report-btn sent-detail-action-btn-delete';
     actionBtn.onclick = () => { deleteSentEmail(email.id); closeSentDetailView(); };
   } else {
-    actionBtn.textContent = '↩ Restore to Sent';
+    actionBtn.textContent = '↩ Restore';
     actionBtn.setAttribute('aria-label', 'Restore email to Sent');
     actionBtn.className = 'report-btn sent-detail-action-btn-restore';
     actionBtn.onclick = () => { restoreSentEmail(email.id); closeSentDetailView(); };
