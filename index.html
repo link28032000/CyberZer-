@@ -27,9 +27,9 @@
   <div class="desktop-icons">
     <!-- Column 1: Main / Unlocked Apps -->
     <div class="desktop-icons-col">
-      <div class="desktop-icon" id="icon-gmail" onclick="openApp('gmail')" title="Email — Phishing Investigation">
-        <div class="icon-img"><img src="assets/icons/apps/mail.svg" alt="Email"></div>
-        <span>Email</span>
+      <div class="desktop-icon" id="icon-gmail" onclick="openApp('gmail')" title="Zmail — Phishing Investigation">
+        <div class="icon-img"><img src="assets/icons/apps/mail.svg" alt="Zmail"></div>
+        <span>Zmail</span>
       </div>
       <div class="desktop-icon" id="icon-browser" onclick="openApp('browser')" title="Browser — Cyber-Net Web Search">
         <div class="icon-img"><img src="assets/icons/apps/browser.svg" alt="Browser"></div>
@@ -87,7 +87,7 @@
     <div class="win-titlebar" id="titlebar-gmail">
       <div class="win-title">
         <span class="win-icon">📧</span>
-        <span>Email</span>
+        <span>Zmail</span>
       </div>
       <div class="win-controls">
         <button type="button" class="win-btn win-minimize" onclick="minimizeApp('gmail')" title="Minimize">─</button>
@@ -99,7 +99,7 @@
       <!-- Email Sidebar -->
       <div class="gmail-sidebar">
         <div class="gmail-logo">
-          <span class="gmail-logo-g">E</span><span class="gmail-logo-mail">mail</span>
+          <span class="gmail-logo-g">Z</span><span class="gmail-logo-mail">mail</span>
         </div>
         <button type="button" class="gmail-compose-btn" disabled>✏ Compose</button>
         <div class="gmail-nav">
@@ -1049,54 +1049,6 @@
     </div>
   </div>
 
-  <!-- ── RANSOMWARE INCIDENT CONSOLE WINDOW (JONALD) ── -->
-  <div id="win-ransomware" class="app-window hidden" data-app="ransomware">
-    <div class="win-titlebar" id="titlebar-ransomware">
-      <div class="win-title">
-        <span class="win-icon">🔒</span>
-        <span>Incident Console — Chapter 4: Ransomware Response &amp; Vault Recovery</span>
-      </div>
-      <div class="win-controls">
-        <button type="button" class="win-btn win-minimize" onclick="minimizeApp('ransomware')" title="Minimize">─</button>
-        <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('ransomware')" title="Maximize">□</button>
-        <button type="button" class="win-btn win-close" onclick="closeApp('ransomware')" title="Close">✕</button>
-      </div>
-    </div>
-    <div class="win-body ransomware-body">
-      <!-- Top Alert Banner -->
-      <div class="rw-banner" id="rw-banner">
-        <div class="rw-banner-icon">🚨</div>
-        <div class="rw-banner-info">
-          <div class="rw-banner-title">CRITICAL INCIDENT: RANSOMWARE EXTORTION DETECTED</div>
-          <div class="rw-banner-sub">The school network storage vault is under attack! Isolate infected storage nodes, kill active payload droppers, and restore immutable backups.</div>
-        </div>
-        <div class="rw-health-gauge">
-          <div class="rw-gauge-title">VAULT RECOVERY</div>
-          <div class="rw-gauge-val" id="rw-health-pct">0%</div>
-        </div>
-      </div>
-
-      <!-- Main Section: 4 Storage Nodes + Real-time Terminal -->
-      <div class="rw-grid-wrap">
-        <div class="rw-nodes-container">
-          <div class="rw-section-title">PROJECT STORAGE NODES &amp; SERVERS</div>
-          <div class="rw-nodes-grid" id="rw-nodes-grid">
-            <!-- Rendered dynamically by script.js -->
-          </div>
-        </div>
-
-        <div class="rw-terminal-panel">
-          <div class="rw-term-header">
-            <span>📟 Live Incident Response Console Log</span>
-            <span class="rw-term-pulse">● CONNECTED</span>
-          </div>
-          <div class="rw-term-logs" id="rw-term-logs">
-            <!-- Log entries rendered dynamically by script.js -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- ══════════════════════════════════════════════════════
        TASKBAR
@@ -1134,8 +1086,8 @@
     </div>
 
     <div class="taskbar-apps">
-      <button type="button" class="taskbar-app-btn icon-only" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Email">
-        <span><img src="assets/icons/apps/mail.svg" alt="Email" class="taskbar-icon-img-lg"></span>
+      <button type="button" class="taskbar-app-btn icon-only" id="taskbar-gmail" onclick="taskbarClick('gmail')" title="Zmail">
+        <span><img src="assets/icons/apps/mail.svg" alt="Zmail" class="taskbar-icon-img-lg"></span>
       </button>
       <button type="button" class="taskbar-app-btn icon-only" id="taskbar-browser" onclick="taskbarClick('browser')" title="Browser">
         <span><img src="assets/icons/apps/browser.svg" alt="Browser" class="taskbar-icon-img-lg"></span>
@@ -1202,9 +1154,9 @@
 
     <!-- Clean Tile Grid -->
     <div class="start-apps-grid" id="start-apps-grid">
-      <div class="start-app-tile" onclick="startMenuOpenApp('gmail')" id="start-app-gmail" title="Open Email">
-        <div class="start-tile-icon"><img src="assets/icons/apps/mail.svg" alt="Email" class="start-tile-img"></div>
-        <div class="start-tile-name">Email</div>
+      <div class="start-app-tile" onclick="startMenuOpenApp('gmail')" id="start-app-gmail" title="Open Zmail">
+        <div class="start-tile-icon"><img src="assets/icons/apps/mail.svg" alt="Zmail" class="start-tile-img"></div>
+        <div class="start-tile-name">Zmail</div>
       </div>
 
       <div class="start-app-tile" onclick="startMenuOpenApp('browser')" id="start-app-browser" title="Open Browser">
@@ -1239,10 +1191,10 @@
       <span class="start-all-apps-label">Available Apps</span>
     </div>
     <div class="start-recommended-list" id="start-recommended-list">
-      <div class="start-recommended-item" onclick="startMenuOpenApp('gmail')" title="Open Email">
-        <div class="rec-file-icon"><img src="assets/icons/apps/mail.svg" alt="Email" class="rec-icon-img"></div>
+      <div class="start-recommended-item" onclick="startMenuOpenApp('gmail')" title="Open Zmail">
+        <div class="rec-file-icon"><img src="assets/icons/apps/mail.svg" alt="Zmail" class="rec-icon-img"></div>
         <div class="rec-file-info">
-          <div class="rec-file-name">Email</div>
+          <div class="rec-file-name">Zmail</div>
         </div>
       </div>
       <div class="start-recommended-item" onclick="startMenuOpenApp('browser')" title="Open Browser">
@@ -1533,7 +1485,7 @@
           <div class="notif-card-icon notif-icon-mail">📧</div>
           <div class="notif-card-content">
             <div class="notif-card-top">
-              <span class="notif-card-source">Email Client</span>
+              <span class="notif-card-source">Zmail</span>
               <span class="notif-card-time">12m ago</span>
             </div>
             <div class="notif-card-title">Student Support Request — Phishing Alert</div>
@@ -2604,7 +2556,7 @@
       <div class="gdemo-win-header">
         <div class="gdemo-win-title">
           <span class="win-icon">📧</span>
-          <span>Email — Phishing Investigation Tutorial</span>
+          <span>Zmail — Phishing Investigation Tutorial</span>
         </div>
         <span class="gdemo-phase-badge">EMAIL DEMO</span>
       </div>

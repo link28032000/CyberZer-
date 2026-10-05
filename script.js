@@ -1352,7 +1352,7 @@ const CATEGORIES = [
       app: '📂 Files & 🛡️ Anti-Virus',
       objective: '3 Systems Secured'
     },
-    character: { name: 'Mia', img: 'assets/Character/Mia.png' },
+    character: { name: 'Pia', img: 'assets/Character/Pia.png' },
     unlocked: true,
     completed: false,
     score: 0,
@@ -2065,12 +2065,8 @@ function vnFinish() {
   } else if (activeCategoryStory === 'phishing') {
     // Show the Chapter 1 comic strip before starting the mission
     showComicStrip();
-  } else if (activeCategoryStory === 'malware') {
-    startMalwareDemo();
-  } else if (activeCategoryStory === 'social_engineering') {
-    startGroup4Mission();
-  } else if (activeCategoryStory === 'ransomware') {
-    startRansomwareMission();
+  } else if (activeCategoryStory === 'malware' || activeCategoryStory === 'social_engineering' || activeCategoryStory === 'ransomware') {
+    openChapterDesktopDirect(activeCategoryStory);
   } else if (activeCategoryStory === 'grand_finale') {
     showGrandCertificate();
   } else {
@@ -3024,6 +3020,56 @@ function startMission(openGmail = false) {
     updateStickyNoteForPhase('phishing');
     setTimeout(showStickyNote, 700);
   }
+}
+
+/**
+ * Opens a clean desktop view for Chapter 2, Chapter 3, or Chapter 4 with NO mission.
+ * Ensures no mission popups, no demo overlays, and Ryan mentor guide is disabled (only Chapter 1 has Ryan).
+ */
+function openChapterDesktopDirect(chapterId) {
+  closeCategoryHub();
+  hideAllOverlays();
+  if (typeof RyanGuide !== 'undefined' && RyanGuide.dismiss) {
+    RyanGuide.dismiss();
+  }
+
+  // Set phase and desktop background
+  gameState.phase = chapterId;
+  updateDesktopBackgroundForPhase(chapterId);
+
+  // Close all app windows to ensure completely clean desktop view
+  ['gmail', 'browser', 'folder', 'antivirus', 'comms', 'ransomware', 'wifi-settings', 'docviewer', 'imageviewer', 'videoplayer', 'taskmanager', 'scanner'].forEach(a => {
+    if (typeof appState !== 'undefined' && appState[a]) {
+      appState[a].open = false;
+      appState[a].minimized = false;
+      appState[a].maximized = false;
+      appState[a].hasBeenPositioned = false;
+    }
+    const w = document.getElementById(`win-${a}`);
+    if (w) {
+      w.classList.add('hidden');
+      w.classList.remove('maximized', 'focused', 'minimized');
+      w.style.left = '';
+      w.style.top = '';
+    }
+  });
+
+  if (typeof updateTaskbar === 'function') updateTaskbar();
+  closeStickyNote();
+
+  // Make desktop visible cleanly
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.visibility = 'visible';
+    desktop.style.opacity = '1';
+  }
+
+  // HUD
+  const hudEl = document.getElementById('hud');
+  if (hudEl) hudEl.classList.remove('hidden');
+
+  // Keep Chapter profile in sync
+  updateLoginScreenForChapter(chapterId);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6083,19 +6129,19 @@ const EXPLORER_ADDITIONAL_FILES = {
   desktop: [
     {
       id: 'desk_app_gmail',
-      name: 'Email',
+      name: 'Zmail',
       fakeExt: 'lnk',
       realExt: 'lnk',
       type: 'Application Shortcut',
       size: '2 KB',
       date: '9/6/2026 08:00 AM',
-      icon: '<img src="assets/icons/apps/mail.svg" alt="Email" />',
+      icon: '<img src="assets/icons/apps/mail.svg" alt="Zmail" />',
       appId: 'gmail',
       isMalware: false,
       threatName: 'Application',
       threatCategory: 'SAFE',
       hash: 'EMAIL-APP-SHORTCUT-CYBERZERO',
-      analysis: 'System shortcut for Email (Phishing Investigation Suite).',
+      analysis: 'System shortcut for Zmail (Phishing Investigation Suite).',
       quarantined: false,
       scanned: true
     },
@@ -8301,9 +8347,9 @@ function g4ProceedToStage3() {
     renderPhoneLinkApp();
     const win = document.getElementById('win-comms');
     if (win) { win.style.left = '90px'; win.style.top = '50px'; win.style.width = '720px'; win.style.height = '500px'; }
-    // Show Mia chat notification
+    // Show Pia chat notification
     setTimeout(() => {
-      showToast('📱 New message from "Mia — New Account". Open Phone Link to investigate.', 'warning');
+      showToast('📱 New message from "Pia — New Account". Open Phone Link to investigate.', 'warning');
       const badge = document.getElementById('pl-notif-badge');
       if (badge) badge.classList.remove('hidden');
     }, 600);
@@ -8313,30 +8359,30 @@ function g4ProceedToStage3() {
 // ── PHONELINK APP ─────────────────────────────────────────────
 
 const G4_CONTACTS = [
-  { id: 'mia_fake', name: 'Mia — New Account', avatar: '👤', joined: 'Today', type: 'suspicious', isGroup4: true },
+  { id: 'pia_fake', name: 'Pia — New Account', avatar: '👤', joined: 'Today', type: 'suspicious', isGroup4: true },
   { id: 'carlo', name: 'Carlo', avatar: '👦', joined: '2 years ago', type: 'known', isGroup4: true },
   { id: 'group4', name: 'Group 4 Chat', avatar: '👥', joined: '1 year ago', type: 'group', isGroup4: true },
-  { id: 'real_mia', name: 'Mia (Verified)', avatar: '👧', joined: '1 year ago', type: 'known', isGroup4: true }
+  { id: 'real_pia', name: 'Pia (Verified)', avatar: '👧', joined: '1 year ago', type: 'known', isGroup4: true }
 ];
 
 const G4_MESSAGES = {
-  mia_fake: [
+  pia_fake: [
     { from: 'them', text: 'Hey, can you send me your student number and birthday? I need them to recover our project account. Please hurry.', time: '2:47 PM', urgent: true }
   ],
   carlo: [
     { from: 'them', text: 'I found a free premium design tool. Download this so we can finish the presentation faster.', time: '3:05 PM', link: 'canva-premium-free.example' }
   ],
   group4: [
-    { from: 'them', sender: 'Mia', text: "That's not me. Don't send anything.", time: '2:49 PM', verified: true },
+    { from: 'them', sender: 'Pia', text: "That's not me. Don't send anything.", time: '2:49 PM', verified: true },
     { from: 'them', sender: 'Carlo', text: 'What happened? Is everything ok?', time: '2:50 PM' }
   ],
-  real_mia: [
+  real_pia: [
     { from: 'them', text: "Hey! Did someone contact you pretending to be me? That account isn't mine.", time: '2:48 PM', verified: true }
   ]
 };
 
 let g4ActiveConvo = null;
-let g4MiaInspected = false;
+let g4PiaInspected = false;
 let g4GroupChecked = false;
 
 function renderPhoneLinkApp() {
@@ -8384,10 +8430,10 @@ function renderPhoneMessages(container) {
   if (badge) badge.textContent = unreadCount > 0 ? unreadCount : '';
 
   const convos = [
-    { id: 'mia_fake', name: 'Mia — New Account', preview: 'Hey, can you send me your student...', time: '2:47 PM', unread: g4State.stage >= 3 && !g4State.miaAction, suspicious: true, showIf: g4State.stage >= 3 },
+    { id: 'pia_fake', name: 'Pia — New Account', preview: 'Hey, can you send me your student...', time: '2:47 PM', unread: g4State.stage >= 3 && !g4State.miaAction, suspicious: true, showIf: g4State.stage >= 3 },
     { id: 'carlo', name: 'Carlo', preview: 'I found a free premium design tool...', time: '3:05 PM', unread: g4State.stage >= 4 && !g4State.fileDecision, showIf: g4State.stage >= 4 },
-    { id: 'group4', name: 'Group 4 Chat', preview: 'Mia: That\'s not me. Don\'t send...', time: '2:49 PM', showIf: true },
-    { id: 'real_mia', name: 'Mia (Verified)', preview: 'Did someone contact you pretending...', time: '2:48 PM', showIf: g4State.stage >= 3 }
+    { id: 'group4', name: 'Group 4 Chat', preview: 'Pia: That\'s not me. Don\'t send...', time: '2:49 PM', showIf: true },
+    { id: 'real_pia', name: 'Pia (Verified)', preview: 'Did someone contact you pretending...', time: '2:48 PM', showIf: g4State.stage >= 3 }
   ].filter(c => c.showIf);
 
   container.innerHTML = `
@@ -8455,8 +8501,8 @@ function openPhoneConversation(contactId) {
   const contact = G4_CONTACTS.find(c => c.id === contactId);
 
   // Track investigation
-  if (contactId === 'mia_fake') g4MiaInspected = true;
-  if (contactId === 'group4' || contactId === 'real_mia') g4GroupChecked = true;
+  if (contactId === 'pia_fake') g4PiaInspected = true;
+  if (contactId === 'group4' || contactId === 'real_pia') g4GroupChecked = true;
 
   const actionHtml = buildPhoneActionHtml(contactId);
 
@@ -8485,14 +8531,14 @@ function openPhoneConversation(contactId) {
 }
 
 function buildPhoneActionHtml(contactId) {
-  if (contactId === 'mia_fake' && !g4State.miaAction) {
+  if (contactId === 'pia_fake' && !g4State.miaAction) {
     return `
       <div class="pl-action-bar">
         <div class="pl-action-header">🎙️ <em>"A familiar name does not guarantee a legitimate request. Verify through another trusted method."</em></div>
         <div class="pl-action-btns">
-          <button class="pl-action-btn pl-btn-danger" onclick="g4MiaDecision('sent')">📤 Send Info (Student ID + Birthday)</button>
-          <button class="pl-action-btn pl-btn-report" onclick="g4MiaDecision('reported')">🚩 Stop & Report Account</button>
-          <button class="pl-action-btn pl-btn-ghost" onclick="g4MiaDecision('ignored')">🚫 Ignore & Warn Group</button>
+          <button class="pl-action-btn pl-btn-danger" onclick="g4PiaDecision('sent')">📤 Send Info (Student ID + Birthday)</button>
+          <button class="pl-action-btn pl-btn-report" onclick="g4PiaDecision('reported')">🚩 Stop & Report Account</button>
+          <button class="pl-action-btn pl-btn-ghost" onclick="g4PiaDecision('ignored')">🚫 Ignore & Warn Group</button>
         </div>
       </div>
     `;
@@ -8507,15 +8553,15 @@ function buildPhoneActionHtml(contactId) {
 }
 
 function g4InspectProfile(contactId) {
-  if (contactId !== 'mia_fake') {
+  if (contactId !== 'pia_fake') {
     showToast(`ℹ️ ${G4_CONTACTS.find(c => c.id === contactId)?.name}: Known contact. Account verified.`, 'info');
     return;
   }
-  showToast('⚠️ Profile "Mia — New Account" was created TODAY. Different from the real Mia\'s account. Investigate further!', 'warning');
-  g4MiaInspected = true;
+  showToast('⚠️ Profile "Pia — New Account" was created TODAY. Different from the real Pia\'s account. Investigate further!', 'warning');
+  g4PiaInspected = true;
 }
 
-function g4MiaDecision(action) {
+function g4PiaDecision(action) {
   g4State.miaAction = action;
   const badge = document.getElementById('pl-notif-badge');
   if (badge) badge.classList.add('hidden');
@@ -8869,7 +8915,7 @@ function g4ShowConsequences() {
           <div class="g4-conseq-steps">
             ${g4State.wifiChoice ? '✓ Verified network before connecting' : '✗ Chose a network'}<br>
             ${g4State.securedLaptop ? '✓ Secured laptop settings' : '✗ Left sharing enabled'}<br>
-            ${g4State.miaAction !== 'sent' ? '✓ Verified Mia\'s identity' : '✗ Sent personal information'}<br>
+            ${g4State.miaAction !== 'sent' ? '✓ Verified Pia\'s identity' : '✗ Sent personal information'}<br>
             ${g4State.fileDecision !== 'open' ? '✓ Rejected unknown file' : '✗ Opened unknown file'}
           </div>
         </div>
@@ -9300,6 +9346,11 @@ function restartEntireGame() {
   const noteEl = document.getElementById('win-loading-note-text');
   const noteWrap = document.getElementById('win-loading-note-wrap');
 
+  // Dismiss and reset Ryan guide immediately — it will restart fresh for Chapter 1
+  if (typeof RyanGuide !== 'undefined') {
+    RyanGuide.reset();
+  }
+
   // Immediately hide desktop so it can NEVER pop in or flash
   const desktop = document.getElementById('desktop');
   if (desktop) {
@@ -9342,7 +9393,7 @@ function restartEntireGame() {
   const RESTART_NOTES = [
     'Resetting detective environment, threat logs, and quarantine database…',
     'Tip: Phishing attacks often create a false sense of urgency to trick you.',
-    'Tip: Always verify the sender\'s email address before clicking any links or opening attachments.',
+    "Tip: Always verify the sender's email address before clicking any links or opening attachments.",
     'Tip: Legitimate services and banks will never request your passwords, MPINs, or OTPs.',
     'Tip: Disguised file extensions like .pdf.exe can secretly harbor malicious payloads.',
     'Tip: Multi-factor authentication (MFA) adds a vital layer of defense to all your accounts.'
@@ -9394,10 +9445,10 @@ function restartEntireGame() {
       vnState.typing = false;
       vnState.done = true;
     }
-    const welcomeOv = document.getElementById('overlay-welcome');
-    if (welcomeOv) {
-      welcomeOv.classList.remove('active');
-      welcomeOv.style.display = 'none';
+    const welcomeOv2 = document.getElementById('overlay-welcome');
+    if (welcomeOv2) {
+      welcomeOv2.classList.remove('active');
+      welcomeOv2.style.display = 'none';
     }
 
     // Reset game state WITHOUT revealing desktop
@@ -9410,6 +9461,10 @@ function restartEntireGame() {
     if (typeof gameState !== 'undefined') gameState.playerName = '';
     const passInp = document.getElementById('ls-name-input');
     if (passInp) passInp.value = '';
+
+    // Reset chapter tracking so Ryan fires fresh next time Chapter 1 is loaded
+    window._currentChapterCategory = null;
+    window._currentChapterCharacter = null;
 
     // Re-ensure desktop is hidden and Story Selection is active and visible underneath
     if (desktop) {
@@ -9729,13 +9784,15 @@ function lsSignIn() {
         const bd = document.getElementById('overlay-backdrop');
         if (bd) bd.classList.remove('active');
 
-        // Start the chapter gameplay directly (skip narrator VN and demo tutorial)
+        // Start Chapter 1 mission or open clean desktop view for Chapters 2, 3, 4
         closeCategoryHub();
-        if (catId === 'phishing') startMission(false);
-        else if (catId === 'malware') startMalwareDemo();
-        else if (catId === 'social_engineering') startGroup4Mission();
-        else if (catId === 'ransomware') startRansomwareMission();
-        else openCategoryHub();
+        if (catId === 'phishing') {
+          startMission(false);
+        } else if (catId === 'malware' || catId === 'social_engineering' || catId === 'ransomware') {
+          openChapterDesktopDirect(catId);
+        } else {
+          openCategoryHub();
+        }
 
         setTimeout(() => {
           ls.classList.add('ls-leaving');
@@ -9745,11 +9802,13 @@ function lsSignIn() {
     } else {
       // No loading screen — just go directly
       closeCategoryHub();
-      if (catId === 'phishing') startMission(false);
-      else if (catId === 'malware') startMalwareDemo();
-      else if (catId === 'social_engineering') startGroup4Mission();
-      else if (catId === 'ransomware') startRansomwareMission();
-      else openCategoryHub();
+      if (catId === 'phishing') {
+        startMission(false);
+      } else if (catId === 'malware' || catId === 'social_engineering' || catId === 'ransomware') {
+        openChapterDesktopDirect(catId);
+      } else {
+        openCategoryHub();
+      }
     }
     return;
   }
@@ -10665,8 +10724,19 @@ let networkSettings = {
   bluetooth: true,
   airplane: false,
   guard: true,
-  currentSsid: 'HomeNetwork_5G'
+  currentSsid: 'HomeNetwork_5G',
+  noInternet: false   // wifi ON but no internet access (shows warning badge icon)
 };
+
+/**
+ * Set the "WiFi connected but no internet" state.
+ * Usage: setWifiNoInternet(true)  → shows warning icon in taskbar tray
+ *        setWifiNoInternet(false) → restores normal WiFi icon
+ */
+function setWifiNoInternet(state) {
+  networkSettings.noInternet = !!state;
+  if (typeof updateNetworkUI === 'function') updateNetworkUI();
+}
 
 function toggleNetworkFlyout(event) {
   if (event) event.stopPropagation();
@@ -10879,16 +10949,29 @@ function updateNetworkUI() {
 
   // Wi-Fi
   if (networkSettings.wifi) {
-    if (trayWifiIcon) trayWifiIcon.innerHTML = '<img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="taskbar-icon-img" style="width:18px;height:18px;vertical-align:middle;">';
+    // Determine connection quality: connected to an SSID AND internet reachable
+    const isConnected = !!networkSettings.currentSsid;
+    const hasInternet  = isConnected && !networkSettings.noInternet;
+
+    if (hasInternet) {
+      // Fully connected with internet — normal WiFi icon
+      if (trayWifiIcon) trayWifiIcon.innerHTML = '<img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="taskbar-icon-img" style="width:18px;height:18px;vertical-align:middle;" title="Connected">';
+      if (tileWifiStatus) tileWifiStatus.textContent = 'On';
+      if (tileWifiBadge) tileWifiBadge.textContent = 'ON';
+    } else {
+      // WiFi ON but not connected to any network, OR connected but no internet
+      if (trayWifiIcon) trayWifiIcon.innerHTML = '<img src="assets/icons/networks/no_internet.svg" alt="No Internet" class="taskbar-icon-img" style="width:18px;height:18px;vertical-align:middle;" title="Wi-Fi on — no internet access">';
+      if (tileWifiStatus) tileWifiStatus.textContent = isConnected ? 'No Internet' : 'Not Connected';
+      if (tileWifiBadge) tileWifiBadge.textContent = 'LIMITED';
+    }
     if (tileWifi) tileWifi.classList.add('active');
-    if (tileWifiStatus) tileWifiStatus.textContent = 'On';
-    if (tileWifiBadge) tileWifiBadge.textContent = 'ON';
     if (wifiList) {
       wifiList.style.opacity = '1';
       wifiList.style.pointerEvents = 'auto';
     }
   } else {
-    if (trayWifiIcon) trayWifiIcon.innerHTML = '<img src="assets/icons/networks/wi-fi_off.svg" alt="No Wi-Fi" class="taskbar-icon-img" style="width:18px;height:18px;vertical-align:middle;">';
+    // WiFi switched OFF entirely
+    if (trayWifiIcon) trayWifiIcon.innerHTML = '<img src="assets/icons/networks/wi-fi_off.svg" alt="No Wi-Fi" class="taskbar-icon-img" style="width:18px;height:18px;vertical-align:middle;" title="Wi-Fi off">';
     if (tileWifi) tileWifi.classList.remove('active');
     if (tileWifiStatus) tileWifiStatus.textContent = 'Off';
     if (tileWifiBadge) tileWifiBadge.textContent = 'OFF';
@@ -11423,6 +11506,15 @@ function shutdownGame() {
   const sd = document.getElementById('overlay-shutdown-screen');
   const noteEl  = document.getElementById('shutdown-loading-note-text');
   const noteWrap = document.getElementById('shutdown-loading-note-wrap');
+
+  // Dismiss and reset Ryan guide immediately — it will restart fresh for Chapter 1
+  if (typeof RyanGuide !== 'undefined') {
+    RyanGuide.reset();
+  }
+
+  // Reset chapter tracking so Ryan fires fresh next time Chapter 1 is loaded
+  window._currentChapterCategory = null;
+  window._currentChapterCharacter = null;
 
   // Immediately hide desktop so it can NEVER pop in or flash
   const desktop = document.getElementById('desktop');
@@ -12415,7 +12507,7 @@ function closeMainMenuExit() {
 
 /** Master index: apps only, with real SVG icons */
 const TASKBAR_SEARCH_INDEX = [
-  { label: 'Email',         sub: 'Application', icon: 'assets/icons/apps/mail.svg',            action: () => taskbarClick('gmail')     },
+  { label: 'Zmail',         sub: 'Application', icon: 'assets/icons/apps/mail.svg',            action: () => taskbarClick('gmail')     },
   { label: 'Browser',       sub: 'Application', icon: 'assets/icons/apps/browser.svg',          action: () => taskbarClick('browser')   },
   { label: 'File Explorer', sub: 'Application', icon: 'assets/icons/apps/folder.svg',           action: () => taskbarClick('folder')    },
   { label: 'Antivirus',     sub: 'Application', icon: 'assets/icons/apps/windows_defender.svg', action: () => taskbarClick('antivirus') },
@@ -12595,6 +12687,8 @@ const RyanGuide = (() => {
 
   // Show / hide overlay
   function _show() {
+    const activeCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (activeCat !== 'phishing') return; // Only Chapter 1 has mentor guide Ryan
     const o = el().overlay;
     if (!o) return;
     o.classList.remove('hidden', 'ryan-animate-out');
@@ -12694,6 +12788,11 @@ const RyanGuide = (() => {
    * @param {Object} [opts] - { onDone, autoDismiss }
    */
   function speak(messages, opts) {
+    const activeCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (activeCat !== 'phishing') {
+      dismiss();
+      return;
+    }
     opts = opts || {};
     if (!messages || messages.length === 0) return;
 
@@ -12815,7 +12914,16 @@ const RyanGuide = (() => {
     fn();
   }
 
-  return { speak, advance, ask, dismiss, once };
+  /**
+   * Reset all "seen" event flags so Ryan can speak again from scratch.
+   * Call this whenever Chapter 1 is restarted so Ryan's welcome fires fresh.
+   */
+  function reset() {
+    _seen = {};
+    dismiss();
+  }
+
+  return { speak, advance, ask, dismiss, once, reset };
 })();
 
 
@@ -12834,7 +12942,7 @@ const RYAN_DIALOGUES = {
   welcome: [
     { text: "Hi! I'm Ryan, your IT Support Mentor. I'll be guiding you through your training and teaching you how to recognize common cyber threats.", state: 'speaking' },
     { text: "Your mission today: investigate suspicious emails arriving in the company inbox. What would you do in a real workplace? Always verify before acting.", state: 'thinking' },
-    { text: "Open Email app from the taskbar when you're ready. I'll be right here coaching you along the way.", state: 'speaking' }
+    { text: "Open Zmail app from the taskbar when you're ready. I'll be right here coaching you along the way.", state: 'speaking' }
   ],
 
   // First time opening Gmail
@@ -12902,70 +13010,88 @@ const RYAN_DIALOGUES = {
    RYAN GUIDE - Event Hooks & Integration
 =========================================================== */
 
-// Hook: openApp
+// Hook: openApp — only fires Ryan for Chapter 1 (phishing)
 (function patchOpenApp() {
   const _orig = window.openApp;
   if (typeof _orig !== 'function') return;
   window.openApp = function(appName) {
     _orig.apply(this, arguments);
+    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (curCat !== 'phishing') return;
     if (appName === 'gmail') {
       RyanGuide.once('gmail-open', function() {
         setTimeout(function() {
-          RyanGuide.speak(RYAN_DIALOGUES.gmailOpen);
+          if ((window._currentChapterCategory || activeCategoryStory) === 'phishing') {
+            RyanGuide.speak(RYAN_DIALOGUES.gmailOpen);
+          }
         }, 700);
       });
     }
   };
 })();
 
-// Hook: toggleStickyNote
+// Hook: toggleStickyNote — only fires Ryan for Chapter 1 (phishing)
 (function patchStickyNote() {
   const _orig = window.toggleStickyNote;
   if (typeof _orig !== 'function') return;
   window.toggleStickyNote = function() {
     _orig.apply(this, arguments);
+    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (curCat !== 'phishing') return;
     RyanGuide.once('sticky-open', function() {
       setTimeout(function() {
-        RyanGuide.speak(RYAN_DIALOGUES.stickyNoteOpen);
+        if ((window._currentChapterCategory || activeCategoryStory) === 'phishing') {
+          RyanGuide.speak(RYAN_DIALOGUES.stickyNoteOpen);
+        }
       }, 450);
     });
   };
 })();
 
-// Hook: renderEmailContent
+// Hook: renderEmailContent — only fires Ryan for Chapter 1 (phishing)
 (function patchRenderEmailContent() {
   const _orig = window.renderEmailContent;
   if (typeof _orig !== 'function') return;
   window.renderEmailContent = function(email) {
     _orig.apply(this, arguments);
+    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (curCat !== 'phishing') return;
     RyanGuide.once('first-email-read', function() {
       setTimeout(function() {
-        RyanGuide.speak(RYAN_DIALOGUES.firstEmailRead);
+        if ((window._currentChapterCategory || activeCategoryStory) === 'phishing') {
+          RyanGuide.speak(RYAN_DIALOGUES.firstEmailRead);
+        }
       }, 750);
     });
   };
 })();
 
-// Hook: handleEmailLinkClick
+// Hook: handleEmailLinkClick — only fires Ryan for Chapter 1 (phishing)
 (function patchEmailLinkClick() {
   const _orig = window.handleEmailLinkClick;
   if (typeof _orig !== 'function') return;
   window.handleEmailLinkClick = function(event, el) {
     _orig.apply(this, arguments);
+    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (curCat !== 'phishing') return;
     RyanGuide.once('link-click-warn', function() {
       setTimeout(function() {
-        RyanGuide.speak(RYAN_DIALOGUES.linkClicked);
+        if ((window._currentChapterCategory || activeCategoryStory) === 'phishing') {
+          RyanGuide.speak(RYAN_DIALOGUES.linkClicked);
+        }
       }, 350);
     });
   };
 })();
 
-// Hook: showCapybaraResult
+// Hook: showCapybaraResult — only fires Ryan for Chapter 1 (phishing)
 (function patchCapybaraResult() {
   const _orig = window.showCapybaraResult;
   if (typeof _orig !== 'function') return;
   window.showCapybaraResult = function(result, email) {
     _orig.apply(this, arguments);
+    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (curCat !== 'phishing') return;
     const isLast = (typeof gameState !== 'undefined' && typeof EMAILS !== 'undefined')
                   ? gameState.emailResults.length >= EMAILS.length
                   : false;
@@ -13023,13 +13149,16 @@ function isDesktopViewFullyLoaded() {
   return true;
 }
 
-// Welcome trigger: ONLY fires in desktop view after loading to screen has finished
+// Welcome trigger: ONLY fires in desktop view after loading to screen has finished, and ONLY for Chapter 1
 (function initRyanWelcome() {
   function tryTriggerWelcome() {
+    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    if (curCat !== 'phishing') return false; // Only Chapter 1 has mentor guide Ryan
     if (isDesktopViewFullyLoaded()) {
       RyanGuide.once('welcome', function() {
         setTimeout(function() {
-          if (isDesktopViewFullyLoaded()) {
+          const current = window._currentChapterCategory || activeCategoryStory || 'phishing';
+          if (current === 'phishing' && isDesktopViewFullyLoaded()) {
             RyanGuide.speak(RYAN_DIALOGUES.welcome);
           }
         }, 1400);

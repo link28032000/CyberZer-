@@ -12877,7 +12877,7 @@ body.g4-infected {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 0;
 }
 
 /* ── Logo Block ── */
@@ -12950,9 +12950,9 @@ body.g4-infected {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  width: 384px;
-  margin-top: 2px;
+  gap: 7px;
+  width: 260px;
+  margin-top: 8px;
   transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1), transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), filter 0.32s ease;
 }
 .mm-nav.mm-nav-exiting {
@@ -12965,8 +12965,8 @@ body.g4-infected {
 /* Base button style (chamfered frame container) */
 .mm-btn {
   position: relative;
-  width: 384px;
-  height: 66px;
+  width: 260px;
+  height: 62px;
   background: none;
   border: none;
   padding: 0;
@@ -12975,7 +12975,7 @@ body.g4-infected {
   align-items: center;
   justify-content: center;
   overflow: visible;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
   outline: none;
 }
 .mm-btn:hover {
@@ -13004,56 +13004,47 @@ body.g4-infected {
   filter: drop-shadow(0 0 14px rgba(0, 176, 244, 0.7)) brightness(1.18);
 }
 
-/* Inner content: centered label inside button */
+/* Inner content: wrapper for absolute-positioned icon and centered label */
 .mm-btn-content {
   position: relative;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 100%;
   height: 100%;
   pointer-events: none;
 }
 
-/* Icon positioned on the left side of the button */
+/* Icon — pinned to the left side */
 .mm-btn-icon-wrap {
   position: absolute;
-  left: 38px;
+  left: 22px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   color: #ffffff;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 }
 
-/* Divider line positioned between left icon area and center text */
+/* Divider — hidden */
 .mm-btn-divider {
-  position: absolute;
-  left: 106px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.5px;
-  height: 26px;
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 1px;
+  display: none;
 }
 
-/* Label text — centered inside button */
+/* Label text — absolutely centered in the full button width */
 .mm-btn-label {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   font-family: 'QB One Extra Bold', 'QB One', var(--font-cyberzero);
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   line-height: 1;
   text-align: center;
@@ -13745,10 +13736,10 @@ body.g4-infected {
 
 /* Responsive */
 @media (max-width: 480px) {
-  .mm-center { gap: 8px; }
-  .mm-nav { width: 340px; max-width: 94vw; }
-  .mm-btn { width: 340px; max-width: 100%; height: 62px; }
-  .mm-btn-label { font-size: 22px; }
+  .mm-center { gap: 0; }
+  .mm-nav { width: 240px; max-width: 94vw; gap: 6px; }
+  .mm-btn { width: 240px; max-width: 100%; height: 56px; }
+  .mm-btn-label { font-size: 18px; }
   .mm-shield-wrap { width: 110px; height: 110px; }
   .mm-title-img { width: 250px; }
   .mm-tech-divider { width: 90vw; max-width: 260px; }
