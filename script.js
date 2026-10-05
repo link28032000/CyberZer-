@@ -1381,27 +1381,49 @@ const CATEGORIES = [
 ];
 
 /**
- * Update the login/password screen avatar and username
+ * Update the login/password screen avatar and username,
+ * the Windows 11 Start Menu profile, and taskbar,
  * to match the character for the selected chapter.
  */
 function updateLoginScreenForChapter(categoryId) {
   const cat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.id === categoryId));
   const char = (cat && cat.character) ? cat.character : { name: 'Alex', img: 'assets/Character/Alex.png' };
 
+  window._currentChapterCategory = categoryId || 'phishing';
+  window._currentChapterCharacter = char;
+  activeCategoryStory = categoryId || 'phishing';
+
+  // Windows 10 Login Screen (Overlay Title Menu) avatar & username
   const avatarImg = document.querySelector('#ls-user-avatar .ls-user-avatar-img');
   if (avatarImg) {
     avatarImg.src = char.img;
     avatarImg.alt = char.name;
+    avatarImg.dataset.fallbackStep = '0';
   }
 
   const usernameEl = document.getElementById('ls-win10-username-display');
   if (usernameEl) usernameEl.textContent = char.name;
 
-  // Also keep the start-menu avatar in sync
+  // Windows 11 Start Menu profile avatar & username
   const startAvatar = document.querySelector('.start-avatar-img');
   if (startAvatar) {
     startAvatar.src = char.img;
     startAvatar.alt = char.name;
+    startAvatar.dataset.fallbackStep = '0';
+  }
+
+  const startUserName = document.getElementById('start-user-name');
+  if (startUserName) startUserName.textContent = char.name;
+
+  // Windows Taskbar username & avatar
+  const tbText = document.getElementById('tb-username-text');
+  const tbAvatar = document.getElementById('tb-user-avatar-mini');
+  if (tbText) tbText.textContent = char.name;
+  if (tbAvatar) tbAvatar.textContent = char.name.charAt(0).toUpperCase();
+
+  // Keep gameState playerName in sync
+  if (typeof gameState !== 'undefined') {
+    gameState.playerName = char.name;
   }
 }
 
@@ -2140,7 +2162,9 @@ function comicPanelFallback(img, panelName) {
 }
 
 function profileAvatarFallback(img) {
-  imgCaseFallback(img, 'assets/Character', 'Alex');
+  if (!img) return;
+  const baseName = (img.alt && img.alt.trim()) ? img.alt.trim() : 'Alex';
+  imgCaseFallback(img, 'assets/Character', baseName);
 }
 
 /** Global keyboard handler for comic viewer */
@@ -2346,6 +2370,7 @@ function comicStripFinish() {
 /** Helper to show the Windows 10 login screen for Alex to enter password */
 function _proceedToAlexPassword() {
   window._pendingStoryChapter = 'phishing';
+  updateLoginScreenForChapter('phishing');
   const tm = document.getElementById('overlay-title-menu');
   if (tm) {
     tm.style.display = '';
@@ -9546,10 +9571,27 @@ function lsHandleNameInput(val) {
   // No-op: username is fixed to Alex; input is now a password field
 }
 
-function applyPlayerName(name) {
+function applyPlayerName(name, charImg) {
   // Update Start Menu footer username
   const startUserName = document.getElementById('start-user-name');
   if (startUserName) startUserName.textContent = name;
+
+  // Update Start Menu footer avatar
+  const startAvatar = document.querySelector('.start-avatar-img');
+  if (startAvatar) {
+    if (charImg) {
+      startAvatar.src = charImg;
+      startAvatar.alt = name;
+      startAvatar.dataset.fallbackStep = '0';
+    } else {
+      const foundCat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.character && c.character.name === name));
+      if (foundCat && foundCat.character) {
+        startAvatar.src = foundCat.character.img;
+        startAvatar.alt = foundCat.character.name;
+        startAvatar.dataset.fallbackStep = '0';
+      }
+    }
+  }
 
   // Update taskbar username pill
   const tbPill   = document.getElementById('taskbar-username-pill');
@@ -9560,7 +9602,9 @@ function applyPlayerName(name) {
   if (tbPill)   tbPill.classList.remove('hidden');
 
   // Persist to gameState
-  gameState.playerName = name;
+  if (typeof gameState !== 'undefined') {
+    gameState.playerName = name;
+  }
 }
 
 function lsShowError() {
@@ -9622,10 +9666,12 @@ function lsSignIn() {
     return;
   }
 
-  // Name is always Alex — fixed protagonist identity
-  const name = 'Alex';
+  const currentCatId = window._pendingStoryChapter || window._currentChapterCategory || activeCategoryStory || 'phishing';
+  const cat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.id === currentCatId));
+  const char = (cat && cat.character) ? cat.character : { name: 'Alex', img: 'assets/Character/Alex.png' };
+  const name = char.name;
 
-  applyPlayerName(name);
+  applyPlayerName(name, char.img);
 
   // If the player came here via Story Selection → Chapter card, show loading then go to chapter (no narrator)
   if (window._pendingStoryChapter) {
@@ -11206,10 +11252,15 @@ function toggleStartMenu(event) {
       filterStartMenuApps('');
       setTimeout(() => input.focus(), 60);
     }
-    const nameInput = document.getElementById('exam-input-name');
     const nameDisplay = document.getElementById('start-user-name');
-    if (nameDisplay && nameInput && nameInput.value.trim()) {
-      nameDisplay.textContent = nameInput.value.trim();
+    const startAvatar = document.querySelector('.start-avatar-img');
+    const curCatId = window._currentChapterCategory || activeCategoryStory || 'phishing';
+    const foundCat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.id === curCatId));
+    const currentChar = (foundCat && foundCat.character) ? foundCat.character : (window._currentChapterCharacter || { name: 'Alex', img: 'assets/Character/Alex.png' });
+    if (nameDisplay && currentChar) nameDisplay.textContent = currentChar.name;
+    if (startAvatar && currentChar) {
+      startAvatar.src = currentChar.img;
+      startAvatar.alt = currentChar.name;
     }
   } else {
     closeStartMenu();
@@ -12010,7 +12061,8 @@ function selectStoryCard(cardEl, categoryId, chapterNum) {
       try { AudioManager.playChime(); } catch(e) {}
     }
 
-    // (TARGET LOCKED badge removed per user preference)
+    // Immediately update profile to match the selected chapter
+    updateLoginScreenForChapter(categoryId);
 
     // Add START MISSION button in footer
     const footer = cardEl.querySelector('.ss-card-footer');
@@ -12064,13 +12116,13 @@ function storySelectPlay(categoryId) {
           cc.classList.remove('active');
           cc.style.display = 'none';
 
-          // Proceed to Chapter 1 Comic Strip or Alex sign-in screen
+          // Proceed to Chapter 1 Comic Strip or sign-in screen
           window._pendingStoryChapter = categoryId;
+          updateLoginScreenForChapter(categoryId);
           if (categoryId === 'phishing') {
             // Show comic strip first BEFORE Alex enters password!
             showComicStrip();
           } else {
-            updateLoginScreenForChapter(categoryId);
             const tm = document.getElementById('overlay-title-menu');
             if (tm) { tm.style.display = ''; tm.classList.add('active'); }
             setTimeout(() => {
@@ -12083,10 +12135,10 @@ function storySelectPlay(categoryId) {
     } else {
       // Fallback
       window._pendingStoryChapter = categoryId;
+      updateLoginScreenForChapter(categoryId);
       if (categoryId === 'phishing') {
         showComicStrip();
       } else {
-        updateLoginScreenForChapter(categoryId);
         const tm = document.getElementById('overlay-title-menu');
         if (tm) { tm.style.display = ''; tm.classList.add('active'); }
         setTimeout(() => {
@@ -12150,11 +12202,37 @@ function refreshStorySelectLocks() {
     }
   });
 
-  // Automatically select the first unlocked card for immediate tactile feedback
-  const firstUnlocked = document.querySelector('.ss-card-unlocked');
-  if (firstUnlocked && !document.querySelector('.ss-card-selected')) {
-    const catId = (typeof CATEGORIES !== 'undefined' && CATEGORIES[0] && CATEGORIES[0].id) ? CATEGORIES[0].id : 'phishing';
-    selectStoryCard(firstUnlocked, catId, 1);
+  // Automatically select the appropriate card: preserve previously chosen card or default to first unlocked
+  const selectedExisting = document.querySelector('.ss-card-selected');
+  if (!selectedExisting) {
+    let targetCard = null;
+    let targetCatId = null;
+    let targetChapterNum = 1;
+
+    const targetCat = window._currentChapterCategory || window._pendingStoryChapter;
+    if (targetCat) {
+      const catIdx = CATEGORIES.findIndex(c => c.id === targetCat);
+      if (catIdx !== -1) {
+        const cardCandidate = document.getElementById(`ss-card-${catIdx + 1}`);
+        if (cardCandidate && cardCandidate.classList.contains('ss-card-unlocked')) {
+          targetCard = cardCandidate;
+          targetCatId = targetCat;
+          targetChapterNum = catIdx + 1;
+        }
+      }
+    }
+
+    if (!targetCard) {
+      targetCard = document.querySelector('.ss-card-unlocked');
+      targetCatId = (typeof CATEGORIES !== 'undefined' && CATEGORIES[0] && CATEGORIES[0].id) ? CATEGORIES[0].id : 'phishing';
+      targetChapterNum = 1;
+    }
+
+    if (targetCard) {
+      selectStoryCard(targetCard, targetCatId, targetChapterNum);
+    }
+  } else if (_selectedStoryCard && _selectedStoryCard.categoryId) {
+    updateLoginScreenForChapter(_selectedStoryCard.categoryId);
   }
 }
 
