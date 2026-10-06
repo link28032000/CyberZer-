@@ -425,6 +425,7 @@ function ch1GetEmailDef(id) {
 }
 
 function ch1InjectWave(waveNum) {
+  ch1Stage = waveNum;
   const ids = (CH1_WAVE_DEFS[waveNum] || []).filter(id => !ch1InboxEmails.some(e => e.id === id));
   if (ids.length === 0) return;
   ids.forEach((id, idx) => {
@@ -435,13 +436,12 @@ function ch1InjectWave(waveNum) {
         renderEmailList();
         updateFolderCounts();
       }
-    }, idx * 350);
+    }, idx * 250);
   });
   setTimeout(() => {
     showToast('📧 New emails arrived in your inbox.', 'success');
     if (typeof AudioManager !== 'undefined') AudioManager.playNotification();
-  }, 250);
-  ch1Stage = waveNum;
+  }, 200);
 }
 
 // Perfect-run score computed over all 9 emails
@@ -3869,14 +3869,9 @@ function renderEmailList() {
         ${badgeHtml}
       </div>`;
 
-    // Only allow clicking current or already-done emails
-    if (isCurrent || result) {
-      item.style.cursor = 'pointer';
-      item.addEventListener('click', () => openEmail(idx));
-    } else {
-      item.style.opacity = '0.45';
-      item.style.cursor = 'not-allowed';
-    }
+    // Allow clicking any email in the current inbox
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => openEmail(idx));
 
     list.appendChild(item);
   });
@@ -4068,6 +4063,7 @@ function openEmail(idx) {
 
   const flagModeBtn = document.getElementById('flag-mode-btn');
   const reportBtn   = document.getElementById('report-btn');
+  const legitBtn    = document.getElementById('legit-btn');
 
   flagModeBtn.classList.remove('active');
   document.querySelector('.gmail-body').classList.remove('flag-mode-active');
@@ -4075,9 +4071,25 @@ function openEmail(idx) {
   if (existingResult) {
     if (reportBtn) {
       reportBtn.disabled = true;
-      reportBtn.textContent = '✓ Submitted as Phishing';
-      reportBtn.classList.add('reported');
-      reportBtn.title = 'You already submitted this email as Phishing.';
+      if (existingResult.playerDecision) {
+        reportBtn.textContent = '✔ Submitted as Phishing';
+        reportBtn.classList.add('reported');
+      } else {
+        reportBtn.textContent = '🚩 Report as Phishing';
+        reportBtn.classList.remove('reported');
+      }
+      reportBtn.title = 'Verdict already submitted for this email.';
+    }
+    if (legitBtn) {
+      legitBtn.disabled = true;
+      if (!existingResult.playerDecision) {
+        legitBtn.textContent = '✔ Marked as Legitimate';
+        legitBtn.classList.add('reported');
+      } else {
+        legitBtn.textContent = '✓ Mark as Legitimate';
+        legitBtn.classList.remove('reported');
+      }
+      legitBtn.title = 'Verdict already submitted for this email.';
     }
     flagModeBtn.disabled = true;
     flagModeBtn.title = 'Investigation concluded — verdict already submitted.';
@@ -4087,6 +4099,12 @@ function openEmail(idx) {
       reportBtn.textContent = '🚩 Report as Phishing';
       reportBtn.classList.remove('reported');
       reportBtn.title = 'Flag and submit this email as Phishing';
+    }
+    if (legitBtn) {
+      legitBtn.disabled = false;
+      legitBtn.textContent = '✓ Mark as Legitimate';
+      legitBtn.classList.remove('reported');
+      legitBtn.title = 'Confirm and submit this email as Legitimate';
     }
     flagModeBtn.disabled = false;
     flagModeBtn.title = '';
@@ -4387,6 +4405,7 @@ function placeFlag(el) {
 
   el.classList.add('flagged');
   renderEvidencePanel();
+  if (typeof toggleEvidencePanel === 'function') toggleEvidencePanel(true);
   if (typeof AudioManager !== 'undefined') AudioManager.playFlagChirp();
   showToast(`🚩 Flagged: ${flag.label}`, 'success');
 
@@ -4458,10 +4477,7 @@ function renderEvidencePanel() {
 
   badge.textContent = isClosed ? `${flags.length} SUBMITTED` : `${flags.length} FLAG${flags.length !== 1 ? 'S' : ''}`;
 
-  if (flags.length === 0) {
-    list.innerHTML = `<div class="evidence-empty">${isClosed ? 'No evidence flags were submitted for this email.' : 'No flags placed yet. Activate 🚩 Flag Evidence to begin.'}</div>`;
-    return;
-  }
+
 
   list.innerHTML = '';
   flags.forEach(flag => {
@@ -4477,25 +4493,68 @@ function renderEvidencePanel() {
   });
 }
 
+function toggleEvidencePanel(forceOpen) {
+  const panel = document.getElementById('evidence-panel');
+  if (!panel) return;
+
+  const isCurrentlyCollapsed = panel.classList.contains('collapsed');
+  const shouldCollapse = (forceOpen !== undefined) ? !forceOpen : !isCurrentlyCollapsed;
+
+  if (shouldCollapse) {
+    panel.classList.add('collapsed');
+  } else {
+    panel.classList.remove('collapsed');
+  }
+
+  const label = document.getElementById('evidence-toggle-label');
+  const arrow = document.getElementById('evidence-toggle-arrow');
+  if (label) label.textContent = shouldCollapse ? 'Show' : 'Hide';
+  if (arrow) arrow.textContent = shouldCollapse ? '▲' : '▼';
+}
+
 // ═══════════════════════════════════════════════════════════
 // RETURN TO INBOX
 // ═══════════════════════════════════════════════════════════
 
+let ch1AutoAdvanceTimer = null;
+
 function returnToInbox() {
+  if (ch1AutoAdvanceTimer) {
+    clearTimeout(ch1AutoAdvanceTimer);
+    ch1AutoAdvanceTimer = null;
+  }
+
   document.getElementById('email-detail-view').classList.remove('active');
   document.getElementById('email-list-view').classList.add('active');
   gameState.flagModeActive = false;
-  document.getElementById('flag-mode-btn').classList.remove('active');
-  document.querySelector('.gmail-body').classList.remove('flag-mode-active');
+  const flagModeBtn = document.getElementById('flag-mode-btn');
+  if (flagModeBtn) flagModeBtn.classList.remove('active');
+  const gmailBody = document.querySelector('.gmail-body');
+  if (gmailBody) gmailBody.classList.remove('flag-mode-active');
   renderEmailList();
   updateHUD();
+
+  // If in mission and all emails in current inbox are reviewed, trigger next wave!
+  if (gameState.phase === 'mission' && ch1InboxEmails.length > 0) {
+    const allReviewed = ch1InboxEmails.every(e => gameState.emailResults.some(r => r.emailId === e.id));
+    if (allReviewed) {
+      if (gameState.emailResults.length >= EMAILS.length) {
+        finishMission();
+      } else {
+        const nextWave = Math.max(ch1Stage + 1, 2);
+        if (nextWave <= 4 && CH1_WAVE_DEFS[nextWave]) {
+          ch1InjectWave(nextWave);
+        }
+      }
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
-// REPORT DIALOG
+// REPORT / VERDICT ACTIONS
 // ═══════════════════════════════════════════════════════════
 
-// ── Direct phishing report — no confirmation overlay ────────────────────────
+// ── Direct phishing report ──────────────────────────────────────────
 function submitReportPhishing() {
   // Primary lookup: by current index
   let email = ch1InboxEmails[gameState.currentEmail];
@@ -4521,19 +4580,44 @@ function submitReportPhishing() {
   submitReport(true);
 }
 
-// Legacy stubs kept for backward-compat (nothing calls these now)
-function showConfirmReport(isPhishing) { if (isPhishing) submitReportPhishing(); }
+// ── Direct legitimate email mark ────────────────────────────────────
+function submitMarkLegitimate() {
+  let email = ch1InboxEmails[gameState.currentEmail];
+
+  if (!email) {
+    email = ch1InboxEmails.find(e => !gameState.emailResults.some(r => r.emailId === e.id));
+    if (email) {
+      gameState.currentEmail = ch1InboxEmails.indexOf(email);
+    }
+  }
+
+  if (!email) {
+    showToast('⚠️ No active email to mark. Please open an email from your inbox first.', 'warning');
+    return;
+  }
+
+  if (gameState.emailResults.some(r => r.emailId === email.id)) {
+    showToast('⚠️ You have already submitted a verdict for this email.', 'warning');
+    return;
+  }
+
+  submitReport(false);
+}
+
+// Legacy stubs kept for backward-compat
+function showConfirmReport(isPhishing) { if (isPhishing) submitReportPhishing(); else submitMarkLegitimate(); }
 function confirmReportYes() {}
 function cancelConfirmReport() {}
 function showReportDialog() { submitReportPhishing(); }
 
-
-
-
-
 let isSubmittingReport = false;
 function submitReport(isPhishing) {
   if (isSubmittingReport) return;
+
+  if (ch1AutoAdvanceTimer) {
+    clearTimeout(ch1AutoAdvanceTimer);
+    ch1AutoAdvanceTimer = null;
+  }
 
   // Primary lookup by index; fallback to first unreviewed
   let email = ch1InboxEmails[gameState.currentEmail];
@@ -4547,15 +4631,12 @@ function submitReport(isPhishing) {
   }
 
   if (gameState.emailResults.some(r => r.emailId === email.id)) {
-    showToast('\u26a0\ufe0f You have already submitted a report for this email.', 'warning');
-    closeOverlay('overlay-report');
+    showToast('⚠️ You have already submitted a verdict for this email.', 'warning');
     return;
   }
 
   isSubmittingReport = true;
   try {
-    closeOverlay('overlay-report');
-
     const correctDecision = (isPhishing === email.phishing);
 
     if (correctDecision) {
@@ -4581,14 +4662,26 @@ function submitReport(isPhishing) {
 
     // ── Lock report & flag buttons ───────────────────────────
     const reportBtn = document.getElementById('report-btn');
+    const legitBtn  = document.getElementById('legit-btn');
     if (reportBtn) {
       reportBtn.disabled = true;
       if (isPhishing) {
-        reportBtn.textContent = '✔ This Email Reported as Phishing';
+        reportBtn.textContent = '✔ Submitted as Phishing';
+        reportBtn.classList.add('reported');
       } else {
-        reportBtn.textContent = '✔ This Email Marked as Legitimate';
+        reportBtn.textContent = '🚩 Report as Phishing';
+        reportBtn.classList.remove('reported');
       }
-      reportBtn.classList.add('reported');
+    }
+    if (legitBtn) {
+      legitBtn.disabled = true;
+      if (!isPhishing) {
+        legitBtn.textContent = '✔ Marked as Legitimate';
+        legitBtn.classList.add('reported');
+      } else {
+        legitBtn.textContent = '✓ Mark as Legitimate';
+        legitBtn.classList.remove('reported');
+      }
     }
     const flagModeBtn = document.getElementById('flag-mode-btn');
     if (flagModeBtn) {
@@ -4603,26 +4696,53 @@ function submitReport(isPhishing) {
       if (old) old.remove();
       const banner = document.createElement('div');
       banner.className = 'verdict-banner verdict-banner-' + (isPhishing ? 'phishing' : 'legit');
+
+      let bannerTitle = '';
+      let bannerMsg = '';
+      let bannerIcon = '';
+
       if (isPhishing && correctDecision) {
-        banner.innerHTML = '<span class="vb-icon">🚩</span><div><strong>PHISHING REPORTED</strong> — Good catch! Ryan will now explain why this was phishing.<br><small>Case closes automatically after Ryan\'s briefing.</small></div>';
+        bannerIcon = '🚩';
+        bannerTitle = 'PHISHING REPORTED';
+        bannerMsg = 'Good catch! You correctly identified this phishing email.';
       } else if (isPhishing && !correctDecision) {
-        banner.innerHTML = '<span class="vb-icon">⚠️</span><div><strong>REPORTED AS PHISHING</strong> — This was actually legitimate. Ryan will explain what to look for next time.</div>';
+        bannerIcon = '⚠️';
+        bannerTitle = 'REPORTED AS PHISHING';
+        bannerMsg = 'This was actually a legitimate email.';
       } else if (!isPhishing && correctDecision) {
-        banner.innerHTML = '<span class="vb-icon">✅</span><div><strong>CLEARED AS LEGITIMATE</strong> — Correct! Ryan will confirm why this email is safe.</div>';
+        bannerIcon = '✅';
+        bannerTitle = 'CLEARED AS LEGITIMATE';
+        bannerMsg = 'Correct! This email is safe and legitimate.';
       } else {
-        banner.innerHTML = '<span class="vb-icon">🚨</span><div><strong>MARKED AS LEGITIMATE</strong> — This was actually phishing! Ryan will explain the red flags you missed.</div>';
+        bannerIcon = '🚨';
+        bannerTitle = 'MARKED AS LEGITIMATE';
+        bannerMsg = 'This was actually a phishing email!';
       }
+
+      banner.innerHTML = `
+        <span class="vb-icon">${bannerIcon}</span>
+        <div style="flex:1;">
+          <strong>${bannerTitle}</strong> — ${bannerMsg}
+          <div style="font-size:12px;opacity:0.85;margin-top:4px;">Returning to inbox in a moment…</div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="nextEmail()" style="font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;background:var(--accent-blue,#4fc3f7);color:#000;font-weight:700;border:none;white-space:nowrap;">
+          Next Email ➔
+        </button>`;
       emailContent.insertBefore(banner, emailContent.firstChild);
     }
+
+    showToast(isPhishing ? '🚩 Email submitted as phishing!' : '✅ Email marked as legitimate!', correctDecision ? 'success' : 'warning');
 
     updateHUD();
     updateFolderCounts();
     updateStickyChecklist();
 
-    // ── Ryan gives his full educational explanation ──────────
-    // nextEmail() is called automatically when Ryan finishes
-    const advanceToNext = () => setTimeout(() => nextEmail(), 600);
+    // Auto-advance to next email / inbox after 2.5s so the game flow never hangs
+    ch1AutoAdvanceTimer = setTimeout(() => {
+      nextEmail();
+    }, 2500);
 
+    // Ryan gives his educational briefing
     if (typeof RyanGuide !== 'undefined') {
       const tutor = email.ryanTutor;
       let messages;
@@ -4630,7 +4750,6 @@ function submitReport(isPhishing) {
       if (tutor) {
         messages = correctDecision ? tutor.correct : tutor.wrong;
       } else {
-        // Generic fallback coaching
         const addr = email.sender ? email.sender.address : 'unknown';
         if (isPhishing && correctDecision) {
           messages = [
@@ -4655,12 +4774,17 @@ function submitReport(isPhishing) {
       }
 
       setTimeout(() => {
-        RyanGuide.speak(messages, { onDone: advanceToNext });
-      }, 400);
-
-    } else {
-      // No RyanGuide — advance after a brief pause
-      setTimeout(advanceToNext, 1800);
+        RyanGuide.speak(messages, {
+          autoDismiss: 4000,
+          onDone: () => {
+            if (ch1AutoAdvanceTimer) {
+              clearTimeout(ch1AutoAdvanceTimer);
+              ch1AutoAdvanceTimer = null;
+            }
+            nextEmail();
+          }
+        });
+      }, 300);
     }
 
   } finally {
@@ -4836,6 +4960,16 @@ function formatAnalysisText(text) {
 // ═══════════════════════════════════════════════════════════
 
 function nextEmail() {
+  if (ch1AutoAdvanceTimer) {
+    clearTimeout(ch1AutoAdvanceTimer);
+    ch1AutoAdvanceTimer = null;
+  }
+
+  // Dismiss any active Ryan dialogue so it doesn't block the screen
+  if (typeof RyanGuide !== 'undefined') {
+    RyanGuide.dismiss();
+  }
+
   // Check if ALL 9 emails have been reviewed
   if (gameState.emailResults.length >= EMAILS.length) {
     finishMission();
@@ -4843,14 +4977,15 @@ function nextEmail() {
   }
 
   // Check if all emails in the CURRENT inbox wave have been reviewed
-  const reviewedInWave = ch1InboxEmails.every(e => gameState.emailResults.some(r => r.emailId === e.id));
+  const reviewedInWave = ch1InboxEmails.length > 0 && ch1InboxEmails.every(e => gameState.emailResults.some(r => r.emailId === e.id));
 
   if (reviewedInWave) {
-    // All current wave emails done — inject next wave
-    const nextWave = ch1Stage + 1;
+    // Current wave complete — determine next wave (1 -> 2 -> 3 -> 4)
+    let nextWave = ch1Stage + 1;
+    if (nextWave <= 1) nextWave = 2;
 
     if (nextWave <= 4 && CH1_WAVE_DEFS[nextWave]) {
-      // Give Ryan contextual coaching before the next wave
+      // Optional brief mentoring notice before the next wave (non-blocking)
       if (typeof RyanGuide !== 'undefined') {
         const waveMessages = {
           2: [
@@ -4867,21 +5002,20 @@ function nextEmail() {
         };
         const msgs = waveMessages[nextWave];
         if (msgs) {
-          setTimeout(() => RyanGuide.speak(msgs), 600);
+          setTimeout(() => RyanGuide.speak(msgs, { autoDismiss: 4500 }), 400);
         }
       }
-
-      // Inject the next wave with a short delay for dramatic effect
-      setTimeout(() => ch1InjectWave(nextWave), 800);
 
       // Return to inbox list view
       document.getElementById('email-detail-view').classList.remove('active');
       document.getElementById('email-list-view').classList.add('active');
       renderEmailList();
       updateHUD();
+
+      // Inject the next wave of emails!
+      ch1InjectWave(nextWave);
       return;
     } else {
-      // All waves done
       finishMission();
       return;
     }
@@ -4890,7 +5024,11 @@ function nextEmail() {
   // Still have unreviewed emails in the current wave — navigate back to inbox list
   const nextIdx = ch1InboxEmails.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
   if (nextIdx === -1) {
-    finishMission();
+    if (ch1Stage < 4) {
+      ch1InjectWave(ch1Stage + 1);
+    } else {
+      finishMission();
+    }
     return;
   }
 
@@ -4917,7 +5055,7 @@ function nextEmail() {
     }
   }, 200);
 
-  const remaining = ch1InboxEmails.length - gameState.emailResults.length;
+  const remaining = EMAILS.length - gameState.emailResults.length;
   showToast(`📧 Next email is waiting — ${remaining} case${remaining !== 1 ? 's' : ''} remaining.`, 'info');
 }
 

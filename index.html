@@ -127,6 +127,7 @@
             <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Mode</button>
             <div class="verdict-btn-group">
               <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()">🚩 Report as Phishing</button>
+              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()">✓ Mark as Legitimate</button>
             </div>
           </div>
 
@@ -134,14 +135,19 @@
             <!-- Populated by JS -->
           </div>
 
-          <!-- Evidence Panel -->
+          <!-- Evidence Panel (Collapsible) -->
           <div id="evidence-panel" class="evidence-panel">
-            <div class="evidence-panel-header">
-              <span class="evidence-panel-title">🔍 Investigation Evidence</span>
-              <span id="evidence-count-badge" class="evidence-count-badge">0 FLAGS</span>
+            <div class="evidence-panel-header" onclick="toggleEvidencePanel()" title="Click to hide or show Investigation Evidence" style="cursor: pointer;">
+              <div class="evidence-panel-title-wrap">
+                <span class="evidence-panel-title">🔍 Investigation Evidence</span>
+                <span id="evidence-count-badge" class="evidence-count-badge">0 FLAGS</span>
+              </div>
+              <button type="button" id="evidence-toggle-btn" class="evidence-toggle-btn" onclick="event.stopPropagation(); toggleEvidencePanel();" aria-label="Toggle Investigation Evidence">
+                <span id="evidence-toggle-label">Hide</span>
+                <span id="evidence-toggle-arrow">▼</span>
+              </button>
             </div>
             <div id="evidence-list" class="evidence-list">
-              <div class="evidence-empty">No flags placed yet. Activate 🚩 Flag Evidence to begin.</div>
             </div>
           </div>
         </div>
