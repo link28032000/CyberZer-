@@ -66,17 +66,16 @@
       <span id="sticky-note-title" class="sticky-note-title-text">📒 Detective's Notes</span>
     </div>
     <div class="sticky-note-scroll">
-      <div class="sticky-note-title">How Scoring Works</div>
+      <div class="sticky-note-title">How to Investigate</div>
       <ul class="sticky-note-list">
-        <li><span class="sn-icon sn-good">✅</span><span>Correct Phishing verdict <strong>+100</strong> (highest)</span></li>
-        <li><span class="sn-icon sn-good">✅</span><span>Correct Legitimate verdict <strong>+50</strong></span></li>
-        <li><span class="sn-icon sn-good">🚩</span><span>Each correct evidence flag <strong>+25</strong></span></li>
-        <li><span class="sn-icon sn-bad">❌</span><span>Wrong verdict <strong>−50</strong></span></li>
-        <li><span class="sn-icon sn-bad">⚠️</span><span>Wrong flag placed <strong>−10</strong></span></li>
-        <li><span class="sn-icon sn-bad">🔍</span><span>Missed a real clue (even if verdict's right) <strong>−25</strong></span></li>
-        <li><span class="sn-icon sn-good">📊</span><span>Watch your live score in the <strong>top-right corner</strong></span></li>
+        <li><span class="sn-icon sn-good">🔍</span><span>Check the <strong>sender's email domain</strong> carefully</span></li>
+        <li><span class="sn-icon sn-good">⚠️</span><span>Look for <strong>false urgency</strong> or deadline threats</span></li>
+        <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — where do they <strong>really</strong> go?</span></li>
+        <li><span class="sn-icon sn-good">🚩</span><span>Use <strong>Flag Mode</strong> to mark red flags</span></li>
+        <li><span class="sn-icon sn-good">📧</span><span>Submit your <strong>verdict</strong> — Ryan will explain why</span></li>
       </ul>
-      <div class="sticky-note-tip">💡 A correct verdict isn't enough on its own — find every clue too, or you'll lose points for what you missed.</div>
+      <div class="sticky-note-tip">💡 After every email, Ryan gives you a detailed explanation of why it was phishing or legitimate.</div>
+
     </div>
   </div>
 
@@ -103,7 +102,7 @@
         </div>
         <button type="button" class="gmail-compose-btn" disabled>✏ Compose</button>
         <div class="gmail-nav">
-          <div class="gmail-nav-item active" id="nav-inbox" onclick="switchGmailFolder('inbox')">📥 Inbox <span id="inbox-count" class="inbox-badge">5</span></div>
+          <div class="gmail-nav-item active" id="nav-inbox" onclick="switchGmailFolder('inbox')">📥 Inbox <span id="inbox-count" class="inbox-badge hidden-init">0</span></div>
           <div class="gmail-nav-item" id="nav-sent" onclick="switchGmailFolder('sent')">📤 Sent <span id="sent-count" class="inbox-badge">2</span></div>
           <div class="gmail-nav-item" id="nav-trash" onclick="switchGmailFolder('trash')">🗑 Trash <span id="trash-count" class="inbox-badge hidden-init">0</span></div>
         </div>
@@ -126,7 +125,9 @@
           <div class="gmail-toolbar">
             <button type="button" class="back-btn" onclick="returnToInbox()">← Back</button>
             <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Mode</button>
-            <button type="button" id="report-btn" class="report-btn" onclick="showReportDialog()">Report as Phishing</button>
+            <div class="verdict-btn-group">
+              <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()">🚩 Report as Phishing</button>
+            </div>
           </div>
 
           <div id="email-content" class="email-content">
@@ -2917,21 +2918,9 @@
   </div>
 </div>
 
-<!-- ── REPORT DIALOG ── -->
-<div id="overlay-report" class="overlay">
-  <div class="dialog-card">
-    <h2 class="dialog-title">📋 Report This Email?</h2>
-    <div id="report-evidence-summary" class="report-evidence-summary">
-      <!-- JS fills -->
-    </div>
-    <p class="dialog-question">What is your verdict on this email?</p>
-    <div class="dialog-actions">
-      <button type="button" class="btn-danger" onclick="submitReport(true)">🚩 REPORT AS PHISHING</button>
-      <button type="button" class="btn-success" onclick="submitReport(false)">✓ MARK AS LEGITIMATE</button>
-    </div>
-    <button type="button" class="btn-ghost btn-report-keep" onclick="closeOverlay('overlay-report')">← Keep Investigating</button>
-  </div>
-</div>
+<!-- overlay-report removed (no longer used) -->
+
+
 
 
 
@@ -2970,10 +2959,11 @@
     </div>
 
     <div class="results-final-score">
-      <span class="results-score-label">FINAL SCORE</span>
-      <span id="res-final-score" class="results-score-num">0</span>
-      <span class="results-score-max">out of <span id="res-max-score">625</span> possible</span>
+      <span class="results-score-label">DECISIONS</span>
+      <span id="res-final-score" class="results-score-num"><span id="res-correct-count">0</span></span>
+      <span class="results-score-max">correct out of <span id="res-max-score">9</span> emails</span>
     </div>
+
 
     <!-- Ryan Mentor Final Debrief -->
     <div class="ryan-results-card">
@@ -3314,6 +3304,8 @@
   </div>
 
 </div>
+
+
 
 <script src="script.js"></script>
 </body>

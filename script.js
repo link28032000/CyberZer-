@@ -9,193 +9,450 @@
 // GAME DATA
 // ═══════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════
+// CHAPTER 1 — DYNAMIC EMAIL SIMULATION SYSTEM
+// Flow: EMPTY INBOX → NOTIFICATION (1) → FIRST PHISHING EMAIL →
+// INVESTIGATION → FLAG MODE → FEEDBACK → NEW EMAILS → MIXED EMAILS →
+// TECHNICAL SOLUTIONS → FINAL SCENARIO → KNOWLEDGE CHECK → COMPLETE
+// ═══════════════════════════════════════════════════════════
+
+// Master email pool for Chapter 1 (9 emails, injected in 4 waves)
 const EMAILS = [
+  // === EMAIL 1: First phishing — loads on first Zmail open ===
   {
     id: 1,
-    sender: { name: 'BPI Security', address: 'bpi.security.verification@gmail.com' },
-    subject: 'URGENT: Your BPI account will be locked today',
-    time: '8:04 AM',
-    preview: 'We detected unusual activity on your account...',
+    sender: { name: 'Business Support', address: 'support@business-secure-alert.com' },
+    subject: 'URGENT: Your Account Requires Immediate Verification',
+    time: '8:14 AM',
+    preview: 'We have detected suspicious activity on your account. Immediate action is required within 30 minutes...',
     phishing: true,
     evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
     body: [
-      { type: 'p', text: 'Dear Customer,' },
-      { type: 'p', text: 'We detected unusual activity on your BPI online banking account. To protect your account, access has been temporarily restricted.' },
+      { type: 'p', text: 'Dear Account Holder,' },
+      { type: 'p', text: 'We have detected suspicious activity on your account. As a precautionary measure, your access has been temporarily restricted pending verification.' },
       {
         type: 'p-flag',
         flagId: 'urgency',
         flagType: 'false_urgency',
-        text: 'You must verify your account within 30 minutes or your online banking access will be permanently suspended.',
+        text: 'WARNING: Your account will be permanently suspended within 30 minutes if you do not verify your identity immediately.',
         label: 'FALSE URGENCY'
       },
-      { type: 'p', text: 'Please click the button below to verify your identity and restore full account access.' },
+      { type: 'p', text: 'To restore your account access and avoid permanent suspension, you must verify your identity using the secure link below.' },
       {
         type: 'link',
         flagId: 'link1',
         flagType: 'suspicious_link',
-        text: 'Verify My BPI Account',
-        destination: 'https://bpi-online-security.com/login',
+        text: 'Verify My Account Now',
+        destination: 'https://business-account-verify.net/login',
         label: 'SUSPICIOUS LINK'
       },
-      { type: 'p', text: 'Thank you for banking with BPI.' },
-      { type: 'p', text: 'Regards,\nBPI Security Team' }
+      { type: 'p', text: 'Do not share this link. It is tied exclusively to your account.' },
+      { type: 'p', text: 'Regards,\nBusiness Support Team\nSecurity Division' }
     ],
     capybaraAnalysis: {
       fake_sender: {
-        correct: '🚩 SENDER — CORRECT\nThe sender address is <code>bpi.security.verification@gmail.com</code>. Notice the <strong>@gmail.com</strong>! Official BPI emails come only from <code>@bpi.com.ph</code>. Legitimate banks NEVER use free public email accounts like Gmail to deliver urgent security alerts.',
-        missed: '🚩 MISSED — FAKE SENDER\nThe email was sent from <code>bpi.security.verification@gmail.com</code>. Notice the <strong>@gmail.com</strong> domain — real banks use their official domain (<code>@bpi.com.ph</code>), never a personal or free Gmail account.'
+        correct: '\ud83d\udea9 SENDER \u2014 CORRECT\nThe domain <code>business-secure-alert.com</code> is not the company\'s official domain. Attackers register convincing-sounding domains to impersonate organizations. Always verify the sender\'s exact domain.',
+        missed: '\ud83d\udea9 MISSED \u2014 FAKE SENDER\nThe sender <code>support@business-secure-alert.com</code> uses a fake domain. The real organization sends from its verified official domain, not <code>business-secure-alert.com</code>.'
       },
       false_urgency: {
-        correct: '🚩 URGENCY — CORRECT\nThe "30 minutes" deadline is a classic social engineering pressure tactic. Attackers create panic to prevent careful thinking.',
-        missed: '🚩 MISSED — FALSE URGENCY\nThe email threatened account suspension within 30 minutes. This extreme time pressure is a hallmark of phishing — it forces the victim to act without thinking.'
+        correct: '\ud83d\udea9 URGENCY \u2014 CORRECT\nA 30-minute suspension deadline is a manufactured pressure tactic designed to prevent critical thinking. Real organizations never use 30-minute ultimatums in security alerts.',
+        missed: '\ud83d\udea9 MISSED \u2014 FALSE URGENCY\nThe 30-minute deadline and \'permanent suspension\' threat are social engineering pressure. Real security alerts give reasonable timeframes and do not use extreme time pressure.'
       },
       suspicious_link: {
-        correct: '🚩 LINK — CORRECT\nThe button links to <code>https://bpi-online-security.com/login</code>, not BPI\'s real website (<code>bpi.com.ph</code>). The domain looks convincing, but attackers register fake domains to harvest credentials.',
-        missed: '🚩 MISSED — SUSPICIOUS LINK\nThe "Verify" button leads to <code>https://bpi-online-security.com/login</code>. Always inspect the destination — the real BPI website is <code>bpi.com.ph</code>.'
+        correct: '\ud83d\udea9 LINK \u2014 CORRECT\nThe verification link leads to <code>business-account-verify.net</code> \u2014 an unrelated fake domain used to harvest credentials. The real company domain is different.',
+        missed: '\ud83d\udea9 MISSED \u2014 SUSPICIOUS LINK\nThe \'Verify My Account Now\' button leads to <code>https://business-account-verify.net/login</code> \u2014 not the company\'s actual domain. Always verify the destination URL before clicking.'
       }
+    },
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Great catch! This was a phishing email. The sender used \"support@business-secure-alert.com\" \u2014 that domain is NOT the company\'s official domain. Attackers register convincing look-alike domains to impersonate real organizations.', state: 'success' },
+        { text: 'The \"30-minute suspension\" threat was a false urgency tactic \u2014 designed to panic you so you act without thinking. Real companies never set 30-minute ultimatums in security emails.', state: 'speaking' },
+        { text: 'The \"Verify My Account\" link led to \"business-account-verify.net\" \u2014 a completely different fake site built to steal your credentials. Always hover over links first to check where they actually go!', state: 'thinking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was actually a phishing email! The sender used \"support@business-secure-alert.com\" \u2014 the domain \"business-secure-alert.com\" is NOT the company\'s real domain. Attackers register look-alike domains to trick you.', state: 'concerned' },
+        { text: 'The \"30-minute suspension\" deadline was a pressure tactic \u2014 designed to make you act before you think. Real organizations always give reasonable timeframes, never 30-minute ultimatums.', state: 'speaking' },
+        { text: 'The link went to \"business-account-verify.net\" \u2014 a fake site built to steal your credentials. Remember: Stop, Check, Verify before clicking any link in an email!', state: 'thinking' }
+      ]
     }
   },
+
+  // === EMAIL 2: Legitimate HR email — Wave 2 ===
   {
     id: 2,
-    sender: { name: 'HR Department', address: 'hr@cybercorp.com' },
-    subject: 'September Employee Benefits Update',
-    time: '9:15 AM',
-    preview: 'The September employee benefits information is now available...',
+    sender: { name: 'HR Department', address: 'hr@business.com' },
+    subject: 'Updated Employee Benefits Information',
+    time: '9:02 AM',
+    preview: 'Please review the updated employee benefits package for the upcoming quarter...',
+    phishing: false,
+    evidence: [],
+    body: [
+      { type: 'p', text: 'Dear Team Member,' },
+      { type: 'p', text: 'We are pleased to share the updated employee benefits package for the upcoming quarter. Please take a moment to review the changes.' },
+      { type: 'p', text: 'Key updates include:\n\u2022 Enhanced health coverage options\n\u2022 Updated dental and vision plans\n\u2022 Expanded wellness program benefits\n\u2022 New remote work allowance policy' },
+      { type: 'p', text: 'Full details are available through the company\'s internal HR portal using your standard work credentials. No password reset or account verification is required.' },
+      { type: 'p', text: 'If you have questions, please contact HR directly at hr@business.com or visit us in Room 204.' },
+      { type: 'p', text: 'Best regards,\nHR Department\nBusiness Inc.' }
+    ],
+    capybaraAnalysis: {},
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Correct! This was a legitimate HR email. The sender \"hr@business.com\" uses the company\'s own official domain \u2014 that\'s a trusted, verified source.', state: 'success' },
+        { text: 'It contained no urgency pressure, no suspicious external links, and no requests for your password. It simply informed you about benefits and directed you to the official internal HR portal. That\'s how real internal emails behave.', state: 'speaking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was actually a legitimate email! The sender \"hr@business.com\" uses the company\'s real domain \u2014 \"business.com\". That\'s a verified, trusted source.', state: 'concerned' },
+        { text: 'It contained no urgency tactics, no external links asking for passwords, and no threats. It simply informed you of a benefits update. Not every email is a threat \u2014 always verify the sender\'s domain first before deciding.', state: 'speaking' }
+      ]
+    }
+  },
+
+  // === EMAIL 3: Phishing — Microsoft typosquat — Wave 2 ===
+  {
+    id: 3,
+    sender: { name: 'Microsoft Security', address: 'security-alert@m1crosoft-support.com' },
+    subject: 'Unusual Sign-In Detected on Your Account',
+    time: '9:28 AM',
+    preview: 'We detected a sign-in attempt from an unrecognized device. Your account may be at risk...',
+    phishing: true,
+    evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
+    body: [
+      { type: 'p', text: 'Dear Microsoft Account User,' },
+      { type: 'p', text: 'We detected a sign-in attempt to your Microsoft account from an unrecognized device in an unusual geographic location.' },
+      {
+        type: 'p-flag',
+        flagId: 'urgency',
+        flagType: 'false_urgency',
+        text: 'IMMEDIATE ACTION REQUIRED: Your account will be locked in 60 minutes unless you verify this activity and confirm your identity.',
+        label: 'FALSE URGENCY'
+      },
+      { type: 'p', text: 'If this was not you, please secure your account immediately by reviewing the activity and changing your password.' },
+      {
+        type: 'link',
+        flagId: 'link1',
+        flagType: 'suspicious_link',
+        text: 'Review Account Activity',
+        destination: 'https://m1crosoft-account-verify.com/signin',
+        label: 'SUSPICIOUS LINK'
+      },
+      { type: 'p', text: 'Regards,\nMicrosoft Account Security Team' }
+    ],
+    capybaraAnalysis: {
+      fake_sender: {
+        correct: '\ud83d\udea9 SENDER \u2014 CORRECT\nThe domain <code>m1crosoft-support.com</code> uses the digit \'1\' instead of the letter \'i\' in \'Microsoft\' \u2014 a typosquat attack. Real Microsoft emails come from <code>@microsoft.com</code>.',
+        missed: '\ud83d\udea9 MISSED \u2014 FAKE SENDER\nThe sender domain <code>m1crosoft-support.com</code> substitutes the digit \'1\' for the letter \'i\' \u2014 a typosquat. Microsoft\'s real domain is <code>microsoft.com</code>.'
+      },
+      false_urgency: {
+        correct: '\ud83d\udea9 URGENCY \u2014 CORRECT\nA 60-minute account lockout is manufactured urgency. Real Microsoft security alerts let you review activity at your own pace and do not impose hour-long ultimatums.',
+        missed: '\ud83d\udea9 MISSED \u2014 FALSE URGENCY\nThe 60-minute countdown is social engineering pressure. Real security alerts do not force immediate action under artificial time limits.'
+      },
+      suspicious_link: {
+        correct: '\ud83d\udea9 LINK \u2014 CORRECT\nThe link goes to <code>m1crosoft-account-verify.com</code> \u2014 a fake typosquat domain. Real Microsoft account management uses <code>account.microsoft.com</code>.',
+        missed: '\ud83d\udea9 MISSED \u2014 SUSPICIOUS LINK\nThe button leads to <code>https://m1crosoft-account-verify.com/signin</code> \u2014 not Microsoft\'s real domain. Always verify the destination URL before clicking.'
+      }
+    },
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Well spotted! This was a phishing email. Look closely at the sender: \"m1crosoft-support.com\" \u2014 that\'s the digit \"1\" (one) instead of the letter \"i\". This is called a typosquat attack.', state: 'success' },
+        { text: 'Real Microsoft emails only ever come from \"@microsoft.com\". The 60-minute lockout threat is manufactured urgency \u2014 real Microsoft security alerts let you review activity at your own pace.', state: 'speaking' },
+        { text: 'The link also went to \"m1crosoft-account-verify.com\" \u2014 same fake typosquat domain. Always read email addresses character by character. One digit difference can mean the difference between real and fake!', state: 'thinking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was actually a phishing email! Look at the sender: \"m1crosoft-support.com\" \u2014 that\'s the digit \"1\" (one) instead of the letter \"i\" in Microsoft. This typosquat trick is designed to fool you at a quick glance.', state: 'concerned' },
+        { text: 'Always read email addresses character by character. Real Microsoft emails only come from \"@microsoft.com\". The 60-minute lockout was manufactured pressure to stop you from thinking clearly.', state: 'speaking' }
+      ]
+    }
+  },
+
+  // === EMAIL 4: Legitimate IT Maintenance — Wave 2 ===
+  {
+    id: 4,
+    sender: { name: 'IT Support', address: 'it-support@business.com' },
+    subject: 'Scheduled Network Maintenance \u2014 This Saturday',
+    time: '10:15 AM',
+    preview: 'The IT team will conduct scheduled network maintenance this Saturday from 10 PM to 2 AM...',
+    phishing: false,
+    evidence: [],
+    body: [
+      { type: 'p', text: 'Dear All Staff,' },
+      { type: 'p', text: 'The IT Support team will be conducting scheduled network infrastructure maintenance this Saturday, from 10:00 PM to 2:00 AM.' },
+      { type: 'p', text: 'Services temporarily unavailable during this window:\n\u2022 VPN access\n\u2022 Internal file server\n\u2022 Company intranet portal\n\u2022 Email (intermittent)' },
+      { type: 'p', text: 'No action is required from you. Your files and credentials remain secure. You do NOT need to update your password after maintenance.' },
+      { type: 'p', text: 'For urgent matters, contact on-call IT at: it-oncall@business.com or ext. 4400.' },
+      { type: 'p', text: 'We apologize for any inconvenience.\n\nIT Support Team\nBusiness Inc.' }
+    ],
+    capybaraAnalysis: {},
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Correct! This was a legitimate IT maintenance notice from \"it-support@business.com\" \u2014 the company\'s official IT domain.', state: 'success' },
+        { text: 'It made no requests for your credentials, had no suspicious external links, and applied no pressure. It simply informed you of planned downtime. Real IT notices never ask for passwords during maintenance.', state: 'speaking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was a legitimate IT maintenance email! The sender \"it-support@business.com\" is on the company\'s real official domain \"business.com\".', state: 'concerned' },
+        { text: 'It asked for nothing from you \u2014 no passwords, no clicks on external links, no urgent action. Legitimate IT notices just inform you of planned downtime. When an email only informs and asks for nothing, and the sender is on the official domain \u2014 it\'s legitimate.', state: 'speaking' }
+      ]
+    }
+  },
+
+  // === EMAIL 5: Technical Solutions legitimate — Wave 3 ===
+  {
+    id: 5,
+    sender: { name: 'Technical Solutions Team', address: 'technical.solutions@business.com' },
+    subject: 'System Maintenance and Technical Update',
+    time: '11:00 AM',
+    preview: 'Monthly system maintenance has been completed. Please review the update summary for your department...',
+    phishing: false,
+    evidence: [],
+    body: [
+      { type: 'p', text: 'Dear Department Staff,' },
+      { type: 'p', text: 'This is a routine notification from the Technical Solutions Team confirming that the monthly system maintenance cycle has been completed successfully.' },
+      { type: 'p', text: 'Updates completed this cycle:\n\u2022 Security patch KB-2024-09 applied to all workstations\n\u2022 Database backup verified and stored to secure off-site location\n\u2022 Network monitoring tools upgraded to version 4.2\n\u2022 Legacy software compatibility testing completed' },
+      { type: 'p', text: 'No action is required from your end. All systems are operating normally. Your credentials, passwords, and access privileges are unchanged.' },
+      { type: 'p', text: 'If you notice any technical issues after this update, please submit a support ticket at the IT help portal or email technical.solutions@business.com.' },
+      { type: 'p', text: 'Thank you for your cooperation.\n\nTechnical Solutions Team\nBusiness Inc. IT Division' }
+    ],
+    capybaraAnalysis: {},
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Good judgment! This was a legitimate system maintenance notification from \"technical.solutions@business.com\" \u2014 a verified official company address.', state: 'success' },
+        { text: 'It reported completed maintenance work, made no credential requests, had no suspicious links, and directed any issues to official support channels. That\'s exactly how real IT update notifications look.', state: 'speaking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was actually a legitimate email! \"technical.solutions@business.com\" is an official company address on the real domain \"business.com\".', state: 'concerned' },
+        { text: 'The email simply reported completed maintenance \u2014 no links to click, no passwords to enter, no threats. When an email only informs you without asking for anything, and the sender is on the official domain, it is almost always legitimate.', state: 'speaking' }
+      ]
+    }
+  },
+
+  // === EMAIL 6: Final Scenario — Legitimate payroll — Wave 4 ===
+  {
+    id: 6,
+    sender: { name: 'Payroll Department', address: 'payroll@business.com' },
+    subject: 'September Payroll Processing Confirmation',
+    time: '11:45 AM',
+    preview: 'Your September payroll has been processed and will be deposited within 1-2 business days...',
+    phishing: false,
+    evidence: [],
+    body: [
+      { type: 'p', text: 'Dear Team Member,' },
+      { type: 'p', text: 'This is to confirm that September payroll has been successfully processed. Your salary will be deposited to your registered bank account within 1\u20132 business days.' },
+      { type: 'p', text: 'Payroll details can be reviewed via the company HR portal using your standard employee credentials. No additional verification is required.' },
+      { type: 'p', text: 'If you have payroll questions, contact us at payroll@business.com or visit HR between 9 AM and 5 PM on working days.' },
+      { type: 'p', text: 'Regards,\nPayroll Department\nBusiness Inc.' }
+    ],
+    capybaraAnalysis: {},
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Correct! This payroll confirmation from \"payroll@business.com\" is legitimate. It uses the company\'s official domain and requires nothing from you.', state: 'success' },
+        { text: 'It simply confirms salary processing and refers you to the internal HR portal \u2014 no credentials to submit, no suspicious links, no urgency pressure. That\'s normal, routine business communication.', state: 'speaking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was actually a legitimate payroll email! \"payroll@business.com\" is on the company\'s real domain. It simply confirms your salary was processed \u2014 no action required from you.', state: 'concerned' },
+        { text: 'Payroll confirmation emails are routine business notifications. They inform \u2014 they don\'t pressure. Ask yourself: Is the sender on the official domain? Does it ask for credentials or links? If no to both \u2014 it\'s legitimate.', state: 'speaking' }
+      ]
+    }
+  },
+
+  // === EMAIL 7: Final Scenario — Obvious phishing — Wave 4 ===
+  {
+    id: 7,
+    sender: { name: 'BANK SECURITY', address: 'urgent-alert@bankng-secure-verify.xyz' },
+    subject: '\u26a0\ufe0f FINAL WARNING: Account Suspended \u2014 Act NOW!',
+    time: '12:10 PM',
+    preview: 'Your bank account has been suspended. You have 15 minutes to verify or lose all access permanently...',
+    phishing: true,
+    evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
+    body: [
+      { type: 'p', text: 'ATTENTION ACCOUNT HOLDER,' },
+      { type: 'p', text: '\u26a0\ufe0f Your bank account has been SUSPENDED due to multiple failed verification attempts. To restore access, you must confirm your identity IMMEDIATELY.' },
+      {
+        type: 'p-flag',
+        flagId: 'urgency',
+        flagType: 'false_urgency',
+        text: '\ud83d\udd34 FINAL WARNING: You have 15 MINUTES to verify your account or you will permanently lose access to all your funds.',
+        label: 'FALSE URGENCY'
+      },
+      { type: 'p', text: 'Click below NOW to restore your account before it is permanently closed and your balance is frozen.' },
+      {
+        type: 'link',
+        flagId: 'link1',
+        flagType: 'suspicious_link',
+        text: 'RESTORE MY ACCOUNT IMMEDIATELY',
+        destination: 'https://bankng-secure-verify.xyz/restore',
+        label: 'SUSPICIOUS LINK'
+      },
+      { type: 'p', text: 'DO NOT IGNORE THIS MESSAGE.\nBank Security Division' }
+    ],
+    capybaraAnalysis: {
+      fake_sender: {
+        correct: '\ud83d\udea9 SENDER \u2014 CORRECT\nThe domain <code>bankng-secure-verify.xyz</code> misspells \'banking\' and uses a <code>.xyz</code> TLD. Real banks never use <code>.xyz</code> domains for official communications.',
+        missed: '\ud83d\udea9 MISSED \u2014 FAKE SENDER\nThe sender <code>urgent-alert@bankng-secure-verify.xyz</code> is clearly fake. \'bankng\' misspells \'banking\' and <code>.xyz</code> is not used by real financial institutions.'
+      },
+      false_urgency: {
+        correct: '\ud83d\udea9 URGENCY \u2014 CORRECT\n\'FINAL WARNING\' in all-caps with a 15-minute countdown is extreme psychological pressure. No real bank sends 15-minute ultimatums or threatens to permanently freeze funds via email.',
+        missed: '\ud83d\udea9 MISSED \u2014 FALSE URGENCY\nThe 15-MINUTE countdown and \'FINAL WARNING\' all-caps language are extreme social engineering tactics. Real banks never impose 15-minute deadlines via email.'
+      },
+      suspicious_link: {
+        correct: '\ud83d\udea9 LINK \u2014 CORRECT\nThe link leads to <code>bankng-secure-verify.xyz/restore</code> \u2014 the same misspelled fake domain as the sender. Attacker-controlled sender and link domains always match.',
+        missed: '\ud83d\udea9 MISSED \u2014 SUSPICIOUS LINK\nThe button leads to <code>bankng-secure-verify.xyz</code> \u2014 a fake domain matching the fake sender. Always verify where links actually go.'
+      }
+    },
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Caught it! The sender \"urgent-alert@bankng-secure-verify.xyz\" misspells \"banking\" as \"bankng\" and uses a \".xyz\" domain. No real bank ever uses \".xyz\" for official communications.', state: 'success' },
+        { text: '\"FINAL WARNING\" in all caps with a 15-MINUTE countdown to freeze your funds is extreme social engineering. Real banks never send 15-minute ultimatums via email or threaten to permanently freeze your money.', state: 'speaking' },
+        { text: 'The link went to \"bankng-secure-verify.xyz\" \u2014 the same fake domain as the sender. When the sender and link share the same non-official domain, it always confirms a phishing attack.', state: 'thinking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was a phishing email! The sender \"urgent-alert@bankng-secure-verify.xyz\" misspells \"banking\" as \"bankng\" and uses a \".xyz\" domain \u2014 no real bank ever uses that.', state: 'concerned' },
+        { text: '\"FINAL WARNING\" and a 15-MINUTE threat to freeze your funds is extreme social engineering designed to cause panic. Stop and always ask: would my real bank actually send this? The answer is always no.', state: 'speaking' }
+      ]
+    }
+  },
+
+  // === EMAIL 8: Final Scenario — Sophisticated phishing — Wave 4 ===
+  {
+    id: 8,
+    sender: { name: 'IT Security Operations', address: 'security-ops@business-it-support.com' },
+    subject: 'Action Required: Security Policy Compliance Update',
+    time: '12:35 PM',
+    preview: 'All employees are required to complete mandatory security compliance verification before Friday...',
+    phishing: true,
+    evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
+    body: [
+      { type: 'p', text: 'Dear Employee,' },
+      { type: 'p', text: 'As part of our annual cybersecurity compliance review, all employees are required to verify their account credentials through our updated secure portal.' },
+      { type: 'p', text: 'This is a mandatory requirement under our updated IT Security Policy (ISP-2024-07). Non-compliance may result in temporary account restrictions.' },
+      {
+        type: 'p-flag',
+        flagId: 'urgency',
+        flagType: 'false_urgency',
+        text: 'IMPORTANT: This compliance verification must be completed by this Friday, 5:00 PM. Accounts not verified by this deadline will be suspended pending manual review.',
+        label: 'FALSE URGENCY'
+      },
+      { type: 'p', text: 'Please use the secure compliance portal link below to complete your verification. The process takes approximately 3 minutes.' },
+      {
+        type: 'link',
+        flagId: 'link1',
+        flagType: 'suspicious_link',
+        text: 'Complete Security Compliance Verification',
+        destination: 'https://business-it-support.com/compliance-portal',
+        label: 'SUSPICIOUS LINK'
+      },
+      { type: 'p', text: 'Thank you for helping us maintain a secure workplace.\n\nIT Security Operations\nCompliance & Risk Management' }
+    ],
+    capybaraAnalysis: {
+      fake_sender: {
+        correct: '\ud83d\udea9 SENDER \u2014 CORRECT\nThe sender uses <code>business-it-support.com</code> \u2014 not the company\'s real domain <code>business.com</code>. Sophisticated phishers register plausible domains to impersonate internal IT departments.',
+        missed: '\ud83d\udea9 MISSED \u2014 FAKE SENDER\nThe sender is <code>security-ops@business-it-support.com</code>. This looks official, but the domain is <code>business-it-support.com</code> \u2014 not the real company domain <code>business.com</code>.'
+      },
+      false_urgency: {
+        correct: '\ud83d\udea9 URGENCY \u2014 CORRECT\nA Friday deadline with suspension threats is manufactured urgency \u2014 just more credible-sounding. Real compliance requirements are announced well in advance through multiple official channels.',
+        missed: '\ud83d\udea9 MISSED \u2014 FALSE URGENCY\nThe \'Friday 5 PM deadline with suspension\' creates time pressure. Sophisticated phishing uses realistic-sounding deadlines. Real compliance notices go through multiple official channels.'
+      },
+      suspicious_link: {
+        correct: '\ud83d\udea9 LINK \u2014 CORRECT\nThe compliance portal link goes to <code>business-it-support.com</code> \u2014 the same fake domain as the sender, not the real company domain <code>business.com</code>.',
+        missed: '\ud83d\udea9 MISSED \u2014 SUSPICIOUS LINK\nThe link leads to <code>business-it-support.com/compliance-portal</code> \u2014 not <code>business.com</code>. The sender and link share the same fake domain, confirming a coordinated phishing attack.'
+      }
+    },
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Excellent! This was a sophisticated phishing attempt \u2014 one of the hardest to catch. The sender \"security-ops@business-it-support.com\" looks official, but the domain is \"business-it-support.com\", NOT \"business.com\".', state: 'success' },
+        { text: 'This is an advanced attack using a plausible domain. The \"Friday 5 PM deadline\" sounds like a real compliance notice \u2014 but real compliance updates are always announced through multiple official channels, not a single urgent email.', state: 'speaking' },
+        { text: 'The compliance portal link also used \"business-it-support.com\" \u2014 same fake domain as the sender. Rule: always compare the sender domain against your company\'s REAL domain. Even one extra word in the domain makes it fake.', state: 'thinking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was a sophisticated phishing email \u2014 the hardest kind! The sender used \"business-it-support.com\" which looks like an IT address, but is NOT \"business.com\".', state: 'concerned' },
+        { text: 'Always compare the sender\'s exact domain against your company\'s real official domain. \"business-it-support.com\" vs \"business.com\" \u2014 one extra phrase makes it a fake.', state: 'speaking' },
+        { text: 'The \"Friday deadline\" and \"account suspension\" were pressure tactics. Real compliance requirements are always announced through multiple official channels \u2014 never a single urgent email. When in doubt, verify directly with IT.', state: 'thinking' }
+      ]
+    }
+  },
+
+  // === EMAIL 9: Final Scenario — Legitimate IT ticket — Wave 4 ===
+  {
+    id: 9,
+    sender: { name: 'IT Help Desk', address: 'helpdesk@business.com' },
+    subject: 'Your IT Support Ticket #4821 Has Been Resolved',
+    time: '1:05 PM',
+    preview: 'Your recent support ticket regarding email configuration has been resolved...',
     phishing: false,
     evidence: [],
     body: [
       { type: 'p', text: 'Dear Employee,' },
-      { type: 'p', text: 'We hope you are doing well. The September employee benefits information is now available for your review.' },
-      { type: 'p', text: 'This month\'s update includes details about the health plan renewal, updated leave policies, and the company wellness program.' },
-      { type: 'p', text: 'Please review the information through the company\'s normal internal HR portal, accessible through your standard work credentials.' },
-      { type: 'p', text: 'If you have any questions, feel free to reach out to the HR team directly at hr@cybercorp.com.' },
-      { type: 'p', text: 'Thank you,\nHR Department\nCyberCorp Inc.' }
+      { type: 'p', text: 'This is an automated notification from the IT Help Desk system. Your support ticket #4821 (Email Configuration Issue) has been resolved.' },
+      { type: 'p', text: 'Resolution summary:\n\u2022 Mailbox synchronization settings have been corrected\n\u2022 Junk mail filters updated\n\u2022 Email signature template restored to default' },
+      { type: 'p', text: 'If you continue to experience issues, please reply to this email or submit a new ticket via the company intranet. No credentials were modified during this process.' },
+      { type: 'p', text: 'Thank you,\nIT Help Desk\nBusiness Inc. \u2014 Ticket System' }
     ],
-    capybaraAnalysis: {}
-  },
-  {
-    id: 3,
-    sender: { name: 'PayPal Security', address: 'security@paypa1-security.com' },
-    subject: 'URGENT: Your PayPal account will be suspended',
-    time: '10:22 AM',
-    preview: 'We detected unusual activity on your PayPal account...',
-    phishing: true,
-    evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
-    body: [
-      { type: 'p', text: 'Dear Customer,' },
-      { type: 'p', text: 'We detected unusual activity on your PayPal account. For your security, certain features have been restricted.' },
-      {
-        type: 'p-flag',
-        flagId: 'urgency',
-        flagType: 'false_urgency',
-        text: 'Your account will be permanently limited within 24 hours unless you verify your identity and confirm your billing information.',
-        label: 'FALSE URGENCY'
-      },
-      { type: 'p', text: 'Failure to complete verification will result in permanent account closure and loss of any pending balance.' },
-      {
-        type: 'link',
-        flagId: 'link1',
-        flagType: 'suspicious_link',
-        text: 'Restore My Account',
-        destination: 'https://paypal-account-check.com/login',
-        label: 'SUSPICIOUS LINK'
-      },
-      { type: 'p', text: 'Thank you for using PayPal.' },
-      { type: 'p', text: 'Regards,\nPayPal Security Team' }
-    ],
-    capybaraAnalysis: {
-      fake_sender: {
-        correct: '🚩 SENDER — CORRECT\nNotice the domain: <code>paypa1-security.com</code> uses the number "1" instead of the letter "l" in "PayPal". This is called a typosquat domain — a common attacker trick.',
-        missed: '🚩 MISSED — FAKE SENDER\nThe sender was <code>security@paypa1-security.com</code>. Look closely — "paypa<strong>1</strong>" uses the digit 1, not the letter l. This subtle swap is a typosquat phishing technique.'
-      },
-      false_urgency: {
-        correct: '🚩 URGENCY — CORRECT\nThe "24 hours" deadline and threat of permanent closure is engineered to create panic. Legitimate companies give adequate time and never threaten instant loss.',
-        missed: '🚩 MISSED — FALSE URGENCY\nThe email threatened permanent account closure within 24 hours. This is a pressure tactic to prevent you from verifying the email\'s legitimacy before acting.'
-      },
-      suspicious_link: {
-        correct: '🚩 LINK — CORRECT\nThe link destination <code>https://paypal-account-check.com/login</code> is not owned by PayPal. The real PayPal uses <code>paypal.com</code>.',
-        missed: '🚩 MISSED — SUSPICIOUS LINK\nThe "Restore My Account" button leads to <code>https://paypal-account-check.com/login</code>. Always check actual link destinations — not the button label text.'
-      }
-    }
-  },
-  {
-    id: 4,
-    sender: { name: 'IT Department', address: 'it@cybercorp.com' },
-    subject: 'Scheduled System Maintenance — Sunday 11 PM',
-    time: '11:05 AM',
-    preview: 'Please be advised of scheduled maintenance this Sunday...',
-    phishing: false,
-    evidence: [],
-    body: [
-      { type: 'p', text: 'Dear Team,' },
-      { type: 'p', text: 'Please be advised that the IT Department will be conducting scheduled system maintenance this Sunday, September 8, from 11:00 PM to 2:00 AM.' },
-      { type: 'p', text: 'During this window, the following services will be temporarily unavailable:' },
-      { type: 'p', text: '• Employee portal\n• Internal file sharing\n• Company email (intermittent)' },
-      { type: 'p', text: 'No action is required from your side. Your data is safe and no credentials need to be updated.' },
-      { type: 'p', text: 'We apologize for any inconvenience. For urgent matters during the maintenance window, please contact the on-call IT team at it-oncall@cybercorp.com.' },
-      { type: 'p', text: 'Thank you for your understanding.\nIT Department' }
-    ],
-    capybaraAnalysis: {}
-  },
-  {
-    id: 5,
-    sender: { name: 'GCash Rewards', address: 'gcash.promotions.rewards@gmail.com' },
-    subject: '🎉 Congratulations! You\'ve won a GCash reward!',
-    time: '12:33 PM',
-    preview: 'You have been selected as a special GCash customer reward winner...',
-    phishing: true,
-    evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
-    body: [
-      { type: 'p', text: 'Dear Valued GCash Customer,' },
-      { type: 'p', text: '🎉 Congratulations! You have been randomly selected as this month\'s special GCash loyalty reward winner!' },
-      { type: 'p', text: 'Your prize: ₱5,000 GCash credits, ready to be claimed to your registered GCash wallet.' },
-      {
-        type: 'p-flag',
-        flagId: 'urgency',
-        flagType: 'false_urgency',
-        text: 'IMPORTANT: This reward will expire in 2 hours. You must claim it immediately or it will be forfeited and transferred to another user.',
-        label: 'FALSE URGENCY'
-      },
-      { type: 'p', text: 'To claim your reward, simply verify your GCash account by clicking the button below.' },
-      {
-        type: 'link',
-        flagId: 'link1',
-        flagType: 'suspicious_link',
-        text: 'Claim My ₱5,000 Reward',
-        destination: 'https://gcash-claim-rewards.com/verify',
-        label: 'SUSPICIOUS LINK'
-      },
-      { type: 'p', text: 'Do not share this link. It is unique to your account.' },
-      { type: 'p', text: 'Regards,\nGCash Rewards Team' }
-    ],
-    capybaraAnalysis: {
-      fake_sender: {
-        correct: '🚩 SENDER — CORRECT\nThe sender address is <code>gcash.promotions.rewards@gmail.com</code>. Notice the <strong>@gmail.com</strong>! Official GCash communications come exclusively from <code>@gcash.com</code>. Scammers often use free Gmail accounts to lure victims with fake giveaways.',
-        missed: '🚩 MISSED — FAKE SENDER\nThe sender was <code>gcash.promotions.rewards@gmail.com</code>. Notice the <strong>@gmail.com</strong> domain — GCash will never use a public or personal Gmail account to distribute rewards.'
-      },
-      false_urgency: {
-        correct: '🚩 URGENCY — CORRECT\nA "2-hour expiry" on a supposed reward is a classic scam pressure tactic. Legitimate rewards do not expire within hours and do not threaten immediate forfeiture.',
-        missed: '🚩 MISSED — FALSE URGENCY\nThe 2-hour countdown before the reward "expires" is a pressure tactic. Scammers use short deadlines to stop you from pausing and thinking critically.'
-      },
-      suspicious_link: {
-        correct: '🚩 LINK — CORRECT\nThe claim link goes to <code>https://gcash-claim-rewards.com/verify</code> — not GCash\'s real website (<code>gcash.com</code>). This is a fake phishing site designed to steal your 4-digit MPIN.',
-        missed: '🚩 MISSED — SUSPICIOUS LINK\nThe "Claim My Reward" button leads to <code>https://gcash-claim-rewards.com/verify</code>. The real GCash website is <code>gcash.com</code>. Always verify destinations before clicking.'
-      }
+    capybaraAnalysis: {},
+    ryanTutor: {
+      correct: [
+        { text: '\u2705 Correct! This IT ticket confirmation from \"helpdesk@business.com\" is legitimate. It uses the company\'s official domain and simply notifies you of a resolved support ticket.', state: 'success' },
+        { text: 'No credentials were requested, no suspicious external links, and no urgency threats. Automated ticket notifications are normal business processes. You verified correctly \u2014 well done!', state: 'speaking' }
+      ],
+      wrong: [
+        { text: '\u26a0\ufe0f That was a legitimate IT Help Desk notification! \"helpdesk@business.com\" uses the company\'s official domain \"business.com\". It simply confirms a support ticket was resolved.', state: 'concerned' },
+        { text: 'Ticket notifications are routine automated emails. No credential requests, no urgency threats. The key check: is the sender on the official domain, and does it ask for anything? If no to both \u2014 it\'s legitimate.', state: 'speaking' }
+      ]
     }
   }
 ];
 
-// Perfect-run total: phishing emails are worth 100 (decision) + 25 per clue;
-// legitimate emails are a flat 50 (no evidence to find). Used by the HUD
-// and the final results screen so both stay in sync automatically.
+// ═══════════════════════════════════════════════════════════
+// CHAPTER 1 — DYNAMIC INBOX STATE
+// Inbox starts EMPTY. Emails are injected in 4 waves based on
+// player progress. Notification badge shows (1) before first open.
+// ═══════════════════════════════════════════════════════════
+
+// Live inbox — populated dynamically as player progresses
+let ch1InboxEmails               = [];    // emails currently visible in the inbox
+let ch1PendingNotification       = false; // true = show badge (1) before player opens Zmail
+let ch1Stage                     = 0;     // 0=start,1=wave1,2=wave2,3=wave3,4=wave4
+let ch1MistakeCount              = 0;     // adaptive mentor coaching tracker
+let ch1InvestigationTutorialDone = false; // true after first-email investigation lesson is shown
+
+// Wave definitions: which email IDs are injected at each stage
+const CH1_WAVE_DEFS = {
+  1: [1],           // First phishing email (injected on first gmail open)
+  2: [2, 3, 4],     // After email 1 reported: HR legit + Microsoft phish + IT legit
+  3: [5],           // After wave 2 cleared: Technical Solutions legit
+  4: [6, 7, 8, 9]   // Final scenario: payroll legit + obvious phish + sophisticated phish + IT ticket legit
+};
+
+function ch1GetEmailDef(id) {
+  return EMAILS.find(e => e.id === id) || null;
+}
+
+function ch1InjectWave(waveNum) {
+  const ids = (CH1_WAVE_DEFS[waveNum] || []).filter(id => !ch1InboxEmails.some(e => e.id === id));
+  if (ids.length === 0) return;
+  ids.forEach((id, idx) => {
+    setTimeout(() => {
+      const def = ch1GetEmailDef(id);
+      if (def) {
+        ch1InboxEmails.push(def);
+        renderEmailList();
+        updateFolderCounts();
+      }
+    }, idx * 350);
+  });
+  setTimeout(() => {
+    showToast('📧 New emails arrived in your inbox.', 'success');
+    if (typeof AudioManager !== 'undefined') AudioManager.playNotification();
+  }, 250);
+  ch1Stage = waveNum;
+}
+
+// Perfect-run score computed over all 9 emails
 const MAX_SCORE = EMAILS.reduce((sum, e) => sum + (e.phishing ? 100 + e.evidence.length * 25 : 50), 0);
 
 // Emails already sent by the player — viewable in the Sent folder
 const SENT_EMAILS = [
   {
     id: 101,
-    to: 'hr@cybercorp.com',
-    subject: 'Re: September Employee Benefits Update',
+    to: 'hr@business.com',
+    subject: 'Re: Updated Employee Benefits Information',
     time: '9:12 AM',
     preview: 'Thanks for the update — reviewed and confirmed on my end...',
     body: [
@@ -206,7 +463,7 @@ const SENT_EMAILS = [
   },
   {
     id: 102,
-    to: 'it-security@cybercorp.com',
+    to: 'it-security@business.com',
     subject: 'Suspicious emails flagged this week',
     time: '10:47 AM',
     preview: 'Sharing a couple of phishing samples I caught for awareness...',
@@ -217,6 +474,10 @@ const SENT_EMAILS = [
     ]
   }
 ];
+
+
+
+
 
 // Fake websites for the browser
 // Fake websites for the browser (Authentic Phishing Website Examples)
@@ -535,6 +796,57 @@ function openApp(appName) {
 
   if (appName === 'gmail') {
     updateFolderCounts();
+    if (gameState.phase === 'mission') {
+      if (ch1InboxEmails.length > 0) {
+        setTimeout(function() {
+          // Pulse-highlight the whole inbox panel first
+          const emailListView = document.getElementById('email-list-view');
+          if (emailListView) {
+            emailListView.classList.remove('inbox-pulse-highlight');
+            void emailListView.offsetWidth;
+            emailListView.classList.add('inbox-pulse-highlight');
+            setTimeout(function() { emailListView.classList.remove('inbox-pulse-highlight'); }, 3200);
+          }
+          updateStickyChecklist();
+
+          // Ryan gives a guided intro: click the email → then check notes
+          setTimeout(function() {
+            if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+              RyanGuide.speak([
+                { text: "You've got mail! 📧 Click the email in your inbox to open it and start investigating.", state: 'speaking' },
+                { text: "Before you dive in — check your Detective's Notes for tips and your mission checklist!", state: 'thinking' }
+              ], {
+                onDone: function() {
+                  setTimeout(function() {
+                    const firstRow = document.querySelector('#email-list .email-list-item');
+                    if (firstRow) {
+                      firstRow.classList.remove('email-row-pulse');
+                      void firstRow.offsetWidth;
+                      firstRow.classList.add('email-row-pulse');
+                      setTimeout(function() { firstRow.classList.remove('email-row-pulse'); }, 3000);
+                    }
+                  }, 200);
+                }
+              });
+            }
+          }, 1000);
+        }, 300);
+      } else {
+        // Player opened Zmail before opening notes:
+        setTimeout(function() {
+          if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+            RyanGuide.speak([
+              { text: "Before you can begin investigating, open your Detective's Notes on your desktop!", state: 'speaking' },
+              { text: "Your notes contain your investigation checklist. Once you open them, your first email will arrive here in Zmail.", state: 'thinking' }
+            ], {
+              onDone: function() {
+                if (typeof IconAttention !== 'undefined') IconAttention.show('notes');
+              }
+            });
+          }
+        }, 500);
+      }
+    }
   }
 
   if (appName === 'browser') {
@@ -2986,10 +3298,17 @@ function startMission(openGmail = false) {
   gameState.trashedSentIds = [];
   gameState.readSentIds = [];
 
+  // ── Chapter 1 dynamic inbox reset ──────────────────────────
+  ch1InboxEmails               = [];    // Start completely empty
+  ch1Stage                     = 0;     // No waves injected yet
+  ch1PendingNotification       = false; // Badge shows only after Ryan's intro finishes
+  ch1MistakeCount              = 0;
+  ch1InvestigationTutorialDone = false; // Reset investigation tutorial flag
+
   hideAllOverlays();
   renderEmailList();
   updateHUD();
-  updateFolderCounts();
+  updateFolderCounts();        // Will show (1) notification
   updateAppLockStates();
 
   const hudEl = document.getElementById('hud');
@@ -3015,6 +3334,50 @@ function startMission(openGmail = false) {
 
   closeStickyNote();
 
+  // ── Ryan full awareness lesson — starts after desktop appears ──
+  if (window._ryanMissionIntroTimer) {
+    clearTimeout(window._ryanMissionIntroTimer);
+    window._ryanMissionIntroTimer = null;
+  }
+  if (typeof RyanGuide !== 'undefined') {
+    window._ryanMissionIntroTimer = setTimeout(function() {
+      if (gameState.phase !== 'mission') return;
+      RyanGuide.speak([
+        // === Introduction ===
+        { text: "Hi! 👋 I'm Ryan, your cybersecurity mentor here at Technical Solutions — it's great to have you on board!", state: 'speaking' },
+        { text: "Before we get started, let's explore why cybersecurity matters to everyone here.", state: 'speaking' },
+        { text: "Cyber threats aren't always about complicated technology.", state: 'thinking' },
+        { text: "Attackers often target people using trust, urgency, fear, curiosity, or deception.", state: 'concerned' },
+        // === Common Threats ===
+        { text: "First, there's phishing. An attacker pretends to be someone you trust and tries to get you to click a link, open a file, or reveal information.", state: 'speaking' },
+        { text: "Vishing is voice phishing. An attacker may call pretending to be IT support, your manager, a bank, or another trusted person.", state: 'speaking' },
+        { text: "Smishing is phishing through text messages or SMS.", state: 'speaking' },
+        { text: "Attackers can also use malicious attachments, fake websites, impersonation, social engineering, and stolen passwords.", state: 'concerned' },
+        // === Why It Matters ===
+        { text: "Your account and your decisions can affect more than just you.", state: 'thinking' },
+        { text: "One successful attack could expose company information, customer data, employee accounts, or important business systems.", state: 'concerned' },
+        { text: "Cybersecurity isn't only an IT responsibility. Everyone has a role in keeping the organization safe.", state: 'speaking' },
+        { text: "Your awareness can help protect you, your coworkers, and the entire organization.", state: 'success' },
+        // === STOP → CHECK → VERIFY → ACT ===
+        { text: "Whenever something feels suspicious, remember four simple steps.", state: 'thinking' },
+        { text: "STOP before reacting.", state: 'speaking' },
+        { text: "CHECK the details.", state: 'speaking' },
+        { text: "VERIFY through a trusted method.", state: 'speaking' },
+        { text: "Then ACT safely.", state: 'speaking' },
+        { text: "Don't let urgency make the decision for you.", state: 'concerned' },
+        // === Transition to Zmail ===
+        { text: "Now let's put that knowledge into practice.", state: 'speaking' },
+        { text: "First, open your Detective's Notes on your desktop to review your tips and checklist.", state: 'speaking' },
+        { text: "Once you check your notes, your first email will arrive in Zmail!", state: 'thinking' }
+      ], {
+        onDone: function() {
+          if (typeof IconAttention !== 'undefined') IconAttention.show('notes');
+          updateFolderCounts();
+        }
+      });
+    }, 3000);
+  }
+
   if (openGmail) {
     openApp('gmail');
     updateStickyNoteForPhase('phishing');
@@ -3023,6 +3386,7 @@ function startMission(openGmail = false) {
 }
 
 /**
+
  * Opens a clean desktop view for Chapter 2, Chapter 3, or Chapter 4 with NO mission.
  * Ensures no mission popups, no demo overlays, and Ryan mentor guide is disabled (only Chapter 1 has Ryan).
  */
@@ -3083,17 +3447,167 @@ function showStickyNote() {
 
   note.classList.remove('hidden');
   note.classList.remove('sticky-note-pop');
-  // Force reflow so the pop-in animation replays every time it's shown
-  void note.offsetWidth;
+  void note.offsetWidth; // Force reflow so the pop-in animation replays every time it's shown
   note.classList.add('sticky-note-pop');
 
   if (icon) icon.classList.remove('hidden');
+
+  // Dismiss the icon attention glow when player opens the note
+  if (typeof IconAttention !== 'undefined') IconAttention.hide('notes');
+
+  // Pulse the border gold to greet the player when they open it
+  note.classList.remove('sticky-note-highlight');
+  void note.offsetWidth;
+  note.classList.add('sticky-note-highlight');
+  setTimeout(function() { note.classList.remove('sticky-note-highlight'); }, 3200);
+
+  // ── Mission Chapter 1: Opening notes adds inbox 1 email and makes it visible ──
+  if (gameState.phase === 'mission' && ch1Stage === 0 && ch1InboxEmails.length === 0) {
+    ch1PendingNotification = false;
+    ch1InjectWave(1); // Adds the 1st email to inbox!
+    updateFolderCounts(); // Shows Inbox (1)
+
+    // If Zmail app is open, refresh the email list immediately so the email is visible
+    if (typeof appState !== 'undefined' && appState['gmail'] && appState['gmail'].open) {
+      renderEmailList();
+      setTimeout(function() {
+        const firstRow = document.querySelector('#email-list .email-list-item');
+        if (firstRow) {
+          firstRow.classList.remove('email-row-pulse');
+          void firstRow.offsetWidth;
+          firstRow.classList.add('email-row-pulse');
+          setTimeout(function() { firstRow.classList.remove('email-row-pulse'); }, 3000);
+        }
+      }, 200);
+    } else {
+      // Guide player to open Zmail
+      if (typeof IconAttention !== 'undefined') IconAttention.show('gmail');
+    }
+  }
 }
 
 function closeStickyNote() {
   const note = document.getElementById('sticky-note');
   if (note) note.classList.add('hidden');
 }
+
+// ─── Sticky note live checklist ──────────────────────────────────────────────
+const SN_ACHIEVEMENTS = [
+  {
+    id: 'first_catch',
+    icon: '🎯',
+    label: 'First Catch',
+    desc: 'Report your first phishing email',
+    check: () => gameState.phishingDetected >= 1,
+    progress: () => `${Math.min(gameState.phishingDetected,1)}/1`
+  },
+  {
+    id: 'phishing_hunter',
+    icon: '🚩',
+    label: 'Phishing Hunter',
+    desc: 'Detect all 5 phishing emails',
+    check: () => gameState.phishingDetected >= 5,
+    progress: () => `${gameState.phishingDetected}/5`
+  },
+  {
+    id: 'trust_check',
+    icon: '✅',
+    label: 'Trust Verified',
+    desc: 'Correctly identify all 4 legitimate emails',
+    check: () => gameState.legitimateDetected >= 4,
+    progress: () => `${gameState.legitimateDetected}/4`
+  },
+  {
+    id: 'halfway',
+    icon: '📧',
+    label: 'Halfway There',
+    desc: 'Review 5 out of 9 emails',
+    check: () => gameState.emailResults.length >= 5,
+    progress: () => `${gameState.emailResults.length}/9`
+  },
+  {
+    id: 'chapter_complete',
+    icon: '🏆',
+    label: 'Chapter Complete',
+    desc: 'Investigate all 9 emails',
+    check: () => gameState.emailResults.length >= 9,
+    progress: () => `${gameState.emailResults.length}/9`
+  }
+];
+
+const _achievementUnlocked = new Set();
+
+function updateStickyChecklist() {
+  if (gameState.phase !== 'mission') return;
+  const section = document.getElementById('sn-checklist-section');
+  if (!section) return;
+
+  let html = '<div class="sn-checklist-header">🏅 Mission Checklist</div><ul class="sn-checklist">';
+
+  SN_ACHIEVEMENTS.forEach(ach => {
+    const done = ach.check();
+    const prog = ach.progress();
+    html += `
+      <li class="sn-ach-item ${done ? 'sn-ach-done' : ''}">
+        <span class="sn-ach-icon">${done ? '✅' : ach.icon}</span>
+        <span class="sn-ach-body">
+          <span class="sn-ach-label">${ach.label}</span>
+          <span class="sn-ach-prog">${prog}</span>
+        </span>
+        ${done ? '<span class="sn-ach-badge">✓ DONE</span>' : ''}
+      </li>`;
+
+    // Fire achievement toast on first unlock
+    if (done && !_achievementUnlocked.has(ach.id)) {
+      _achievementUnlocked.add(ach.id);
+      setTimeout(() => showAchievementToast(ach), 500);
+    }
+  });
+
+  html += '</ul>';
+  section.innerHTML = html;
+
+  // Pulse the sticky note to draw attention after a verdict
+  const note = document.getElementById('sticky-note');
+  if (note && !note.classList.contains('hidden')) {
+    note.classList.remove('sticky-note-pulse-once');
+    void note.offsetWidth;
+    note.classList.add('sticky-note-pulse-once');
+    setTimeout(() => note.classList.remove('sticky-note-pulse-once'), 800);
+  }
+}
+
+function showAchievementToast(ach) {
+  // Create a premium achievement popup
+  const existing = document.getElementById('achievement-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'achievement-toast';
+  toast.className = 'achievement-toast';
+  toast.innerHTML = `
+    <div class="ach-toast-glow"></div>
+    <div class="ach-toast-icon">${ach.icon}</div>
+    <div class="ach-toast-body">
+      <div class="ach-toast-title">Achievement Unlocked!</div>
+      <div class="ach-toast-name">${ach.label}</div>
+      <div class="ach-toast-desc">${ach.desc}</div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+
+  // Animate in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('ach-toast-show'));
+  });
+
+  // Auto-dismiss after 3.5s
+  setTimeout(() => {
+    toast.classList.remove('ach-toast-show');
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
 
 function toggleStickyNote() {
   const note = document.getElementById('sticky-note');
@@ -3129,19 +3643,16 @@ function updateStickyNoteForPhase(phase) {
   } else {
     if (titleEl) titleEl.textContent = "📒 Detective's Notes";
     scrollEl.innerHTML = `
-      <div class="sticky-note-title">How Scoring Works</div>
+      <div class="sticky-note-title">How to Investigate</div>
       <ul class="sticky-note-list">
-        <li><span class="sn-icon sn-good">✅</span><span>Correct Phishing verdict <strong>+100</strong> (highest)</span></li>
-        <li><span class="sn-icon sn-good">✅</span><span>Correct Legitimate verdict <strong>+50</strong></span></li>
-        <li><span class="sn-icon sn-good">🚩</span><span>Each correct evidence flag <strong>+25</strong></span></li>
-        <li><span class="sn-icon sn-bad">❌</span><span>Wrong verdict <strong>−50</strong></span></li>
-        <li><span class="sn-icon sn-bad">⚠️</span><span>Wrong flag placed <strong>−10</strong></span></li>
-        <li><span class="sn-icon sn-bad">🔍</span><span>Missed a real clue (even if verdict's right) <strong>−25</strong></span></li>
-        <li><span class="sn-icon sn-good">📊</span><span>Watch your live score in the <strong>top-right corner</strong></span></li>
+        <li><span class="sn-icon sn-good">🔍</span><span>Check the <strong>sender's email domain</strong></span></li>
+        <li><span class="sn-icon sn-good">⚠️</span><span>Look for <strong>false urgency</strong> or threats</span></li>
+        <li><span class="sn-icon sn-good">🔗</span><span>Hover links — where do they <strong>really</strong> go?</span></li>
+        <li><span class="sn-icon sn-good">🚩</span><span>Use <strong>Flag Mode</strong> to mark red flags</span></li>
       </ul>
-      <div class="sticky-note-tip">
-        💡 A correct verdict isn't enough on its own — find every clue too, or you'll lose points for what you missed.
-      </div>`;
+      <div id="sn-checklist-section"></div>
+      <div class="sticky-note-tip">💡 Ryan will explain every verdict after you submit it.</div>`;
+    updateStickyChecklist();
   }
 }
 
@@ -3229,7 +3740,7 @@ function updateHUD() {
     const currentNum = activeMissionIdx === -1 ? EMAILS.length : activeMissionIdx + 1;
     if (hudCount) hudCount.textContent = `${currentNum} / ${EMAILS.length}`;
   }
-  if (hudScore) hudScore.textContent = `${gameState.score}`;
+  if (hudScore) hudScore.textContent = `${gameState.correctDecisions}/${gameState.emailResults.length || 0}`;
   updateAppLockStates();
 }
 
@@ -3261,9 +3772,9 @@ function updateFolderCounts() {
   const sentBadge = document.getElementById('sent-count');
   const trashBadge = document.getElementById('trash-count');
 
-  // Inbox badge: count remaining uncompleted/uninvestigated emails
+  // Inbox badge — dynamic Chapter 1 system:
   if (inboxBadge) {
-    const remainingInbox = EMAILS.filter(e => !gameState.emailResults.some(r => r.emailId === e.id)).length;
+    let remainingInbox = ch1InboxEmails.filter(e => !gameState.emailResults.some(r => r.emailId === e.id)).length;
     inboxBadge.textContent = remainingInbox;
     inboxBadge.style.display = remainingInbox > 0 ? 'inline-block' : 'none';
   }
@@ -3294,15 +3805,40 @@ function renderEmailList() {
   const list = document.getElementById('email-list');
   list.innerHTML = '';
 
-  const activeMissionIdx = EMAILS.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
+  // ── Chapter 1 dynamic injection: requires opening notes first ──
+  // If notes haven't been opened yet and inbox is empty:
+  if (gameState.phase === 'mission' && ch1Stage === 0 && ch1InboxEmails.length === 0) {
+    list.innerHTML = `
+      <div class="email-empty-state" style="padding:48px 24px;text-align:center;">
+        <div style="font-size:38px;margin-bottom:12px;">📒</div>
+        <div style="font-size:16px;font-weight:700;color:var(--accent-blue);margin-bottom:8px;">Open Detective's Notes to Begin</div>
+        <div style="font-size:13px;color:var(--text-secondary);max-width:360px;margin:0 auto 16px;line-height:1.5;">
+          Check your Detective's Notes on the desktop for tips and your checklist. Opening your notes will dispatch your first email to this inbox!
+        </div>
+        <button type="button" class="btn btn-primary" onclick="showStickyNote()" style="font-size:13px;padding:8px 20px;border-radius:6px;cursor:pointer;background:var(--accent-blue);color:#000;font-weight:700;border:none;">
+          📒 Open Detective's Notes
+        </button>
+      </div>`;
+    return;
+  }
+  // If no emails yet (after review/all done), show empty state
+  if (ch1InboxEmails.length === 0) {
+    list.innerHTML = `<div class="email-empty-state">📭 Your inbox is empty.</div>`;
+    return;
+  }
 
-  EMAILS.forEach((email, idx) => {
+  // Use the live dynamic inbox (ch1InboxEmails) instead of the full EMAILS pool
+  const activeMissionIdx = ch1InboxEmails.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
+
+  ch1InboxEmails.forEach((email, idx) => {
     const result = gameState.emailResults.find(r => r.emailId === email.id);
+
     const isCurrent = (activeMissionIdx !== -1 && idx === activeMissionIdx);
     const isRead = !!result;
+    const isNewlyInjected = !isRead && !result; // unread/unreviewed
 
     const item = document.createElement('div');
-    item.className = `email-list-item ${isRead ? 'read' : 'unread'}`;
+    item.className = `email-list-item ${isRead ? 'read' : 'unread'}${isNewlyInjected ? ' ch1-new-email' : ''}`;
     item.id = `email-item-${email.id}`;
 
     // Avatar letter
@@ -3312,8 +3848,10 @@ function renderEmailList() {
 
     let badgeHtml = '';
     if (result) {
-      const label = result.isPhishing ? '🚩 Phishing' : '✓ Legitimate';
-      const cls = result.isPhishing ? 'phishing' : 'legit';
+      // Show what the PLAYER submitted, not the email's actual type
+      const playerSaidPhishing = result.playerDecision;
+      const label = playerSaidPhishing ? '🚩 REPORTED' : '✓ CLEARED';
+      const cls   = playerSaidPhishing ? 'phishing' : 'legit';
       badgeHtml = `<span class="email-done-badge ${cls}">${label}</span>`;
     } else if (isCurrent) {
       badgeHtml = `<div class="email-status-dot"></div>`;
@@ -3343,6 +3881,7 @@ function renderEmailList() {
     list.appendChild(item);
   });
 }
+
 
 // ═══════════════════════════════════════════════════════════
 // GMAIL — SENT & TRASH
@@ -3493,9 +4032,28 @@ function restoreSentEmail(id) {
 // ═══════════════════════════════════════════════════════════
 
 function openEmail(idx) {
-  const email = EMAILS[idx];
+  const email = ch1InboxEmails[idx];
+  if (!email) return;
   gameState.currentEmail = idx;
   const existingResult = gameState.emailResults.find(r => r.emailId === email.id);
+
+  // ── Investigation tutorial — show once when first email is opened ──────────
+  if (!ch1InvestigationTutorialDone && !existingResult && gameState.phase === 'mission') {
+    ch1InvestigationTutorialDone = true;
+    if (typeof RyanGuide !== 'undefined') {
+      setTimeout(function() {
+        RyanGuide.speak([
+          { text: "Before you decide whether this message is safe, let's investigate it.", state: 'thinking' },
+          { text: "Start with the sender. Don't rely only on the name — check the actual email address and domain.", state: 'speaking' },
+          { text: "Next, look at what the message wants you to do. Is it asking for your password, personal information, payment, or an unexpected action?", state: 'speaking' },
+          { text: "Look for pressure too. Words like 'URGENT,' 'IMMEDIATELY,' or 'FINAL WARNING' can be signs of social engineering.", state: 'concerned' },
+          { text: "Finally, be careful with links and attachments. A link can appear legitimate while taking you somewhere completely different.", state: 'speaking' },
+          { text: "Don't look for just one clue. Look at the whole message and the context.", state: 'thinking' },
+          { text: "Now it's your turn. Investigate the email and decide what you think.", state: 'success' }
+        ]);
+      }, 400);
+    }
+  }
 
   if (existingResult) {
     gameState.currentEmailFlags = existingResult.savedFlags ? [...existingResult.savedFlags] : [];
@@ -3509,25 +4067,27 @@ function openEmail(idx) {
   document.getElementById('email-detail-view').classList.add('active');
 
   const flagModeBtn = document.getElementById('flag-mode-btn');
-  const reportBtn = document.getElementById('report-btn');
+  const reportBtn   = document.getElementById('report-btn');
 
   flagModeBtn.classList.remove('active');
   document.querySelector('.gmail-body').classList.remove('flag-mode-active');
 
   if (existingResult) {
-    reportBtn.disabled = true;
-    reportBtn.textContent = '✓ Reported';
-    reportBtn.classList.add('reported');
-    reportBtn.title = 'You have already submitted a report for this email.';
-
+    if (reportBtn) {
+      reportBtn.disabled = true;
+      reportBtn.textContent = '✓ Submitted as Phishing';
+      reportBtn.classList.add('reported');
+      reportBtn.title = 'You already submitted this email as Phishing.';
+    }
     flagModeBtn.disabled = true;
-    flagModeBtn.title = 'Investigation concluded — report already submitted.';
+    flagModeBtn.title = 'Investigation concluded — verdict already submitted.';
   } else {
-    reportBtn.disabled = false;
-    reportBtn.textContent = '📋 Report';
-    reportBtn.classList.remove('reported');
-    reportBtn.title = '';
-
+    if (reportBtn) {
+      reportBtn.disabled = false;
+      reportBtn.textContent = '🚩 Report as Phishing';
+      reportBtn.classList.remove('reported');
+      reportBtn.title = 'Flag and submit this email as Phishing';
+    }
     flagModeBtn.disabled = false;
     flagModeBtn.title = '';
   }
@@ -3535,6 +4095,28 @@ function openEmail(idx) {
   renderEmailContent(email);
   renderEvidencePanel();
   updateHUD();
+
+  // ── Highlight Flag Mode btn + sticky note when opening a fresh email ──────
+  if (!existingResult && gameState.phase === 'mission') {
+    setTimeout(function() {
+      // Pulse the Flag Mode button to guide the player
+      const flagBtn = document.getElementById('flag-mode-btn');
+      if (flagBtn) {
+        flagBtn.classList.remove('btn-pulse-highlight');
+        void flagBtn.offsetWidth;
+        flagBtn.classList.add('btn-pulse-highlight');
+        setTimeout(function() { flagBtn.classList.remove('btn-pulse-highlight'); }, 3200);
+      }
+      // Also pulse sticky note to remind player it's there
+      const note = document.getElementById('sticky-note');
+      if (note && !note.classList.contains('hidden')) {
+        note.classList.remove('sticky-note-pulse-once');
+        void note.offsetWidth;
+        note.classList.add('sticky-note-pulse-once');
+        setTimeout(function() { note.classList.remove('sticky-note-pulse-once'); }, 800);
+      }
+    }, 350);
+  }
 }
 
 function renderEmailContent(email) {
@@ -3624,7 +4206,7 @@ function renderEmailContent(email) {
 }
 
 function handleFlaggableClick(el) {
-  const currentEmailObj = EMAILS[gameState.currentEmail];
+  const currentEmailObj = ch1InboxEmails[gameState.currentEmail];
   if (currentEmailObj && gameState.emailResults.some(r => r.emailId === currentEmailObj.id)) {
     showToast('🔒 This email has already been reported. Case is closed.', 'warning');
     return;
@@ -3684,7 +4266,7 @@ function closeLinkPopup() {
 }
 
 function flagFromPopup() {
-  const email = EMAILS[gameState.currentEmail];
+  const email = ch1InboxEmails[gameState.currentEmail];
   if (email && gameState.emailResults.some(r => r.emailId === email.id)) {
     showToast('🔒 This email has already been reported. Case is closed.', 'warning');
     closeLinkPopup();
@@ -3776,7 +4358,7 @@ function toggleFlagMode() {
 }
 
 function placeFlag(el) {
-  const currentEmailObj = EMAILS[gameState.currentEmail];
+  const currentEmailObj = ch1InboxEmails[gameState.currentEmail];
   if (currentEmailObj && gameState.emailResults.some(r => r.emailId === currentEmailObj.id)) {
     showToast('🔒 This email has already been reported. Case is closed.', 'warning');
     return;
@@ -3807,13 +4389,48 @@ function placeFlag(el) {
   renderEvidencePanel();
   if (typeof AudioManager !== 'undefined') AudioManager.playFlagChirp();
   showToast(`🚩 Flagged: ${flag.label}`, 'success');
+
+  // ── Ryan explains the flag — only on the first email ────────────────────
+  if (gameState.currentEmail === 0 && gameState.phase === 'mission') {
+    clearTimeout(placeFlag._ryanTimer);
+    placeFlag._ryanTimer = setTimeout(function() {
+      ryanExplainFlag(flagType, flagText, flag.label);
+    }, 600);
+  }
 }
 
+// Dialogue map: Ryan explains each type of suspicious flag
+function ryanExplainFlag(flagType, flagText, flagLabel) {
+  if (typeof RyanGuide === 'undefined') return;
+  const dialogues = {
+    fake_sender: [
+      { text: "Good catch! 🎯 You flagged the sender's address. Phishers often use domains that look real at a glance — like 'paypa1.com' instead of 'paypal.com'. Always read the full email address carefully!", state: 'speaking' },
+      { text: "Real companies will never ask for sensitive info from a free email domain like Gmail or Hotmail. A spoofed sender is one of the strongest signs of phishing.", state: 'thinking' }
+    ],
+    false_urgency: [
+      { text: "Nice! ⚠️ You spotted the urgency tactic. Phrases like 'Act immediately', 'Your account will be closed', or 'Verify now' are designed to panic you into clicking without thinking.", state: 'speaking' },
+      { text: "Attackers use urgency to bypass your logical thinking. Pause. A real organization gives you time to verify through official channels.", state: 'thinking' }
+    ],
+    suspicious_link: [
+      { text: "Great eye! 🔗 You flagged a suspicious link. Before clicking any link, hover over it to see the real destination URL. If the domain doesn't match the supposed sender — it's a trap.", state: 'speaking' },
+      { text: "Phishing links often use subdomains or misspelled names to look legitimate. For example: 'login.paypal.com.evil.net' is NOT a PayPal link — 'evil.net' is the real domain here.", state: 'thinking' }
+    ]
+  };
+
+  const slides = dialogues[flagType] || [
+    { text: `Good find! You flagged "${flagLabel}". Every red flag you identify builds a stronger case. Keep looking for more suspicious clues before you report.`, state: 'speaking' }
+  ];
+
+  RyanGuide.speak(slides);
+}
+
+
 function removeFlag(flagType) {
-  const currentEmailObj = EMAILS[gameState.currentEmail];
+  const currentEmailObj = ch1InboxEmails[gameState.currentEmail];
   if (currentEmailObj && gameState.emailResults.some(r => r.emailId === currentEmailObj.id)) {
     return;
   }
+
 
   const idx = gameState.currentEmailFlags.findIndex(f => f.type === flagType);
   if (idx === -1) return;
@@ -3878,40 +4495,59 @@ function returnToInbox() {
 // REPORT DIALOG
 // ═══════════════════════════════════════════════════════════
 
-function showReportDialog() {
-  const email = EMAILS[gameState.currentEmail];
-  if (!email) return;
+// ── Direct phishing report — no confirmation overlay ────────────────────────
+function submitReportPhishing() {
+  // Primary lookup: by current index
+  let email = ch1InboxEmails[gameState.currentEmail];
 
-  if (gameState.emailResults.some(r => r.emailId === email.id)) {
-    showToast('⚠️ You have already submitted a report for this email.', 'warning');
+  // Fallback: find first unreviewed email if index is stale
+  if (!email) {
+    email = ch1InboxEmails.find(e => !gameState.emailResults.some(r => r.emailId === e.id));
+    if (email) {
+      gameState.currentEmail = ch1InboxEmails.indexOf(email);
+    }
+  }
+
+  if (!email) {
+    showToast('⚠️ No active email to report. Please open an email from your inbox first.', 'warning');
     return;
   }
 
-  const flags = gameState.currentEmailFlags;
-  const summary = document.getElementById('report-evidence-summary');
-
-  if (flags.length === 0) {
-    summary.innerHTML = `<div class="evidence-empty" style="padding:0">No evidence flags placed yet.</div>
-      <p class="report-evidence-count">You can still report, but your score will reflect missing evidence.</p>`;
-  } else {
-    const items = flags.map(f =>
-      `<div class="res-item">🚩 <span>${f.label}</span><span style="color:var(--text-muted);margin-left:auto;font-size:11px">${f.text.slice(0,40)}${f.text.length > 40 ? '…' : ''}</span></div>`
-    ).join('');
-    summary.innerHTML = items +
-      `<div class="report-evidence-count">${flags.length} evidence flag${flags.length > 1 ? 's' : ''} placed</div>`;
+  if (gameState.emailResults.some(r => r.emailId === email.id)) {
+    showToast('⚠️ You have already submitted a verdict for this email.', 'warning');
+    return;
   }
 
-  showOverlay('overlay-report');
+  submitReport(true);
 }
+
+// Legacy stubs kept for backward-compat (nothing calls these now)
+function showConfirmReport(isPhishing) { if (isPhishing) submitReportPhishing(); }
+function confirmReportYes() {}
+function cancelConfirmReport() {}
+function showReportDialog() { submitReportPhishing(); }
+
+
+
+
 
 let isSubmittingReport = false;
 function submitReport(isPhishing) {
   if (isSubmittingReport) return;
-  const email = EMAILS[gameState.currentEmail];
-  if (!email) return;
+
+  // Primary lookup by index; fallback to first unreviewed
+  let email = ch1InboxEmails[gameState.currentEmail];
+  if (!email) {
+    email = ch1InboxEmails.find(e => !gameState.emailResults.some(r => r.emailId === e.id));
+    if (email) gameState.currentEmail = ch1InboxEmails.indexOf(email);
+  }
+  if (!email) {
+    showToast('⚠️ Could not find the active email. Please open an email from the inbox.', 'warning');
+    return;
+  }
 
   if (gameState.emailResults.some(r => r.emailId === email.id)) {
-    showToast('⚠️ You have already submitted a report for this email.', 'warning');
+    showToast('\u26a0\ufe0f You have already submitted a report for this email.', 'warning');
     closeOverlay('overlay-report');
     return;
   }
@@ -3920,57 +4556,16 @@ function submitReport(isPhishing) {
   try {
     closeOverlay('overlay-report');
 
-    const playerFlags = gameState.currentEmailFlags.map(f => f.type);
-    const expectedEvidence = email.evidence;
-
-    // Decision scoring — a correct Phishing call is worth more than a correct
-    // Legitimate call, since Phishing requires solid evidence to back it up.
     const correctDecision = (isPhishing === email.phishing);
-    let emailScore = 0;
 
     if (correctDecision) {
-      emailScore += isPhishing ? 100 : 50;
       gameState.correctDecisions++;
       if (isPhishing) gameState.phishingDetected++;
       else gameState.legitimateDetected++;
       if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
     } else {
-      emailScore -= 50;
       if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
     }
-
-    // Evidence scoring (only matters for phishing emails)
-    let correctFlags = [];
-    let incorrectFlags = [];
-    let missedEvidence = [];
-
-    if (email.phishing) {
-      playerFlags.forEach(pf => {
-        if (expectedEvidence.includes(pf)) {
-          correctFlags.push(pf);
-          emailScore += 25;
-          gameState.evidenceFoundTotal++;
-        } else {
-          incorrectFlags.push(pf);
-          emailScore -= 10;
-        }
-      });
-      missedEvidence = expectedEvidence.filter(e => !playerFlags.includes(e));
-
-      // Getting the verdict right isn't the whole job — missing real evidence
-      // costs points too, even when the final call was correct.
-      if (correctDecision && missedEvidence.length > 0) {
-        emailScore -= missedEvidence.length * 25;
-      }
-    } else {
-      // Legitimate email — any flag is incorrect
-      if (playerFlags.length > 0) {
-        incorrectFlags = playerFlags;
-        emailScore -= playerFlags.length * 10;
-      }
-    }
-
-    gameState.score = Math.max(0, gameState.score + emailScore);
 
     // Store result
     const result = {
@@ -3979,22 +4574,21 @@ function submitReport(isPhishing) {
       isPhishing: email.phishing,
       playerDecision: isPhishing,
       correctDecision,
-      playerFlags,
-      correctFlags,
-      incorrectFlags,
-      missedEvidence,
-      score: emailScore,
+      playerFlags: gameState.currentEmailFlags.map(f => f.type),
       savedFlags: [...gameState.currentEmailFlags]
     };
     gameState.emailResults.push(result);
 
-    // Disable report and flag buttons immediately
+    // ── Lock report & flag buttons ───────────────────────────
     const reportBtn = document.getElementById('report-btn');
     if (reportBtn) {
       reportBtn.disabled = true;
-      reportBtn.textContent = '✓ Reported';
+      if (isPhishing) {
+        reportBtn.textContent = '✔ This Email Reported as Phishing';
+      } else {
+        reportBtn.textContent = '✔ This Email Marked as Legitimate';
+      }
       reportBtn.classList.add('reported');
-      reportBtn.title = 'You have already submitted a report for this email.';
     }
     const flagModeBtn = document.getElementById('flag-mode-btn');
     if (flagModeBtn) {
@@ -4002,12 +4596,115 @@ function submitReport(isPhishing) {
       flagModeBtn.classList.remove('active');
     }
 
+    // ── Inject verdict banner at the top of the email view ──
+    const emailContent = document.getElementById('email-content');
+    if (emailContent) {
+      const old = emailContent.querySelector('.verdict-banner');
+      if (old) old.remove();
+      const banner = document.createElement('div');
+      banner.className = 'verdict-banner verdict-banner-' + (isPhishing ? 'phishing' : 'legit');
+      if (isPhishing && correctDecision) {
+        banner.innerHTML = '<span class="vb-icon">🚩</span><div><strong>PHISHING REPORTED</strong> — Good catch! Ryan will now explain why this was phishing.<br><small>Case closes automatically after Ryan\'s briefing.</small></div>';
+      } else if (isPhishing && !correctDecision) {
+        banner.innerHTML = '<span class="vb-icon">⚠️</span><div><strong>REPORTED AS PHISHING</strong> — This was actually legitimate. Ryan will explain what to look for next time.</div>';
+      } else if (!isPhishing && correctDecision) {
+        banner.innerHTML = '<span class="vb-icon">✅</span><div><strong>CLEARED AS LEGITIMATE</strong> — Correct! Ryan will confirm why this email is safe.</div>';
+      } else {
+        banner.innerHTML = '<span class="vb-icon">🚨</span><div><strong>MARKED AS LEGITIMATE</strong> — This was actually phishing! Ryan will explain the red flags you missed.</div>';
+      }
+      emailContent.insertBefore(banner, emailContent.firstChild);
+    }
+
     updateHUD();
     updateFolderCounts();
-    showCapybaraResult(result, email);
+    updateStickyChecklist();
+
+    // ── Ryan gives his full educational explanation ──────────
+    // nextEmail() is called automatically when Ryan finishes
+    const advanceToNext = () => setTimeout(() => nextEmail(), 600);
+
+    if (typeof RyanGuide !== 'undefined') {
+      const tutor = email.ryanTutor;
+      let messages;
+
+      if (tutor) {
+        messages = correctDecision ? tutor.correct : tutor.wrong;
+      } else {
+        // Generic fallback coaching
+        const addr = email.sender ? email.sender.address : 'unknown';
+        if (isPhishing && correctDecision) {
+          messages = [
+            { text: `✅ Great catch! "${addr}" is a fake domain designed to look legitimate. That was a phishing email.`, state: 'success' },
+            { text: 'Always verify sender domains character by character. Attackers register look-alike domains to steal your credentials.', state: 'speaking' }
+          ];
+        } else if (isPhishing && !correctDecision) {
+          messages = [
+            { text: `⚠️ "${addr}" is actually a real, verified sender. That email was legitimate.`, state: 'concerned' },
+            { text: 'Before flagging, check: Is the domain official? Is there real urgency or suspicious links? Not every unexpected email is a threat.', state: 'speaking' }
+          ];
+        } else if (!isPhishing && correctDecision) {
+          messages = [
+            { text: `✅ Correct! "${addr}" is a verified, trusted sender with no suspicious urgency or links. That was a clean, legitimate email.`, state: 'success' }
+          ];
+        } else {
+          messages = [
+            { text: `⚠️ That was actually a phishing email! "${addr}" is a fake domain impersonating a real organization.`, state: 'concerned' },
+            { text: 'Key red flags: fake sender domain, urgency pressure, suspicious links. Review each email carefully before deciding.', state: 'speaking' }
+          ];
+        }
+      }
+
+      setTimeout(() => {
+        RyanGuide.speak(messages, { onDone: advanceToNext });
+      }, 400);
+
+    } else {
+      // No RyanGuide — advance after a brief pause
+      setTimeout(advanceToNext, 1800);
+    }
+
   } finally {
     isSubmittingReport = false;
   }
+}
+
+// ─── Ryan explains each email result with educational content ─────────────────
+function showRyanExplanation(email, correctDecision) {
+  if (typeof RyanGuide === 'undefined') {
+    setTimeout(nextEmail, 1000);
+    return;
+  }
+
+  const tutor = email.ryanTutor;
+  if (!tutor) {
+    // Fallback generic message if no ryanTutor defined
+    const fallback = correctDecision
+      ? [{ text: '\u2705 ' + (email.phishing ? 'Correct — that was a phishing email!' : 'Correct — that was a legitimate email!'), state: 'success' }]
+      : [{ text: '\u26a0\ufe0f ' + (email.phishing ? 'That was actually a phishing email. Always check the sender domain and look for urgency pressure.' : 'That was actually a legitimate email. Verify the sender domain before deciding.'), state: 'concerned' }];
+    RyanGuide.speak(fallback, { onDone: nextEmail });
+    return;
+  }
+
+  const messages = correctDecision ? tutor.correct : tutor.wrong;
+  RyanGuide.speak(messages, { onDone: nextEmail });
+}
+
+// ─── Brief non-blocking coaching note delivered from the inbox after case closes ─
+function showRyanExplanationBrief(email, correctDecision, playerSaidPhishing) {
+  if (typeof RyanGuide === 'undefined') return;
+  let text, state;
+  if (correctDecision) {
+    text = playerSaidPhishing
+      ? `✅ Correct! That was a phishing email. The domain "${email.sender ? email.sender.address : ''}" is fake. Good detective work!`
+      : `✅ Correct! That was a clean, legitimate email — no phishing indicators found. Well spotted!`;
+    state = 'success';
+  } else {
+    text = playerSaidPhishing
+      ? `⚠️ That was actually a legitimate email. The sender "${email.sender ? email.sender.address : ''}" is real. Check the domain carefully next time.`
+      : `⚠️ That was actually a phishing email! Always verify the sender domain and look for urgency pressure or mismatched links.`;
+    state = 'concerned';
+  }
+  RyanGuide.speak([{ text, state }]);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4125,18 +4822,10 @@ function showCapybaraResult(result, email) {
     missedEl.classList.add('hidden');
   }
 
-  // Score
-  const scoreVal = document.getElementById('review-score-value');
-  scoreVal.textContent = (score >= 0 ? '+' : '') + score;
-  scoreVal.style.color = score > 0 ? 'var(--accent-green)' : score < 0 ? 'var(--accent-red)' : 'var(--accent-cyan)';
-
-  // Next button label
-  const nextBtn = document.getElementById('btn-next-email');
-  const isLast = gameState.emailResults.length >= EMAILS.length;
-  nextBtn.textContent = isLast ? '📊 VIEW FINAL RESULTS' : 'NEXT EMAIL →';
-
-  showOverlay('overlay-review');
+  // showCapybaraResult is kept for compatibility but overlay-review has been removed.
+  // All feedback is now delivered via Ryan's inline dialogue (showRyanExplanation).
 }
+
 
 function formatAnalysisText(text) {
   return text.replace(/\n/g, '<br>');
@@ -4147,14 +4836,59 @@ function formatAnalysisText(text) {
 // ═══════════════════════════════════════════════════════════
 
 function nextEmail() {
-  closeOverlay('overlay-review');
-
+  // Check if ALL 9 emails have been reviewed
   if (gameState.emailResults.length >= EMAILS.length) {
     finishMission();
     return;
   }
 
-  const nextIdx = EMAILS.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
+  // Check if all emails in the CURRENT inbox wave have been reviewed
+  const reviewedInWave = ch1InboxEmails.every(e => gameState.emailResults.some(r => r.emailId === e.id));
+
+  if (reviewedInWave) {
+    // All current wave emails done — inject next wave
+    const nextWave = ch1Stage + 1;
+
+    if (nextWave <= 4 && CH1_WAVE_DEFS[nextWave]) {
+      // Give Ryan contextual coaching before the next wave
+      if (typeof RyanGuide !== 'undefined') {
+        const waveMessages = {
+          2: [
+            { text: "Great work on that first email! Now more messages have arrived in your inbox. Remember to check every sender address carefully — legitimate companies always use their official domains.", state: 'speaking' },
+            { text: "This wave includes a mix of real and fake emails. Your job is to investigate each one. Stop, Check, and Verify!", state: 'thinking' }
+          ],
+          3: [
+            { text: "You're building strong instincts! A new email just arrived from the Technical Solutions Team. Check it carefully — is it genuine or another trick?", state: 'speaking' }
+          ],
+          4: [
+            { text: "You've reached the final challenge! These last emails are a true test. Some are obvious, some are sophisticated fakes. Use everything you've learned!", state: 'success' },
+            { text: "Examine each sender, look for urgency pressure, and hover over every link before deciding. You've got this!", state: 'thinking' }
+          ]
+        };
+        const msgs = waveMessages[nextWave];
+        if (msgs) {
+          setTimeout(() => RyanGuide.speak(msgs), 600);
+        }
+      }
+
+      // Inject the next wave with a short delay for dramatic effect
+      setTimeout(() => ch1InjectWave(nextWave), 800);
+
+      // Return to inbox list view
+      document.getElementById('email-detail-view').classList.remove('active');
+      document.getElementById('email-list-view').classList.add('active');
+      renderEmailList();
+      updateHUD();
+      return;
+    } else {
+      // All waves done
+      finishMission();
+      return;
+    }
+  }
+
+  // Still have unreviewed emails in the current wave — navigate back to inbox list
+  const nextIdx = ch1InboxEmails.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
   if (nextIdx === -1) {
     finishMission();
     return;
@@ -4164,14 +4898,27 @@ function nextEmail() {
   gameState.currentEmailFlags = [];
   gameState.flagModeActive = false;
 
-  renderEmailList();
-  updateHUD();
-
-  // Switch to list view if in detail view
+  // Switch to inbox list view first
   document.getElementById('email-detail-view').classList.remove('active');
   document.getElementById('email-list-view').classList.add('active');
 
-  showToast(`📧 Email ${nextIdx + 1} of ${EMAILS.length} — investigate next.`, 'success');
+  renderEmailList();
+  updateHUD();
+
+  // Pulse-highlight the next unread email so the player sees it
+  setTimeout(() => {
+    const nextRow = document.getElementById(`email-item-${ch1InboxEmails[nextIdx].id}`);
+    if (nextRow) {
+      nextRow.classList.remove('email-row-pulse');
+      void nextRow.offsetWidth;
+      nextRow.classList.add('email-row-pulse');
+      setTimeout(() => nextRow.classList.remove('email-row-pulse'), 3000);
+      nextRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 200);
+
+  const remaining = ch1InboxEmails.length - gameState.emailResults.length;
+  showToast(`📧 Next email is waiting — ${remaining} case${remaining !== 1 ? 's' : ''} remaining.`, 'info');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4181,31 +4928,39 @@ function nextEmail() {
 function finishMission() {
   gameState.phase = 'results';
 
+  // Rank is based purely on decision accuracy (no scoring)
+  const total = EMAILS.length;
+  const correct = gameState.correctDecisions;
+  const pct = correct / total;
+  let rank, rankClass, rankLabel;
+  if (pct >= 1.0)   { rank = 'S'; rankClass = 'rank-s'; rankLabel = 'CYBER DETECTIVE'; }
+  else if (pct >= 0.85) { rank = 'A'; rankClass = '';       rankLabel = 'EXCELLENT DETECTIVE'; }
+  else if (pct >= 0.70) { rank = 'B'; rankClass = 'rank-b'; rankLabel = 'GOOD DETECTIVE'; }
+  else if (pct >= 0.50) { rank = 'C'; rankClass = 'rank-c'; rankLabel = 'KEEP PRACTICING'; }
+  else               { rank = 'D'; rankClass = 'rank-d'; rankLabel = 'NEEDS MORE TRAINING'; }
+
   const totalEvidence = EMAILS.reduce((sum, e) => sum + e.evidence.length, 0);
 
-  // Calculate rank against the perfect-run total (MAX_SCORE).
-  const pct = gameState.score / MAX_SCORE;
-  let rank, rankClass, rankLabel;
-  if (pct >= 0.95) { rank = 'S'; rankClass = 'rank-s'; rankLabel = 'CYBER DETECTIVE'; }
-  else if (pct >= 0.85) { rank = 'A'; rankClass = ''; rankLabel = 'EXCELLENT DETECTIVE'; }
-  else if (pct >= 0.70) { rank = 'B'; rankClass = 'rank-b'; rankLabel = 'GOOD DETECTIVE'; }
-  else if (pct >= 0.50) { rank = 'C'; rankClass = 'rank-c'; rankLabel = 'NEEDS MORE TRAINING'; }
-  else { rank = 'D'; rankClass = 'rank-d'; rankLabel = 'INVESTIGATION FAILED'; }
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('res-emails',    `${gameState.emailResults.length} / ${total}`);
+  setEl('res-decisions', `${correct} / ${total}`);
+  setEl('res-evidence',  `${gameState.evidenceFoundTotal} / ${totalEvidence}`);
+  setEl('res-phishing',  gameState.phishingDetected);
+  setEl('res-legit',     gameState.legitimateDetected);
+  setEl('res-accuracy',  `${Math.round(pct * 100)}%`);
+  setEl('res-correct-count', correct);
+  setEl('res-max-score', total);
 
-  document.getElementById('res-emails').textContent = `${gameState.emailResults.length} / ${EMAILS.length}`;
-  document.getElementById('res-decisions').textContent = `${gameState.correctDecisions} / ${EMAILS.length}`;
-  document.getElementById('res-evidence').textContent = `${gameState.evidenceFoundTotal} / ${totalEvidence}`;
-  document.getElementById('res-phishing').textContent = gameState.phishingDetected;
-  document.getElementById('res-legit').textContent = gameState.legitimateDetected;
-  document.getElementById('res-accuracy').textContent = `${Math.max(0, Math.round(pct * 100))}%`;
-  document.getElementById('res-final-score').textContent = gameState.score;
-  document.getElementById('res-max-score').textContent = MAX_SCORE;
-  document.getElementById('results-rank').textContent = rank;
-  document.getElementById('results-rank').className = `results-rank-circle ${rankClass}`;
-  document.getElementById('results-rank-label').textContent = rankLabel;
-  completeCategory('phishing', gameState.score, rank);
+  const rankEl = document.getElementById('results-rank');
+  if (rankEl) {
+    rankEl.textContent = rank;
+    rankEl.className = `results-rank-circle ${rankClass}`;
+  }
+  setEl('results-rank-label', rankLabel);
+
+  // Pass a nominal score to completeCategory for chapter lock/unlock logic
+  completeCategory('phishing', correct * 100, rank);
   updateAppLockStates();
-  // Update sticky note to Malware points system for Chapter 2
   updateStickyNoteForPhase('malware');
   showOverlay('overlay-results');
   if (typeof AudioManager !== 'undefined') AudioManager.playMissionComplete();
@@ -4239,6 +4994,12 @@ function playAgain(showVN = false) {
   gameState.malwareFalsePositives = 0;
   gameState.selectedFolderFileId = null;
   gameState.activeScanFileId = null;
+  // Reset Chapter 1 dynamic inbox state
+  ch1InboxEmails               = [];
+  ch1PendingNotification       = false;
+  ch1Stage                     = 0;
+  ch1MistakeCount              = 0;
+  ch1InvestigationTutorialDone = false;
   if (typeof FOLDER_FILES !== 'undefined') {
     FOLDER_FILES.forEach(f => { f.quarantined = false; f.scanned = false; });
   }
@@ -12776,8 +13537,10 @@ const RyanGuide = (() => {
     const isLast = _queue.length === 1;
     refs.continueLabel.textContent = isLast ? 'TAP / CLICK TO CONTINUE' : 'TAP TO CONTINUE';
 
-    step._fullText = step.text;
-    _typeText(step.text, function() {});
+    // Guard: ensure text is always a valid string before typing
+    const safeText = (step.text !== undefined && step.text !== null) ? String(step.text) : '';
+    step._fullText = safeText;
+    _typeText(safeText, function() {});
   }
 
   // Public API
@@ -12796,16 +13559,37 @@ const RyanGuide = (() => {
     opts = opts || {};
     if (!messages || messages.length === 0) return;
 
+    // ── FIX: Clear any running typing animation to prevent race conditions ──
+    clearTimeout(_typeTimeout);
+    clearTimeout(_dismissTimer);
+    _typing = false;
+    if (_cursorEl && _cursorEl.parentNode) {
+      _cursorEl.parentNode.removeChild(_cursorEl);
+      _cursorEl = null;
+    }
+
+    // ── FIX: Sanitize every message text — never allow undefined/null/object ──
     _queue = messages.map(function(m) {
-      return (typeof m === 'string') ? { text: m, state: 'speaking' } : m;
-    });
+      if (typeof m === 'string') {
+        return { text: String(m), state: 'speaking' };
+      }
+      if (m && typeof m === 'object') {
+        return {
+          text: (m.text !== undefined && m.text !== null) ? String(m.text) : '',
+          state: (typeof m.state === 'string') ? m.state : 'speaking'
+        };
+      }
+      return { text: '', state: 'speaking' };
+    }).filter(function(m) { return m.text.length > 0; });
+
+    if (_queue.length === 0) return;
+
     _onDoneCallback = opts.onDone || null;
 
     _show();
     _showStep();
 
     if (opts.autoDismiss) {
-      clearTimeout(_dismissTimer);
       _dismissTimer = setTimeout(function() { dismiss(); }, opts.autoDismiss);
     }
   }
@@ -12940,9 +13724,10 @@ const RYAN_DIALOGUES = {
 
   // Welcome on initial desktop display
   welcome: [
-    { text: "Hi! I'm Ryan, your IT Support Mentor. I'll be guiding you through your training and teaching you how to recognize common cyber threats.", state: 'speaking' },
-    { text: "Your mission today: investigate suspicious emails arriving in the company inbox. What would you do in a real workplace? Always verify before acting.", state: 'thinking' },
-    { text: "Open Zmail app from the taskbar when you're ready. I'll be right here coaching you along the way.", state: 'speaking' }
+    { text: "Hi! 👋 I'm Ryan, your cybersecurity mentor here at Technical Solutions — it's great to have you on board!", state: 'speaking' },
+    { text: "I'll be guiding you through your training and teaching you how to recognize common cyber threats — starting today!", state: 'speaking' },
+    { text: "Your first mission is to investigate suspicious emails in your company inbox. Think carefully before acting — just like you would in a real workplace.", state: 'thinking' },
+    { text: "First, open your Detective's Notes on your desktop to review your tips and checklist. Opening your notes will unlock your first email! 💪", state: 'success' }
   ],
 
   // First time opening Gmail
@@ -12953,8 +13738,8 @@ const RYAN_DIALOGUES = {
 
   // First time opening Detective Notes / Sticky Notes
   stickyNoteOpen: [
-    { text: "Good observation checking your notes. Keep this open as your reference guide.", state: 'speaking' },
-    { text: "Look for fake sender domains, false urgency, and suspicious links. Don't rush. Verify first.", state: 'thinking' }
+    { text: "Good observation checking your notes! 📒 Keep this checklist open as your guide.", state: 'speaking' },
+    { text: "I've sent your first email to Zmail. Open your Inbox (1 new email) to start investigating!", state: 'thinking' }
   ],
 
   // First email detail view
@@ -13149,40 +13934,9 @@ function isDesktopViewFullyLoaded() {
   return true;
 }
 
-// Welcome trigger: ONLY fires in desktop view after loading to screen has finished, and ONLY for Chapter 1
+// Welcome trigger: Handled cleanly and solely by startMission() to prevent duplicate intro speech.
 (function initRyanWelcome() {
-  function tryTriggerWelcome() {
-    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
-    if (curCat !== 'phishing') return false; // Only Chapter 1 has mentor guide Ryan
-    if (isDesktopViewFullyLoaded()) {
-      RyanGuide.once('welcome', function() {
-        setTimeout(function() {
-          const current = window._currentChapterCategory || activeCategoryStory || 'phishing';
-          if (current === 'phishing' && isDesktopViewFullyLoaded()) {
-            RyanGuide.speak(RYAN_DIALOGUES.welcome);
-          }
-        }, 1400);
-      });
-      return true;
-    }
-    return false;
-  }
-
-  // Periodic check (every 400ms) until desktop view is ready
-  const pollInterval = setInterval(function() {
-    if (tryTriggerWelcome()) {
-      clearInterval(pollInterval);
-    }
-  }, 400);
-
-  // MutationObserver for instant trigger once desktop styles/classes switch to visible
-  const observer = new MutationObserver(function() {
-    if (tryTriggerWelcome()) {
-      clearInterval(pollInterval);
-      observer.disconnect();
-    }
-  });
-  observer.observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ['class', 'style'] });
+  // No-op: startMission() is the single source of truth for the Chapter 1 intro dialogue.
 })();
 
 
@@ -13196,7 +13950,7 @@ function isDesktopViewFullyLoaded() {
      IconAttention.hideAll()       — clear all
 =========================================================== */
 const IconAttention = (() => {
-  const idMap = { gmail: 'icon-gmail', browser: 'icon-browser', folder: 'icon-folder', antivirus: 'icon-antivirus', comms: 'icon-comms' };
+  const idMap = { gmail: 'icon-gmail', browser: 'icon-browser', folder: 'icon-folder', antivirus: 'icon-antivirus', comms: 'icon-comms', notes: 'icon-notes' };
 
   function _getIcon(appName) {
     return document.getElementById(idMap[appName] || ('icon-' + appName));
