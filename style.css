@@ -78,6 +78,7 @@ p { line-height: 1.6; }
   flex-direction: column;
   /* Hidden on load — revealed by JS after overlays close */
   visibility: hidden;
+  overflow: hidden;
 }
 
 .desktop-bg {
@@ -371,13 +372,12 @@ p { line-height: 1.6; }
   border-radius: 6px 6px 12px 12px;
   padding: 18px 14px 14px;
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.28), 0 4px 12px rgba(161, 98, 7, 0.18), 0 1px 0 rgba(255, 255, 255, 0.9) inset;
-  transform: rotate(1.5deg);
+  transform: none;
   font-family: var(--font-primary, 'Inter', sans-serif);
-  transition: box-shadow 200ms ease, transform 200ms ease, opacity 180ms ease;
+  transition: box-shadow 200ms ease, opacity 180ms ease;
   user-select: none;
 }
 .sticky-note:hover {
-  transform: rotate(0.5deg);
   box-shadow: 0 20px 42px rgba(15, 23, 42, 0.32), 0 5px 14px rgba(161, 98, 7, 0.22), 0 1px 0 rgba(255, 255, 255, 0.95) inset;
 }
 .sticky-note.hidden { display: none; }
@@ -385,7 +385,7 @@ p { line-height: 1.6; }
   transition: none;
   box-shadow: 0 24px 50px rgba(15, 23, 42, 0.42), 0 4px 12px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.8) inset;
   cursor: grabbing;
-  transform: rotate(0deg) scale(1.02);
+  transform: scale(1.02);
 }
 
 .sticky-note.collapsed {
@@ -397,17 +397,11 @@ p { line-height: 1.6; }
 }
 
 .sticky-note.sticky-note-pop {
-  animation: sticky-pop-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes sticky-pop-in {
-  0%   { opacity: 0; transform: rotate(1.5deg) translateY(-24px) scale(0.88); }
-  60%  { opacity: 1; transform: rotate(1.5deg) translateY(4px) scale(1.03); }
-  100% { opacity: 1; transform: rotate(1.5deg) translateY(0) scale(1); }
+  animation: none !important;
 }
 
 .sticky-note.sticky-note-highlight {
-  outline: 3px solid #f59e0b;
-  outline-offset: 2px;
+  outline: none !important;
 }
 
 .sticky-note-tape {
@@ -605,50 +599,63 @@ p { line-height: 1.6; }
   flex-direction: column;
   overflow: hidden;
   z-index: 100;
-  transition: box-shadow var(--transition);
+  transition: top 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow var(--transition);
   resize: both;
+}
+
+.app-window.dragging {
+  transition: none !important;
+}
+
+body.has-ryan-dialogue .app-window:not(.maximized) {
+  max-height: calc(100vh - 200px) !important;
+}
+
+body.has-ryan-dialogue .app-window.maximized {
+  inset: 0 0 195px 0 !important;
+  transition: inset 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
 #win-gmail {
   width: 840px;
   max-width: calc(100vw - 80px);
-  height: min(525px, calc(100vh - 225px));
-  max-height: calc(100vh - 215px);
+  height: min(525px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
 }
 
 #win-browser {
   width: 840px;
   max-width: calc(100vw - 80px);
-  height: min(525px, calc(100vh - 225px));
-  max-height: calc(100vh - 215px);
+  height: min(525px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
 }
 
 #win-folder {
   width: 760px;
   max-width: calc(100vw - 80px);
-  height: min(480px, calc(100vh - 225px));
-  max-height: calc(100vh - 215px);
+  height: min(480px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
 }
 
 #win-antivirus {
   width: 720px;
   max-width: calc(100vw - 80px);
-  height: min(480px, calc(100vh - 225px));
-  max-height: calc(100vh - 215px);
+  height: min(480px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
 }
 
 #win-comms {
   width: 760px;
   max-width: calc(100vw - 80px);
-  height: min(500px, calc(100vh - 225px));
-  max-height: calc(100vh - 215px);
+  height: min(500px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
 }
 
 #win-ransomware {
   width: 800px;
   max-width: calc(100vw - 80px);
-  height: min(520px, calc(100vh - 225px));
-  max-height: calc(100vh - 215px);
+  height: min(520px, calc(100vh - 64px));
+  max-height: calc(100vh - 64px);
 }
 
 .app-window.hidden { display: none; }
@@ -1530,6 +1537,39 @@ p { line-height: 1.6; }
 @keyframes blink-warn {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* ═══════════════════════════════════════════════
+   PHISHING WINDOW CLOSE BUTTON HIGHLIGHT
+   ═══════════════════════════════════════════════ */
+
+/* Window Close Button Highlight (Top Right) */
+#browser-win-close.phish-close-highlight,
+.win-close.phish-close-highlight {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 0 16px rgba(239, 68, 68, 0.95), 0 0 28px rgba(239, 68, 68, 0.6) !important;
+  animation: phishClosePulse 1.2s infinite ease-in-out !important;
+  position: relative;
+  z-index: 10;
+}
+
+/* Phishing close button pulse keyframes */
+@keyframes phishClosePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), 0 0 10px rgba(239, 68, 68, 0.85);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0), 0 0 22px rgba(239, 68, 68, 1);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 0 10px rgba(239, 68, 68, 0.85);
+  }
 }
 
 
@@ -5396,8 +5436,8 @@ p { line-height: 1.6; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(79,195,247,0.4); }
 
 /* Window dimensions managed dynamically by centerWindow() without hardcoded offsets */
-#win-gmail  { width: 840px; max-width: calc(100vw - 80px); height: min(525px, calc(100vh - 225px)); max-height: calc(100vh - 215px); }
-#win-browser { width: 840px; max-width: calc(100vw - 80px); height: min(525px, calc(100vh - 225px)); max-height: calc(100vh - 215px); }
+#win-gmail  { width: 840px; max-width: calc(100vw - 80px); height: min(525px, calc(100vh - 64px)); max-height: calc(100vh - 64px); }
+#win-browser { width: 840px; max-width: calc(100vw - 80px); height: min(525px, calc(100vh - 64px)); max-height: calc(100vh - 64px); }
 
 /* ═══════════════════════════════════════════════
    DETECTIVE EMOJI SIZING — upgraded from capybara
@@ -15711,6 +15751,43 @@ body.g4-infected {
   color: #c8e6c9 !important;
 }
 
+/* Highlight both Report and Legit buttons on first email when all evidence is flagged */
+@keyframes verdict-pulse-phish {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.65), 0 0 12px rgba(239, 83, 80, 0.45);
+    border-color: rgba(239, 83, 80, 0.85);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(239, 83, 80, 0), 0 0 20px rgba(239, 83, 80, 0.75);
+    border-color: #ef5350;
+  }
+}
+
+@keyframes verdict-pulse-legit {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(66, 183, 110, 0.65), 0 0 12px rgba(66, 183, 110, 0.45);
+    border-color: rgba(66, 183, 110, 0.85);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(66, 183, 110, 0), 0 0 20px rgba(66, 183, 110, 0.75);
+    border-color: #42b76e;
+  }
+}
+
+.verdict-phishing.verdict-btn-highlight {
+  animation: verdict-pulse-phish 1.4s ease-in-out infinite !important;
+  background: rgba(183, 28, 28, 0.32) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+.verdict-legit.verdict-btn-highlight {
+  animation: verdict-pulse-legit 1.4s ease-in-out infinite !important;
+  background: rgba(27, 94, 32, 0.32) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
 /* ════════════════════════════════════════════════════════════
    VERDICT BANNER  (injected into email-content after submit)
    ════════════════════════════════════════════════════════════ */
@@ -15893,19 +15970,13 @@ body.g4-infected {
 }
 
 /* ════════════════════════════════════════════════════════════
-   INBOX PULSE HIGHLIGHT (when Zmail opens)
+   INBOX PULSE HIGHLIGHT (when Zmail opens) - Border highlight removed
    ════════════════════════════════════════════════════════════ */
 
-@keyframes inbox-pulse-ring {
-  0%   { box-shadow: 0 0 0 0   rgba(79,195,247,0.55), inset 0 0 0 2px rgba(79,195,247,0.3); }
-  50%  { box-shadow: 0 0 0 10px rgba(79,195,247,0),   inset 0 0 0 2px rgba(79,195,247,0.7); }
-  100% { box-shadow: 0 0 0 0   rgba(79,195,247,0),    inset 0 0 0 2px rgba(79,195,247,0.3); }
-}
 .inbox-pulse-highlight {
-  border-radius: 8px;
-  animation: inbox-pulse-ring 1.0s ease-out 3 !important;
-  border: 2px solid rgba(79,195,247,0.5) !important;
-  transition: border 0.2s;
+  border: none !important;
+  box-shadow: none !important;
+  animation: none !important;
 }
 
 /* ── Flag Mode button pulse highlight (fires when email is opened) ── */
@@ -15935,16 +16006,18 @@ body.g4-infected {
 }
 
 
-/* ── First email row pulse — invites player to click it ── */
+/* ── First email row pulse — invites player to click it (border highlight line removed) ── */
 @keyframes email-row-pulse-anim {
-  0%   { background: rgba(79,195,247,0.0);  box-shadow: inset 3px 0 0 rgba(79,195,247,0.0); }
-  30%  { background: rgba(79,195,247,0.10); box-shadow: inset 3px 0 0 rgba(79,195,247,0.8); }
-  70%  { background: rgba(79,195,247,0.06); box-shadow: inset 3px 0 0 rgba(79,195,247,0.4); }
-  100% { background: rgba(79,195,247,0.0);  box-shadow: inset 3px 0 0 rgba(79,195,247,0.0); }
+  0%   { background: rgba(79,195,247,0.0);  box-shadow: none; }
+  30%  { background: rgba(79,195,247,0.08); box-shadow: none; }
+  70%  { background: rgba(79,195,247,0.04); box-shadow: none; }
+  100% { background: rgba(79,195,247,0.0);  box-shadow: none; }
 }
 .email-row-pulse {
   animation: email-row-pulse-anim 1.0s ease-in-out 3 !important;
   border-radius: 6px;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -15957,17 +16030,12 @@ body.g4-infected {
   100% { box-shadow: 0 0 0 0   rgba(255,213,79,0),   0 8px 32px rgba(0,0,0,0.5); border-color: rgba(255,213,79,0.3); }
 }
 .sticky-note-highlight {
-  animation: sticky-highlight-ring 1.0s ease-out 3 !important;
-  border: 2px solid rgba(255,213,79,0.7) !important;
+  animation: none !important;
+  outline: none !important;
 }
 
-@keyframes sticky-pulse-once {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.025); }
-  100% { transform: scale(1); }
-}
 .sticky-note-pulse-once {
-  animation: sticky-pulse-once 0.5s ease !important;
+  animation: none !important;
 }
 
 /* ════════════════════════════════════════════════════════════

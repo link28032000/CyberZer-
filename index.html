@@ -79,7 +79,6 @@
           <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
         </ul>
       </div>
-      <div class="sticky-note-tip">💡 <strong>Pro Tip:</strong> Ryan explains every verdict with educational feedback after submission.</div>
     </div>
   </div>
 
@@ -131,7 +130,7 @@
             <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Mode</button>
             <div class="verdict-btn-group">
               <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()" title="Report as Phishing" aria-label="Report as Phishing"><img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report</button>
-              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()" title="Mark as Legitimate" aria-label="Mark as Legitimate"><img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark</button>
+              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()" title="Mark as Legit" aria-label="Mark as Legit"><img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit</button>
             </div>
           </div>
 
@@ -181,7 +180,7 @@
       <div class="win-controls">
         <button type="button" class="win-btn win-minimize" onclick="minimizeApp('browser')" title="Minimize">─</button>
         <button type="button" class="win-btn win-maximize" onclick="toggleMaximize('browser')" title="Maximize">□</button>
-        <button type="button" class="win-btn win-close" onclick="closeApp('browser')" title="Close">✕</button>
+        <button type="button" class="win-btn win-close" id="browser-win-close" onclick="closeApp('browser')" title="Close">✕</button>
       </div>
     </div>
     <div class="win-body browser-body">
@@ -197,7 +196,6 @@
             <button type="button" class="browser-go-btn" onclick="submitBrowserUrl()" title="Navigate / Search">➔</button>
           </div>
         </div>
-
       </div>
 
       <div id="browser-content" class="browser-content">

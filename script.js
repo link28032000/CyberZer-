@@ -558,9 +558,6 @@ const FAKE_SITES = {
             <p>Protected by Enterprise Multi-Factor Authentication • ISO 27001 Certified</p>
           </div>
         </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> Look at the URL bar: <code>business-account-verify.net</code>. The real organization domain is <code>business.com</code>. Attackers register look-alike domains and copy official branding to harvest employee login credentials!
-        </div>
       </div>
       <div class="fakesite-footer">
         <p>© 2026 Business Inc. Global IT &amp; Information Security Systems. All rights reserved.</p>
@@ -605,9 +602,6 @@ const FAKE_SITES = {
               <button type="submit" class="ms-submit-btn">Next</button>
             </div>
           </form>
-          <div class="fakesite-disclaimer" style="margin-top:24px;">
-            ⚠️ <strong>Cyber Detective Clue:</strong> Notice the domain typosquat: <code>m1crosoft-account-verify.com</code> with digit <code>1</code> instead of letter <code>i</code>. Authentic Microsoft sign-in pages reside strictly on <code>login.microsoftonline.com</code> or <code>account.microsoft.com</code>!
-          </div>
         </div>
         <div class="ms-footer">
           <span>Terms of use</span>
@@ -663,12 +657,6 @@ const FAKE_SITES = {
             <p>Federal Deposit Insurance Protection • 256-Bit SSL Encrypted Verification</p>
           </div>
         </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> Look closely at <code>bankng-secure-verify.xyz</code>:
-          1) "banking" is misspelled as "bankng".
-          2) Financial institutions never use top-level domains like <code>.xyz</code>.
-          3) Extreme 15-minute countdowns and asking for ATM PINs / security answers are classic credential harvester techniques.
-        </div>
       </div>
       <div class="fakesite-footer">
         <p>© 2026 Interbank Security Network. All rights reserved.</p>
@@ -719,9 +707,6 @@ const FAKE_SITES = {
             <p>Internal Security Audit System • Global Information Security Office</p>
           </div>
         </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> This is a sophisticated corporate spear-phishing attack! The attacker registered <code>business-it-support.com</code> to imitate your IT team. Notice that the authentic company domain is <code>business.com</code>. An extra word like <code>-it-support</code> completely changes domain ownership!
-        </div>
       </div>
       <div class="fakesite-footer">
         <p>© 2026 Business Inc. Global IT &amp; Information Security Systems. All rights reserved.</p>
@@ -768,9 +753,6 @@ const FAKE_SITES = {
           <div class="fakesite-card-footer">
             <p>Don't have an account? <a href="#" onclick="event.preventDefault(); showToast('⚠️ Fake link on phishing portal.', 'warning');">Register for BPI Online</a></p>
           </div>
-        </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> Notice the domain in your browser bar: <code>bpi-online-security.com</code>. Authentic Philippine banks use <code>.com.ph</code> domains (e.g. <code>bpi.com.ph</code>). Attackers buy lookalike domains to steal login credentials!
         </div>
       </div>
       <div class="fakesite-footer">
@@ -819,9 +801,6 @@ const FAKE_SITES = {
             </div>
           </form>
         </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> Authentic PayPal emails address you by your full name, not generic greetings. Look at the URL bar — <code>paypal-account-check.com</code> is not owned by PayPal!
-        </div>
       </div>
       <div class="fakesite-footer">
         <p>English | Español | Français | Contact Us | Privacy | Legal</p>
@@ -867,9 +846,6 @@ const FAKE_SITES = {
               Verify &amp; Claim ₱5,000 Reward
             </button>
           </form>
-        </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> <strong>NEVER</strong> enter your 4-digit MPIN or SMS OTP on any website. GCash will NEVER request your MPIN or OTP via a web link! Real domain is strictly <code>gcash.com</code>.
         </div>
       </div>
       <div class="fakesite-footer">
@@ -1029,6 +1005,7 @@ function openApp(appName) {
   const state = appState[appName];
 
   if (state.open && !state.minimized) {
+    centerWindow(appName);
     focusWindow(appName);
     return;
   }
@@ -1045,14 +1022,6 @@ function openApp(appName) {
     if (gameState.phase === 'mission') {
       if (ch1InboxEmails.length > 0) {
         setTimeout(function() {
-          // Pulse-highlight the whole inbox panel first
-          const emailListView = document.getElementById('email-list-view');
-          if (emailListView) {
-            emailListView.classList.remove('inbox-pulse-highlight');
-            void emailListView.offsetWidth;
-            emailListView.classList.add('inbox-pulse-highlight');
-            setTimeout(function() { emailListView.classList.remove('inbox-pulse-highlight'); }, 3200);
-          }
           updateStickyChecklist();
 
           // Ryan gives a guided intro: click the email → then check notes
@@ -1114,12 +1083,9 @@ function openApp(appName) {
     if (typeof syncMediaPlayerVolume === 'function') syncMediaPlayerVolume();
   }
 
-  // First time this app is opened, center it on screen so it isn't
-  // hidden behind the Detective's Notes sticky note in the bottom-right corner.
-  if (!state.hasBeenPositioned) {
-    centerWindow(appName);
-    state.hasBeenPositioned = true;
-  }
+  // Always center window on screen when opened
+  centerWindow(appName);
+  state.hasBeenPositioned = true;
 }
 
 // Centers a window on the desktop
@@ -1127,27 +1093,57 @@ function centerWindow(appName) {
   const win = document.getElementById(`win-${appName}`);
   const desktop = document.getElementById('desktop');
   const taskbar = document.getElementById('taskbar');
-  if (!win || !desktop) return;
+  if (!win || !desktop || win.classList.contains('maximized')) return;
 
   const w = win.offsetWidth || 840;
   const h = win.offsetHeight || 520;
-  const viewportW = desktop.clientWidth;
-  const viewportH = desktop.clientHeight - (taskbar ? taskbar.offsetHeight : 48);
+  const viewportW = desktop.clientWidth || window.innerWidth;
+  const taskbarH = taskbar ? taskbar.offsetHeight : 48;
 
-  let left = Math.max(20, Math.round((viewportW - w) / 2));
+  const ryanOverlay = document.getElementById('ryan-guide-overlay');
+  const hasDialogue = document.body.classList.contains('has-ryan-dialogue') ||
+    (ryanOverlay && !ryanOverlay.classList.contains('hidden') && !ryanOverlay.classList.contains('ryan-animate-out'));
 
-  // Clearance for Ryan IT Support guide overlay (sits above taskbar at bottom 58px with ~120px height)
-  // so app windows are neatly positioned above Ryan without overlapping or covering
-  const ryanTopBoundary = viewportH - 180;
-  let top = Math.round((ryanTopBoundary - h) / 2);
-  top = Math.max(24, Math.min(52, top));
+  const bottomClearance = hasDialogue ? 195 : taskbarH;
+  const viewportH = (desktop.clientHeight || window.innerHeight) - bottomClearance;
 
-  if (top + h > ryanTopBoundary && top > 18) {
-    top = Math.max(16, ryanTopBoundary - h);
-  }
+  const left = Math.max(0, Math.round((viewportW - w) / 2));
+  const top = Math.max(hasDialogue ? 10 : 0, Math.round((viewportH - h) / 2));
 
   win.style.left = left + 'px';
   win.style.top = top + 'px';
+}
+
+// Adjusts open app windows when dialogue appears or disappears so they never cover each other
+function adjustAppsForDialogue(hasDialogue) {
+  const desktop = document.getElementById('desktop');
+  const viewportH = desktop ? desktop.clientHeight : window.innerHeight;
+  const maxSafeBottom = viewportH - 195;
+
+  const openWins = document.querySelectorAll('.app-window:not(.hidden):not(.minimized)');
+  openWins.forEach(win => {
+    if (win.classList.contains('maximized')) return;
+    const appName = win.dataset.app;
+
+    if (hasDialogue) {
+      if (win.dataset.preDialogueTop === undefined) {
+        win.dataset.preDialogueTop = win.style.top || `${win.offsetTop}px`;
+      }
+      const winHeight = win.offsetHeight || 520;
+      const currentTop = parseInt(win.style.top, 10) || win.offsetTop;
+      if (currentTop + winHeight > maxSafeBottom) {
+        const newTop = Math.max(10, maxSafeBottom - winHeight);
+        win.style.top = newTop + 'px';
+      }
+    } else {
+      if (win.dataset.preDialogueTop !== undefined) {
+        win.style.top = win.dataset.preDialogueTop;
+        delete win.dataset.preDialogueTop;
+      } else if (appName) {
+        centerWindow(appName);
+      }
+    }
+  });
 }
 
 function closeApp(appName) {
@@ -1157,11 +1153,24 @@ function closeApp(appName) {
     const vid = document.getElementById('videoplayer-video');
     if (vid) vid.pause();
   }
+  if (appName === 'browser') {
+    const activeTab = typeof getActiveTab === 'function' ? getActiveTab() : null;
+    const wasPhish = activeTab && typeof isPhishingUrl === 'function' && isPhishingUrl(activeTab.url);
+    if (wasPhish) {
+      if (typeof showToast === 'function') {
+        showToast('🛡️ Good defensive practice: You closed the browser to exit the phishing site!', 'success');
+      }
+    }
+    if (typeof updateBrowserPhishingNotice === 'function') {
+      updateBrowserPhishingNotice(false);
+    }
+  }
   appState[appName].open = false;
   appState[appName].minimized = false;
   appState[appName].maximized = false;
   win.classList.add('hidden');
   win.classList.remove('maximized', 'focused');
+  delete win.dataset.preDialogueTop;
   updateTaskbar();
   if (typeof AudioManager !== 'undefined') AudioManager.playWindowSound(false);
 }
@@ -1304,6 +1313,7 @@ function updateTaskbar() {
     startY = e.clientY;
     origLeft = win.offsetLeft;
     origTop = win.offsetTop;
+    win.classList.add('dragging');
 
     const appName = win.dataset.app;
     focusWindow(appName);
@@ -1311,14 +1321,34 @@ function updateTaskbar() {
   });
 
   document.addEventListener('mousemove', e => {
-    if (!dragging) return;
+    if (!dragging || !target) return;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    target.style.left = Math.max(0, origLeft + dx) + 'px';
-    target.style.top = Math.max(0, origTop + dy) + 'px';
+
+    const desktop = document.getElementById('desktop');
+    const taskbar = document.getElementById('taskbar');
+    const desktopW = desktop ? desktop.clientWidth : window.innerWidth;
+    const taskbarH = taskbar ? taskbar.offsetHeight : 48;
+
+    const ryanOverlay = document.getElementById('ryan-guide-overlay');
+    const hasDialogue = document.body.classList.contains('has-ryan-dialogue') ||
+      (ryanOverlay && !ryanOverlay.classList.contains('hidden') && !ryanOverlay.classList.contains('ryan-animate-out'));
+
+    const bottomClearance = hasDialogue ? 195 : taskbarH;
+    const desktopH = (desktop ? desktop.clientHeight : window.innerHeight) - bottomClearance;
+
+    const maxLeft = Math.max(0, desktopW - target.offsetWidth);
+    const maxTop = Math.max(0, desktopH - target.offsetHeight);
+
+    target.style.left = Math.min(maxLeft, Math.max(0, origLeft + dx)) + 'px';
+    target.style.top = Math.min(maxTop, Math.max(0, origTop + dy)) + 'px';
   });
 
-  document.addEventListener('mouseup', () => { dragging = false; });
+  document.addEventListener('mouseup', () => {
+    if (target) target.classList.remove('dragging');
+    dragging = false;
+    target = null;
+  });
 
   // Double click titlebar to toggle maximize (desktop experience)
   document.addEventListener('dblclick', e => {
@@ -3695,21 +3725,12 @@ function showStickyNote() {
   const icon = document.getElementById('icon-notes');
   if (!note) return;
 
-  note.classList.remove('hidden');
-  note.classList.remove('sticky-note-pop');
-  void note.offsetWidth; // Force reflow so the pop-in animation replays every time it's shown
-  note.classList.add('sticky-note-pop');
+  note.classList.remove('hidden', 'sticky-note-pop', 'sticky-note-highlight', 'sticky-note-pulse-once');
 
   if (icon) icon.classList.remove('hidden');
 
   // Dismiss the icon attention glow when player opens the note
   if (typeof IconAttention !== 'undefined') IconAttention.hide('notes');
-
-  // Pulse the border gold to greet the player when they open it
-  note.classList.remove('sticky-note-highlight');
-  void note.offsetWidth;
-  note.classList.add('sticky-note-highlight');
-  setTimeout(function() { note.classList.remove('sticky-note-highlight'); }, 3200);
 
   updateStickyChecklist();
 
@@ -3843,14 +3864,6 @@ function updateStickyChecklist() {
   html += '</ul>';
   section.innerHTML = html;
 
-  // Pulse the sticky note to draw attention after a verdict
-  const note = document.getElementById('sticky-note');
-  if (note && !note.classList.contains('hidden')) {
-    note.classList.remove('sticky-note-pulse-once');
-    void note.offsetWidth;
-    note.classList.add('sticky-note-pulse-once');
-    setTimeout(() => note.classList.remove('sticky-note-pulse-once'), 800);
-  }
 }
 
 function showAchievementToast(ach) {
@@ -3936,8 +3949,7 @@ function updateStickyNoteForPhase(phase) {
           <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
           <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
         </ul>
-      </div>
-      <div class="sticky-note-tip">💡 <strong>Pro Tip:</strong> Ryan explains every verdict with educational feedback after submission.</div>`;
+      </div>`;
     updateStickyChecklist();
   }
 }
@@ -4376,10 +4388,10 @@ function openEmail(idx) {
     if (legitBtn) {
       legitBtn.disabled = true;
       if (!existingResult.playerDecision) {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Marked';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
         legitBtn.classList.add('reported');
       } else {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
         legitBtn.classList.remove('reported');
       }
       legitBtn.title = 'Verdict already submitted for this email.';
@@ -4395,9 +4407,9 @@ function openEmail(idx) {
     }
     if (legitBtn) {
       legitBtn.disabled = false;
-      legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark';
+      legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
       legitBtn.classList.remove('reported');
-      legitBtn.title = 'Confirm and submit this email as Legitimate';
+      legitBtn.title = 'Confirm and submit this email as Legit';
     }
     flagModeBtn.disabled = false;
     flagModeBtn.title = '';
@@ -4405,6 +4417,7 @@ function openEmail(idx) {
 
   renderEmailContent(email);
   renderEvidencePanel();
+  if (typeof updateVerdictButtonsHighlight === 'function') updateVerdictButtonsHighlight();
   updateHUD();
 
   // ── Default hide investigation evidence on email open unless flags exist ──
@@ -4437,14 +4450,6 @@ function openEmail(idx) {
         void flagBtn.offsetWidth;
         flagBtn.classList.add('btn-pulse-highlight');
         setTimeout(function() { flagBtn.classList.remove('btn-pulse-highlight'); }, 3200);
-      }
-      // Also pulse sticky note to remind player it's there
-      const note = document.getElementById('sticky-note');
-      if (note && !note.classList.contains('hidden')) {
-        note.classList.remove('sticky-note-pulse-once');
-        void note.offsetWidth;
-        note.classList.add('sticky-note-pulse-once');
-        setTimeout(function() { note.classList.remove('sticky-note-pulse-once'); }, 800);
       }
     }, 350);
   }
@@ -4851,6 +4856,36 @@ function renderEvidencePanel() {
       ${removeBtnHtml}`;
     list.appendChild(item);
   });
+
+  if (typeof updateVerdictButtonsHighlight === 'function') {
+    updateVerdictButtonsHighlight();
+  }
+}
+
+function updateVerdictButtonsHighlight() {
+  const reportBtn = document.getElementById('report-btn');
+  const legitBtn  = document.getElementById('legit-btn');
+  if (!reportBtn || !legitBtn) return;
+
+  const currentEmailObj = (ch1InboxEmails && ch1InboxEmails[gameState.currentEmail]) || (EMAILS && EMAILS[gameState.currentEmail]);
+  const isFirstEmail = (gameState.currentEmail === 0 || (currentEmailObj && currentEmailObj.id === 1));
+  const isClosed = currentEmailObj && gameState.emailResults && gameState.emailResults.some(r => r.emailId === currentEmailObj.id);
+
+  // Highlight both report and legit button only on first email if the player flagged all evidence
+  if (isFirstEmail && !isClosed && currentEmailObj && currentEmailObj.evidence && currentEmailObj.evidence.length > 0) {
+    const allFlagged = currentEmailObj.evidence.every(evType =>
+      gameState.currentEmailFlags && gameState.currentEmailFlags.some(f => f.type === evType)
+    );
+
+    if (allFlagged) {
+      reportBtn.classList.add('verdict-btn-highlight');
+      legitBtn.classList.add('verdict-btn-highlight');
+      return;
+    }
+  }
+
+  reportBtn.classList.remove('verdict-btn-highlight');
+  legitBtn.classList.remove('verdict-btn-highlight');
 }
 
 function toggleEvidencePanel(forceOpen) {
@@ -4890,6 +4925,10 @@ function returnToInbox() {
   gameState.flagModeActive = false;
   const flagModeBtn = document.getElementById('flag-mode-btn');
   if (flagModeBtn) flagModeBtn.classList.remove('active');
+  const reportBtn = document.getElementById('report-btn');
+  const legitBtn  = document.getElementById('legit-btn');
+  if (reportBtn) reportBtn.classList.remove('verdict-btn-highlight');
+  if (legitBtn) legitBtn.classList.remove('verdict-btn-highlight');
   const gmailBody = document.querySelector('.gmail-body');
   if (gmailBody) gmailBody.classList.remove('flag-mode-active');
   renderEmailList();
@@ -5079,12 +5118,15 @@ function submitReport(isPhishing) {
     if (legitBtn) {
       legitBtn.disabled = true;
       if (!isPhishing) {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Marked';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
         legitBtn.classList.add('reported');
       } else {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
         legitBtn.classList.remove('reported');
       }
+    }
+    if (typeof updateVerdictButtonsHighlight === 'function') {
+      updateVerdictButtonsHighlight();
     }
     const flagModeBtn = document.getElementById('flag-mode-btn');
     if (flagModeBtn) {
@@ -5639,6 +5681,31 @@ let browserTabs = [];
 let browserActiveTabId = 0;
 let browserTabCounter = 0;
 
+function isPhishingUrl(url) {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  if (lower.includes('canva-premium-free.example')) return true;
+  return typeof getPhishingSiteForUrl === 'function' && getPhishingSiteForUrl(url) !== null;
+}
+
+let lastPhishingNoticeToastTime = 0;
+
+function updateBrowserPhishingNotice(isPhishing, url) {
+  const winCloseBtn = document.getElementById('browser-win-close');
+
+  if (isPhishing) {
+    if (winCloseBtn) {
+      winCloseBtn.classList.add('phish-close-highlight');
+      winCloseBtn.setAttribute('title', 'Close');
+    }
+  } else {
+    if (winCloseBtn) {
+      winCloseBtn.classList.remove('phish-close-highlight');
+      winCloseBtn.setAttribute('title', 'Close');
+    }
+  }
+}
+
 function initBrowserTabs() {
   browserTabs = [];
   browserTabCounter = 0;
@@ -5675,10 +5742,18 @@ function closeTab(tabId, event) {
   if (event) event.stopPropagation();
   const idx = browserTabs.findIndex(t => t.id === tabId);
   if (idx === -1) return;
+  const closedTab = browserTabs[idx];
+  const wasPhish = closedTab && typeof isPhishingUrl === 'function' && isPhishingUrl(closedTab.url);
+
   browserTabs.splice(idx, 1);
   if (browserTabs.length === 0) {
     // Re-open a blank tab
     initBrowserTabs();
+    if (wasPhish) {
+      if (typeof showToast === 'function') {
+        showToast('🛡️ Excellent! You safely closed the suspicious phishing website.', 'success');
+      }
+    }
     return;
   }
   if (browserActiveTabId === tabId) {
@@ -5687,6 +5762,11 @@ function closeTab(tabId, event) {
   }
   renderTabStrip();
   renderActiveTab();
+  if (wasPhish) {
+    if (typeof showToast === 'function') {
+      showToast('🛡️ Excellent! You safely closed the suspicious phishing website.', 'success');
+    }
+  }
 }
 
 function createNewBrowserTab(url) {
@@ -5702,7 +5782,7 @@ function renderTabStrip() {
   const strip = document.getElementById('browser-tabs-strip');
   if (!strip) return;
   strip.innerHTML = browserTabs.map(tab => `
-    <div class="browser-tab${tab.id === browserActiveTabId ? ' active' : ''}" onclick="switchTab(${tab.id})" title="${tab.url}">
+    <div class="browser-tab${tab.id === browserActiveTabId ? ' active' : ''}" onclick="switchTab(${tab.id})" title="${escapeHtml(tab.url)}">
       <span class="browser-tab-favicon">${tab.icon}</span>
       <span class="browser-tab-title">${escapeHtml(tab.title)}</span>
       <button class="browser-tab-close" onclick="closeTab(${tab.id}, event)" title="Close tab">✕</button>
@@ -5885,9 +5965,6 @@ function renderDynamicPhishingSite(url, host) {
           <div class="fakesite-card-footer">
             <p>256-Bit SSL Encrypted Verification • Identity Shield Protection</p>
           </div>
-        </div>
-        <div class="fakesite-disclaimer">
-          ⚠️ <strong>Cyber Detective Clue:</strong> Look at the URL bar: <code>${escapeHtml(host)}</code>. Phishing attackers create fake login portals that mirror genuine login pages to steal personal credentials.
         </div>
       </div>
       <div class="fakesite-footer">
@@ -6107,6 +6184,7 @@ function _applyPageToContent(url) {
 
   // 0. OFFLINE CHECK: If Wi-Fi is turned off or disconnected
   if (!isInternetConnected()) {
+    updateBrowserPhishingNotice(false);
     setTabMeta('No internet', '🦖', '⚠️ Disconnected', 'not-secure');
     content.innerHTML = renderChromeOfflineError(url);
     return;
@@ -6117,6 +6195,7 @@ function _applyPageToContent(url) {
 
   // 1. Google Homepage
   if (isGoogleHome) {
+    updateBrowserPhishingNotice(false);
     setTabMeta('Google', '🌐', '🔒 Secure', 'secure');
     content.innerHTML = BROWSER_HOME_HTML;
     return;
@@ -6127,8 +6206,11 @@ function _applyPageToContent(url) {
   if (phishSite) {
     setTabMeta(phishSite.title, phishSite.icon, '⚠️ Not Secure', 'not-secure');
     content.innerHTML = phishSite.html;
+    updateBrowserPhishingNotice(true, url);
     return;
   }
+
+  updateBrowserPhishingNotice(false);
 
   // 3. Google Search Results
   if (isGoogleSearch) {
@@ -6799,7 +6881,13 @@ function returnToGmail() {
 let toastTimeout = null;
 
 function showToast(message, type) {
+  // If dialogue overlay is active, don't show toast behind the dialogue
+  const ryanOverlay = document.getElementById('ryan-guide-overlay');
+  if (ryanOverlay && !ryanOverlay.classList.contains('hidden')) {
+    return;
+  }
   const toast = document.getElementById('toast');
+  if (!toast) return;
   toast.textContent = message;
   toast.className = `toast ${type}`;
   toast.classList.remove('hidden');
@@ -10106,6 +10194,10 @@ function renderG4MaliciousSite() {
   if (secIndicator) {
     secIndicator.textContent = '⚠️ Not Secure';
     secIndicator.style.color = 'var(--accent-red)';
+  }
+
+  if (typeof updateBrowserPhishingNotice === 'function') {
+    updateBrowserPhishingNotice(true, 'http://canva-premium-free.example/download');
   }
 
   contentEl.innerHTML = `
@@ -14447,6 +14539,8 @@ const RyanGuide = (() => {
     if (!o) return;
     const toast = document.getElementById('toast');
     if (toast) toast.classList.add('hidden'); // Clear any toast behind Ryan's dialogue
+    document.body.classList.add('has-ryan-dialogue');
+    if (typeof adjustAppsForDialogue === 'function') adjustAppsForDialogue(true);
     o.classList.remove('hidden', 'ryan-animate-out');
     void o.offsetHeight; // trigger reflow
     o.classList.add('ryan-animate-in');
@@ -14456,6 +14550,8 @@ const RyanGuide = (() => {
   }
 
   function _hide() {
+    document.body.classList.remove('has-ryan-dialogue');
+    if (typeof adjustAppsForDialogue === 'function') adjustAppsForDialogue(false);
     const o = el().overlay;
     if (!o || o.classList.contains('hidden')) return;
     o.classList.add('ryan-animate-out');
