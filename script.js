@@ -407,6 +407,7 @@ const EMAILS = [
 
 // Live inbox — populated dynamically as player progresses
 let ch1InboxEmails               = [];    // emails currently visible in the inbox
+let ch1AnimatedEmailIds          = new Set(); // tracks emails already animated in inbox
 let ch1PendingNotification       = false; // true = show badge (1) before player opens Zmail
 let ch1Stage                     = 0;     // 0=start,1=wave1,2=wave2,3=wave3,4=wave4
 let ch1MistakeCount              = 0;     // adaptive mentor coaching tracker
@@ -428,19 +429,72 @@ function ch1InjectWave(waveNum) {
   ch1Stage = waveNum;
   const ids = (CH1_WAVE_DEFS[waveNum] || []).filter(id => !ch1InboxEmails.some(e => e.id === id));
   if (ids.length === 0) return;
-  ids.forEach((id, idx) => {
-    setTimeout(() => {
-      const def = ch1GetEmailDef(id);
-      if (def) {
-        ch1InboxEmails.push(def);
-        renderEmailList();
-        updateFolderCounts();
-      }
-    }, idx * 250);
+
+  // Add all incoming wave emails so they arrive in the inbox together
+  ids.forEach(id => {
+    const def = ch1GetEmailDef(id);
+    if (def && !ch1InboxEmails.some(e => e.id === id)) {
+      ch1InboxEmails.push(def);
+    }
   });
+
+  renderEmailList();
+  updateFolderCounts();
+
   setTimeout(() => {
     showToast('📧 New emails arrived in your inbox.', 'success');
     if (typeof AudioManager !== 'undefined') AudioManager.playNotification();
+
+    // Push dynamic Zmail simulation notifications based on wave
+    if (typeof addSimulationNotification === 'function') {
+      if (waveNum === 1) {
+        addSimulationNotification({
+          id: 'notif-zmail-wave1',
+          source: 'Zmail',
+          icon: '📧',
+          iconType: 'mail',
+          title: 'New Email: Business Support Alert',
+          body: 'Subject: URGENT: Your Account Requires Immediate Verification. Click to inspect in Zmail.',
+          time: 'Just now',
+          app: 'gmail',
+          emailId: 1
+        }, false);
+      } else if (waveNum === 2) {
+        addSimulationNotification({
+          id: 'notif-zmail-wave2',
+          source: 'Zmail',
+          icon: '📧',
+          iconType: 'mail',
+          title: 'Zmail: 3 New Incident Emails',
+          body: 'New messages from HR (Benefits), Microsoft Security, and IT Support waiting in inbox.',
+          time: 'Just now',
+          app: 'gmail'
+        }, false);
+      } else if (waveNum === 3) {
+        addSimulationNotification({
+          id: 'notif-zmail-wave3',
+          source: 'Zmail',
+          icon: '📧',
+          iconType: 'mail',
+          title: 'New Email: Technical Solutions',
+          body: 'Subject: System Maintenance Completed Successfully. Routine confirmation from verified domain.',
+          time: 'Just now',
+          app: 'gmail',
+          emailId: 5
+        }, false);
+      } else if (waveNum === 4) {
+        addSimulationNotification({
+          id: 'notif-zmail-wave4',
+          source: 'Zmail',
+          icon: '📧',
+          iconType: 'mail',
+          title: 'Zmail: 4 Final Scenario Emails Arrived',
+          body: 'Direct deposit payroll notice, urgent security patch, bank notice, and IT Help Desk ticket arrived.',
+          time: 'Just now',
+          app: 'gmail'
+        }, false);
+      }
+    }
   }, 200);
 }
 
@@ -448,32 +502,7 @@ function ch1InjectWave(waveNum) {
 const MAX_SCORE = EMAILS.reduce((sum, e) => sum + (e.phishing ? 100 + e.evidence.length * 25 : 50), 0);
 
 // Emails already sent by the player — viewable in the Sent folder
-const SENT_EMAILS = [
-  {
-    id: 101,
-    to: 'hr@business.com',
-    subject: 'Re: Updated Employee Benefits Information',
-    time: '9:12 AM',
-    preview: 'Thanks for the update — reviewed and confirmed on my end...',
-    body: [
-      { type: 'p', text: 'Hi HR Department,' },
-      { type: 'p', text: 'Thanks for the update — I reviewed the September benefits information through the normal internal resources. No issues on my end.' },
-      { type: 'p', text: 'Regards,\nStudent' }
-    ]
-  },
-  {
-    id: 102,
-    to: 'it-security@business.com',
-    subject: 'Suspicious emails flagged this week',
-    time: '10:47 AM',
-    preview: 'Sharing a couple of phishing samples I caught for awareness...',
-    body: [
-      { type: 'p', text: 'Hi IT Security Team,' },
-      { type: 'p', text: 'Sharing a couple of phishing samples I caught this week — fake sender domains, urgency pressure tactics, and mismatched links. Recommend circulating these for staff awareness training.' },
-      { type: 'p', text: 'Regards,\nStudent' }
-    ]
-  }
-];
+const SENT_EMAILS = [];
 
 
 
@@ -482,6 +511,223 @@ const SENT_EMAILS = [
 // Fake websites for the browser
 // Fake websites for the browser (Authentic Phishing Website Examples)
 const FAKE_SITES = {
+  'https://business-account-verify.net/login': `
+    <div class="fakesite fakesite-corporate">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>business-account-verify.net</code> is a fake phishing website, NOT the official company domain <code>business.com</code>!</span>
+      </div>
+      <div class="fakesite-header" style="background:#0f172a;">
+        <div class="fakesite-header-inner">
+          <div class="fakesite-logo">🏢 Business Inc. — Employee SSO</div>
+          <div class="fakesite-subtag">Identity &amp; Access Management Portal</div>
+        </div>
+      </div>
+      <div class="fakesite-body">
+        <div class="fakesite-card">
+          <div class="fakesite-card-header">
+            <h2>Single Sign-On (SSO) Verification</h2>
+            <div class="fakesite-urgency-callout">
+              ⚠️ <strong>URGENT:</strong> Account access restricted due to suspicious sign-in. Verify credentials within 30 minutes to prevent permanent suspension.
+            </div>
+          </div>
+          <form onsubmit="event.preventDefault(); handlePhishingSubmit('business-account-verify.net', 'Business Inc. SSO');">
+            <div class="fakesite-field">
+              <label for="corp-user">Corporate Email or Employee ID</label>
+              <input type="text" id="corp-user" placeholder="user@business.com or EMP-ID" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="corp-pass">Current Work Password</label>
+              <input type="password" id="corp-pass" placeholder="••••••••••••" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="corp-pin">Employee PIN / Security Token</label>
+              <input type="password" id="corp-pin" placeholder="6-digit PIN" maxlength="6" autocomplete="off" />
+            </div>
+            <div class="fakesite-row">
+              <label class="fakesite-remember">
+                <input type="checkbox" checked /> Keep this workstation authenticated
+              </label>
+              <a href="#" class="fakesite-link" onclick="event.preventDefault(); showToast('⚠️ Fake link: Attackers only collect submitted credentials.', 'warning');">Forgot password?</a>
+            </div>
+            <button type="submit" class="fakesite-submit">
+              Verify Employee Identity &amp; Restore Access
+            </button>
+          </form>
+          <div class="fakesite-card-footer">
+            <p>Protected by Enterprise Multi-Factor Authentication • ISO 27001 Certified</p>
+          </div>
+        </div>
+        <div class="fakesite-disclaimer">
+          ⚠️ <strong>Cyber Detective Clue:</strong> Look at the URL bar: <code>business-account-verify.net</code>. The real organization domain is <code>business.com</code>. Attackers register look-alike domains and copy official branding to harvest employee login credentials!
+        </div>
+      </div>
+      <div class="fakesite-footer">
+        <p>© 2026 Business Inc. Global IT &amp; Information Security Systems. All rights reserved.</p>
+      </div>
+    </div>`,
+
+  'https://m1crosoft-account-verify.com/signin': `
+    <div class="fakesite fakesite-microsoft">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>m1crosoft-account-verify.com</code> uses a digit "1" instead of the letter "i"! Real Microsoft is <code>microsoft.com</code>.</span>
+      </div>
+      <div class="fakesite-ms-container">
+        <div class="fakesite-ms-card">
+          <div class="ms-logo-wrap">
+            <div class="ms-logo-grid">
+              <span style="background:#f25022;"></span>
+              <span style="background:#7fba00;"></span>
+              <span style="background:#00a4ef;"></span>
+              <span style="background:#ffb900;"></span>
+            </div>
+            <span class="ms-brand-name">Microsoft</span>
+          </div>
+          <h2 class="ms-signin-title">Sign in</h2>
+          <div class="ms-security-warning">
+            ⚠️ <strong>Unusual sign-in activity detected.</strong> Enter your credentials to confirm your identity and prevent account lockout within 60 minutes.
+          </div>
+          <form onsubmit="event.preventDefault(); handlePhishingSubmit('m1crosoft-account-verify.com', 'Microsoft 365');">
+            <div class="ms-field">
+              <label for="ms-email" style="font-size:12px;color:#505050;display:block;margin-bottom:4px;">Email, phone, or Skype</label>
+              <input type="text" id="ms-email" placeholder="someone@example.com" required autocomplete="off" />
+            </div>
+            <div class="ms-field" style="margin-top:16px;">
+              <label for="ms-pwd" style="font-size:12px;color:#505050;display:block;margin-bottom:4px;">Password</label>
+              <input type="password" id="ms-pwd" placeholder="Enter password" required autocomplete="off" />
+            </div>
+            <div class="ms-trouble-links">
+              <p style="margin:6px 0;"><a href="#" onclick="event.preventDefault(); showToast('⚠️ Fake link on phishing portal.', 'warning');">No account? Create one!</a></p>
+              <p style="margin:6px 0;"><a href="#" onclick="event.preventDefault(); showToast('⚠️ Fake link on phishing portal.', 'warning');">Can’t access your account?</a></p>
+            </div>
+            <div class="ms-btn-row">
+              <button type="submit" class="ms-submit-btn">Next</button>
+            </div>
+          </form>
+          <div class="fakesite-disclaimer" style="margin-top:24px;">
+            ⚠️ <strong>Cyber Detective Clue:</strong> Notice the domain typosquat: <code>m1crosoft-account-verify.com</code> with digit <code>1</code> instead of letter <code>i</code>. Authentic Microsoft sign-in pages reside strictly on <code>login.microsoftonline.com</code> or <code>account.microsoft.com</code>!
+          </div>
+        </div>
+        <div class="ms-footer">
+          <span>Terms of use</span>
+          <span>Privacy &amp; cookies</span>
+          <span>...</span>
+        </div>
+      </div>
+    </div>`,
+
+  'https://bankng-secure-verify.xyz/restore': `
+    <div class="fakesite fakesite-banking">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>bankng-secure-verify.xyz</code> misspells "banking" and uses a cheap <code>.xyz</code> domain! Real banks never use .xyz domains.</span>
+      </div>
+      <div class="fakesite-header bankng-header">
+        <div class="fakesite-header-inner">
+          <div class="fakesite-logo">🔒 Secure Bank Online — Risk Management</div>
+          <div class="fakesite-subtag">Emergency Account Restoration Portal</div>
+        </div>
+      </div>
+      <div class="fakesite-body">
+        <div class="fakesite-card">
+          <div class="fakesite-card-header">
+            <span class="bankng-alert-badge">⚠️ SUSPENSION ORDER #BK-99214</span>
+            <h2 style="color:#b91c1c;">Account Access Frozen</h2>
+            <div class="bankng-timer-box">
+              <span>⏳</span> <strong>TIME REMAINING: 14:48</strong> until permanent fund closure.
+            </div>
+          </div>
+          <form onsubmit="event.preventDefault(); handlePhishingSubmit('bankng-secure-verify.xyz', 'Bank Security Portal');">
+            <div class="fakesite-field">
+              <label for="bank-user">Online Banking User ID / Username</label>
+              <input type="text" id="bank-user" placeholder="Enter online banking ID" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="bank-acc">16-Digit Debit / Account Card Number</label>
+              <input type="text" id="bank-acc" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="bank-pin">ATM PIN / Security Password</label>
+              <input type="password" id="bank-pin" placeholder="Enter ATM PIN or Password" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="bank-ssn">Mother's Maiden Name (Identity Verification)</label>
+              <input type="text" id="bank-ssn" placeholder="Security answer" required autocomplete="off" />
+            </div>
+            <button type="submit" class="fakesite-submit bankng-submit">
+              RESTORE MY ACCOUNT IMMEDIATELY
+            </button>
+          </form>
+          <div class="fakesite-card-footer">
+            <p>Federal Deposit Insurance Protection • 256-Bit SSL Encrypted Verification</p>
+          </div>
+        </div>
+        <div class="fakesite-disclaimer">
+          ⚠️ <strong>Cyber Detective Clue:</strong> Look closely at <code>bankng-secure-verify.xyz</code>:
+          1) "banking" is misspelled as "bankng".
+          2) Financial institutions never use top-level domains like <code>.xyz</code>.
+          3) Extreme 15-minute countdowns and asking for ATM PINs / security answers are classic credential harvester techniques.
+        </div>
+      </div>
+      <div class="fakesite-footer">
+        <p>© 2026 Interbank Security Network. All rights reserved.</p>
+      </div>
+    </div>`,
+
+  'https://business-it-support.com/compliance-portal': `
+    <div class="fakesite fakesite-it">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>business-it-support.com</code> is a spear-phishing domain! Official company portal is <code>business.com</code>.</span>
+      </div>
+      <div class="fakesite-header it-header">
+        <div class="fakesite-header-inner">
+          <div class="fakesite-logo">🛡️ IT Security Operations | Compliance Hub</div>
+          <div class="fakesite-subtag">Mandatory Employee Security Review (ISP-2024-07)</div>
+        </div>
+      </div>
+      <div class="fakesite-body">
+        <div class="fakesite-card">
+          <div class="fakesite-card-header">
+            <span class="it-policy-pill">POLICY ISP-2024-07</span>
+            <h2 style="margin-top:8px;">Annual IT Security Compliance Verification</h2>
+            <p>Mandatory certification for all corporate staff. Must be completed by Friday 5:00 PM to maintain VPN and workstation privileges.</p>
+          </div>
+          <form onsubmit="event.preventDefault(); handlePhishingSubmit('business-it-support.com', 'IT Security Operations');">
+            <div class="fakesite-field">
+              <label for="it-email">Corporate Work Email (@business.com)</label>
+              <input type="email" id="it-email" placeholder="name@business.com" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="it-pwd">Active Directory / Domain Password</label>
+              <input type="password" id="it-pwd" placeholder="Enter corporate password" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="it-dept">Department / Division</label>
+              <input type="text" id="it-dept" placeholder="e.g. Sales, Operations, Finance" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="it-otp">Two-Factor Authentication (2FA) Code</label>
+              <input type="text" id="it-otp" placeholder="6-digit authenticator code" maxlength="6" autocomplete="off" />
+            </div>
+            <button type="submit" class="fakesite-submit" style="background:linear-gradient(90deg, #0369a1, #0284c7);">
+              Complete Security Compliance Verification
+            </button>
+          </form>
+          <div class="fakesite-card-footer">
+            <p>Internal Security Audit System • Global Information Security Office</p>
+          </div>
+        </div>
+        <div class="fakesite-disclaimer">
+          ⚠️ <strong>Cyber Detective Clue:</strong> This is a sophisticated corporate spear-phishing attack! The attacker registered <code>business-it-support.com</code> to imitate your IT team. Notice that the authentic company domain is <code>business.com</code>. An extra word like <code>-it-support</code> completely changes domain ownership!
+        </div>
+      </div>
+      <div class="fakesite-footer">
+        <p>© 2026 Business Inc. Global IT &amp; Information Security Systems. All rights reserved.</p>
+      </div>
+    </div>`,
+
   'https://bpi-online-security.com/login': `
     <div class="fakesite fakesite-bpi">
       <div class="phish-sim-banner">
@@ -1099,23 +1345,21 @@ document.querySelectorAll('.app-window').forEach(win => {
 
 function updateClock() {
   const now = new Date();
-  const h = now.getHours().toString().padStart(2, '0');
+  const rawHours = now.getHours();
+  const ampm = rawHours >= 12 ? 'PM' : 'AM';
+  const hours12 = (rawHours % 12) || 12;
   const m = now.getMinutes().toString().padStart(2, '0');
   const s = now.getSeconds().toString().padStart(2, '0');
   
   const timeEl = document.getElementById('taskbar-time');
-  if (timeEl) timeEl.textContent = `${h}:${m}`;
+  if (timeEl) timeEl.textContent = `${hours12}:${m} ${ampm}`;
   const dateEl = document.getElementById('taskbar-date');
   if (dateEl) dateEl.textContent = `${now.getMonth()+1}/${now.getDate()}/${now.getFullYear()}`;
 
   // Live seconds and full date in words for the calendar flyout
   const calLiveTime = document.getElementById('cal-live-time');
   if (calLiveTime) {
-    let hours = now.getHours();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // '0' becomes '12'
-    calLiveTime.textContent = `${hours.toString().padStart(2, '0')}:${m}:${s} ${ampm}`;
+    calLiveTime.textContent = `${hours12.toString().padStart(2, '0')}:${m}:${s} ${ampm}`;
   }
 
   const calDateWords = document.getElementById('cal-date-words');
@@ -1736,6 +1980,9 @@ function updateLoginScreenForChapter(categoryId) {
   // Keep gameState playerName in sync
   if (typeof gameState !== 'undefined') {
     gameState.playerName = char.name;
+  }
+  if (typeof initChapterMissionNotifications === 'function') {
+    initChapterMissionNotifications(categoryId, false);
   }
 }
 
@@ -3300,6 +3547,7 @@ function startMission(openGmail = false) {
 
   // ── Chapter 1 dynamic inbox reset ──────────────────────────
   ch1InboxEmails               = [];    // Start completely empty
+  ch1AnimatedEmailIds.clear();
   ch1Stage                     = 0;     // No waves injected yet
   ch1PendingNotification       = false; // Badge shows only after Ryan's intro finishes
   ch1MistakeCount              = 0;
@@ -3310,6 +3558,7 @@ function startMission(openGmail = false) {
   updateHUD();
   updateFolderCounts();        // Will show (1) notification
   updateAppLockStates();
+  if (typeof initChapterMissionNotifications === 'function') initChapterMissionNotifications('phishing', false);
 
   const hudEl = document.getElementById('hud');
   if (hudEl) hudEl.classList.remove('hidden');
@@ -3434,6 +3683,7 @@ function openChapterDesktopDirect(chapterId) {
 
   // Keep Chapter profile in sync
   updateLoginScreenForChapter(chapterId);
+  if (typeof initChapterMissionNotifications === 'function') initChapterMissionNotifications(chapterId, false);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3460,6 +3710,8 @@ function showStickyNote() {
   void note.offsetWidth;
   note.classList.add('sticky-note-highlight');
   setTimeout(function() { note.classList.remove('sticky-note-highlight'); }, 3200);
+
+  updateStickyChecklist();
 
   // ── Mission Chapter 1: Opening notes adds inbox 1 email and makes it visible ──
   if (gameState.phase === 'mission' && ch1Stage === 0 && ch1InboxEmails.length === 0) {
@@ -3489,6 +3741,11 @@ function showStickyNote() {
 function closeStickyNote() {
   const note = document.getElementById('sticky-note');
   if (note) note.classList.add('hidden');
+}
+
+function toggleStickyNoteCollapse() {
+  const note = document.getElementById('sticky-note');
+  if (note) note.classList.toggle('collapsed');
 }
 
 // ─── Sticky note live checklist ──────────────────────────────────────────────
@@ -3542,19 +3799,38 @@ function updateStickyChecklist() {
   const section = document.getElementById('sn-checklist-section');
   if (!section) return;
 
-  let html = '<div class="sn-checklist-header">🏅 Mission Checklist</div><ul class="sn-checklist">';
+  const totalGoals = SN_ACHIEVEMENTS.length;
+  let completedCount = 0;
+  SN_ACHIEVEMENTS.forEach(ach => {
+    if (ach.check()) completedCount++;
+  });
+  const progressPercent = Math.round((completedCount / totalGoals) * 100);
+
+  let html = `
+    <div class="sn-progress-card">
+      <div class="sn-progress-header">
+        <span class="sn-progress-title">🎯 Mission Checklist</span>
+        <span class="sn-progress-count">${completedCount}/${totalGoals} (${progressPercent}%)</span>
+      </div>
+      <div class="sn-progress-bar-track">
+        <div class="sn-progress-bar-fill" style="width: ${progressPercent}%;"></div>
+      </div>
+    </div>
+    <ul class="sn-checklist">`;
 
   SN_ACHIEVEMENTS.forEach(ach => {
     const done = ach.check();
     const prog = ach.progress();
     html += `
       <li class="sn-ach-item ${done ? 'sn-ach-done' : ''}">
-        <span class="sn-ach-icon">${done ? '✅' : ach.icon}</span>
-        <span class="sn-ach-body">
-          <span class="sn-ach-label">${ach.label}</span>
-          <span class="sn-ach-prog">${prog}</span>
-        </span>
-        ${done ? '<span class="sn-ach-badge">✓ DONE</span>' : ''}
+        <div class="sn-checkbox ${done ? 'checked' : ''}">${done ? '✓' : ''}</div>
+        <div class="sn-ach-body">
+          <div class="sn-ach-header-row">
+            <span class="sn-ach-label">${ach.label}</span>
+            <span class="sn-ach-prog-badge ${done ? 'done' : ''}">${prog}</span>
+          </div>
+          <div class="sn-ach-desc">${ach.desc}</div>
+        </div>
       </li>`;
 
     // Fire achievement toast on first unlock
@@ -3627,31 +3903,41 @@ function updateStickyNoteForPhase(phase) {
   if (phase === 'malware') {
     if (titleEl) titleEl.textContent = "🛡️ Malware Hunter Notes";
     scrollEl.innerHTML = `
-      <div class="sticky-note-title" style="color:#b388ff;border-bottom:1px solid rgba(179,136,255,0.3);padding-bottom:4px;margin-bottom:8px">Chapter 2: Malware Scoring</div>
-      <ul class="sticky-note-list">
-        <li><span class="sn-icon sn-good">🛡️</span><span>Quarantine real Malware: <strong>+100</strong> (highest)</span></li>
-        <li><span class="sn-icon sn-bad">⚠️</span><span>False Positive (Clean file): <strong>−25</strong></span></li>
-        <li><span class="sn-icon sn-good">⚡</span><span>Anti-Virus Scan: <strong>Free check</strong></span></li>
-        <li><span class="sn-icon sn-good">🎯</span><span>Goal: Neutralize all <strong>4 threats</strong></span></li>
-        <li><span class="sn-icon sn-good">🏆</span><span>Rank S Target: <strong>4/4, 0 False Positives</strong></span></li>
-        <li><span class="sn-icon sn-good">📊</span><span>Watch your live score in <strong>top-right HUD</strong></span></li>
-      </ul>
-      <div class="sticky-note-tip" style="border-left: 3px solid #b388ff; background: rgba(179,136,255,0.12)">
+      <div class="sn-progress-card" style="border-color: rgba(168, 85, 247, 0.4);">
+        <div class="sn-progress-header">
+          <span class="sn-progress-title" style="color: #6b21a8;">🛡️ Chapter 2: Malware Goals</span>
+          <span class="sn-progress-count" style="color: #6b21a8; background: #f3e8ff; border-color: rgba(168, 85, 247, 0.3);">${gameState.malwareQuarantined || 0}/4</span>
+        </div>
+      </div>
+      <div class="sn-rules-card">
+        <div class="sn-rules-title" style="color: #6b21a8;">🛡️ Malware Scoring Rules</div>
+        <ul class="sticky-note-list">
+          <li><span class="sn-icon sn-good">🛡️</span><span>Quarantine real Malware: <strong>+100</strong> (highest)</span></li>
+          <li><span class="sn-icon sn-bad">⚠️</span><span>False Positive (Clean file): <strong>−25</strong></span></li>
+          <li><span class="sn-icon sn-good">⚡</span><span>Anti-Virus Scan: <strong>Free check</strong></span></li>
+          <li><span class="sn-icon sn-good">🎯</span><span>Goal: Neutralize all <strong>4 threats</strong></span></li>
+          <li><span class="sn-icon sn-good">🏆</span><span>Rank S Target: <strong>4/4, 0 False Positives</strong></span></li>
+          <li><span class="sn-icon sn-good">📊</span><span>Watch your live score in <strong>top-right HUD</strong></span></li>
+        </ul>
+      </div>
+      <div class="sticky-note-tip" style="border-left: 3px solid #9333ea; background: rgba(147, 51, 234, 0.08); color: #581c87;">
         💡 <strong>Detective Tip:</strong> Check actual extension in Folder (e.g. <code>.pdf.exe</code>, <code>.vbs</code>) and run an Anti-Virus scan before clicking Quarantine!
       </div>`;
     showStickyNote();
   } else {
     if (titleEl) titleEl.textContent = "📒 Detective's Notes";
     scrollEl.innerHTML = `
-      <div class="sticky-note-title">How to Investigate</div>
-      <ul class="sticky-note-list">
-        <li><span class="sn-icon sn-good">🔍</span><span>Check the <strong>sender's email domain</strong></span></li>
-        <li><span class="sn-icon sn-good">⚠️</span><span>Look for <strong>false urgency</strong> or threats</span></li>
-        <li><span class="sn-icon sn-good">🔗</span><span>Hover links — where do they <strong>really</strong> go?</span></li>
-        <li><span class="sn-icon sn-good">🚩</span><span>Use <strong>Flag Mode</strong> to mark red flags</span></li>
-      </ul>
       <div id="sn-checklist-section"></div>
-      <div class="sticky-note-tip">💡 Ryan will explain every verdict after you submit it.</div>`;
+      <div class="sn-rules-card">
+        <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
+        <ul class="sticky-note-list">
+          <li><span class="sn-icon sn-good">🌐</span><span>Verify the <strong>sender's email domain</strong> carefully</span></li>
+          <li><span class="sn-icon sn-good">⏳</span><span>Look for <strong>manufactured urgency</strong> or threats</span></li>
+          <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
+          <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
+        </ul>
+      </div>
+      <div class="sticky-note-tip">💡 <strong>Pro Tip:</strong> Ryan explains every verdict with educational feedback after submission.</div>`;
     updateStickyChecklist();
   }
 }
@@ -3830,16 +4116,23 @@ function renderEmailList() {
   // Use the live dynamic inbox (ch1InboxEmails) instead of the full EMAILS pool
   const activeMissionIdx = ch1InboxEmails.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
 
+  let staggerIndex = 0;
   ch1InboxEmails.forEach((email, idx) => {
     const result = gameState.emailResults.find(r => r.emailId === email.id);
 
     const isCurrent = (activeMissionIdx !== -1 && idx === activeMissionIdx);
     const isRead = !!result;
-    const isNewlyInjected = !isRead && !result; // unread/unreviewed
+    const isNewlyInjected = !ch1AnimatedEmailIds.has(email.id);
 
     const item = document.createElement('div');
     item.className = `email-list-item ${isRead ? 'read' : 'unread'}${isNewlyInjected ? ' ch1-new-email' : ''}`;
     item.id = `email-item-${email.id}`;
+
+    if (isNewlyInjected) {
+      item.style.animationDelay = `${staggerIndex * 90}ms`;
+      staggerIndex++;
+      ch1AnimatedEmailIds.add(email.id);
+    }
 
     // Avatar letter
     const initial = email.sender.name[0].toUpperCase();
@@ -4072,10 +4365,10 @@ function openEmail(idx) {
     if (reportBtn) {
       reportBtn.disabled = true;
       if (existingResult.playerDecision) {
-        reportBtn.textContent = '✔ Submitted as Phishing';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Reported';
         reportBtn.classList.add('reported');
       } else {
-        reportBtn.textContent = '🚩 Report as Phishing';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report';
         reportBtn.classList.remove('reported');
       }
       reportBtn.title = 'Verdict already submitted for this email.';
@@ -4083,10 +4376,10 @@ function openEmail(idx) {
     if (legitBtn) {
       legitBtn.disabled = true;
       if (!existingResult.playerDecision) {
-        legitBtn.textContent = '✔ Marked as Legitimate';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Marked';
         legitBtn.classList.add('reported');
       } else {
-        legitBtn.textContent = '✓ Mark as Legitimate';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark';
         legitBtn.classList.remove('reported');
       }
       legitBtn.title = 'Verdict already submitted for this email.';
@@ -4096,13 +4389,13 @@ function openEmail(idx) {
   } else {
     if (reportBtn) {
       reportBtn.disabled = false;
-      reportBtn.textContent = '🚩 Report as Phishing';
+      reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report';
       reportBtn.classList.remove('reported');
       reportBtn.title = 'Flag and submit this email as Phishing';
     }
     if (legitBtn) {
       legitBtn.disabled = false;
-      legitBtn.textContent = '✓ Mark as Legitimate';
+      legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark';
       legitBtn.classList.remove('reported');
       legitBtn.title = 'Confirm and submit this email as Legitimate';
     }
@@ -4113,6 +4406,26 @@ function openEmail(idx) {
   renderEmailContent(email);
   renderEvidencePanel();
   updateHUD();
+
+  // ── Default hide investigation evidence on email open unless flags exist ──
+  const evPanel = document.getElementById('evidence-panel');
+  if (evPanel) {
+    if (gameState.currentEmailFlags.length === 0) {
+      evPanel.classList.add('hidden');
+      evPanel.classList.add('collapsed');
+      const label = document.getElementById('evidence-toggle-label');
+      const arrow = document.getElementById('evidence-toggle-arrow');
+      if (label) label.textContent = 'Show';
+      if (arrow) arrow.textContent = '▲';
+    } else {
+      evPanel.classList.remove('hidden');
+      evPanel.classList.remove('collapsed');
+      const label = document.getElementById('evidence-toggle-label');
+      const arrow = document.getElementById('evidence-toggle-arrow');
+      if (label) label.textContent = 'Hide';
+      if (arrow) arrow.textContent = '▼';
+    }
+  }
 
   // ── Highlight Flag Mode btn + sticky note when opening a fresh email ──────
   if (!existingResult && gameState.phase === 'mission') {
@@ -4143,12 +4456,15 @@ function renderEmailContent(email) {
 
   const existingResult = gameState.emailResults.find(r => r.emailId === email.id);
   if (existingResult) {
+    content.classList.add('case-closed-reviewed');
     const verdictText = existingResult.playerDecision ? '🚩 Reported as Phishing' : '✓ Marked as Legitimate';
     const verdictClass = existingResult.playerDecision ? 'phishing' : 'legit';
     const banner = document.createElement('div');
     banner.className = `case-closed-banner ${verdictClass}`;
     banner.innerHTML = `🔒 <strong>CASE CLOSED</strong> — ${verdictText} (${existingResult.score >= 0 ? '+' : ''}${existingResult.score} pts). You can review this email, but reports can only be submitted once.`;
     content.appendChild(banner);
+  } else {
+    content.classList.remove('case-closed-reviewed');
   }
 
   // Header block
@@ -4203,6 +4519,11 @@ function renderEmailContent(email) {
     } else if (part.type === 'link') {
       const wrap = document.createElement('div');
       wrap.className = 'email-link-wrap';
+
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'email-link-actions-row';
+
+      // 1. Primary flaggable link
       const link = document.createElement('a');
       const isFlagged = gameState.currentEmailFlags.some(f => f.type === part.flagType);
       link.className = `email-link flaggable${isFlagged ? ' flagged' : ''}`;
@@ -4215,7 +4536,18 @@ function renderEmailContent(email) {
       link.textContent = part.text;
       link.setAttribute('onclick', 'handleEmailLinkClick(event, this)');
       link.setAttribute('oncontextmenu', 'handleEmailLinkRightClick(event, this)');
-      wrap.appendChild(link);
+      actionsRow.appendChild(link);
+
+      // 2. Dedicated "View Website" button (always inspects the site in the simulated browser)
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'email-view-website-btn';
+      viewBtn.innerHTML = `<span>🌐 View Website</span><span class="view-btn-arrow">➔</span>`;
+      viewBtn.title = `Inspect simulated website in browser: ${part.destination}`;
+      viewBtn.setAttribute('onclick', `event.stopPropagation(); openSuspiciousSite('${part.destination}')`);
+      actionsRow.appendChild(viewBtn);
+
+      wrap.appendChild(actionsRow);
       body.appendChild(wrap);
     }
   });
@@ -4295,6 +4627,10 @@ function flagFromPopup() {
     if (!gameState.flagModeActive) {
       // Auto-enable flag mode when flagging from popup
       gameState.flagModeActive = true;
+      const btn = document.getElementById('flag-mode-btn');
+      const body = document.querySelector('.gmail-body');
+      if (btn) btn.classList.add('active');
+      if (body) body.classList.add('flag-mode-active');
     }
     placeFlag(el);
   }
@@ -4368,6 +4704,14 @@ function toggleFlagMode() {
     btn.classList.add('active');
     body.classList.add('flag-mode-active');
     showToast('🚩 Flag Mode ON — click suspicious elements to flag them.', 'warning');
+
+    if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+      RyanGuide.once('flag-mode-guide', function() {
+        setTimeout(function() {
+          RyanGuide.speak(RYAN_DIALOGUES.firstEmailRead);
+        }, 200);
+      });
+    }
   } else {
     btn.classList.remove('active');
     body.classList.remove('flag-mode-active');
@@ -4405,6 +4749,11 @@ function placeFlag(el) {
 
   el.classList.add('flagged');
   renderEvidencePanel();
+  const evPanel = document.getElementById('evidence-panel');
+  if (evPanel) {
+    evPanel.classList.remove('hidden');
+    evPanel.classList.remove('collapsed');
+  }
   if (typeof toggleEvidencePanel === 'function') toggleEvidencePanel(true);
   if (typeof AudioManager !== 'undefined') AudioManager.playFlagChirp();
   showToast(`🚩 Flagged: ${flag.label}`, 'success');
@@ -4465,6 +4814,17 @@ function removeFlag(flagType) {
   }
 
   renderEvidencePanel();
+  if (gameState.currentEmailFlags.length === 0) {
+    const evPanel = document.getElementById('evidence-panel');
+    if (evPanel) {
+      evPanel.classList.add('hidden');
+      evPanel.classList.add('collapsed');
+      const label = document.getElementById('evidence-toggle-label');
+      const arrow = document.getElementById('evidence-toggle-arrow');
+      if (label) label.textContent = 'Show';
+      if (arrow) arrow.textContent = '▲';
+    }
+  }
   showToast(`🗑 Unflagged: ${removed.label}`, '');
 }
 
@@ -4497,13 +4857,14 @@ function toggleEvidencePanel(forceOpen) {
   const panel = document.getElementById('evidence-panel');
   if (!panel) return;
 
-  const isCurrentlyCollapsed = panel.classList.contains('collapsed');
+  const isCurrentlyCollapsed = panel.classList.contains('collapsed') || panel.classList.contains('hidden');
   const shouldCollapse = (forceOpen !== undefined) ? !forceOpen : !isCurrentlyCollapsed;
 
   if (shouldCollapse) {
     panel.classList.add('collapsed');
   } else {
     panel.classList.remove('collapsed');
+    panel.classList.remove('hidden');
   }
 
   const label = document.getElementById('evidence-toggle-label');
@@ -4577,6 +4938,32 @@ function submitReportPhishing() {
     return;
   }
 
+  // ── Require at least one flag to report as phishing ────────
+  if (!gameState.currentEmailFlags || gameState.currentEmailFlags.length === 0) {
+    // Pulse Flag Mode button to guide the player
+    const flagBtn = document.getElementById('flag-mode-btn');
+    if (flagBtn) {
+      flagBtn.classList.remove('btn-pulse-highlight');
+      void flagBtn.offsetWidth;
+      flagBtn.classList.add('btn-pulse-highlight');
+      setTimeout(() => flagBtn.classList.remove('btn-pulse-highlight'), 3200);
+    }
+
+    if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+      const toast = document.getElementById('toast');
+      if (toast) toast.classList.add('hidden');
+
+      RyanGuide.speak([
+        { text: "Hold on, Detective! 🛑 You need to add a flag before reporting an email as phishing.", state: 'concerned' },
+        { text: "Always think before you report or mark as legitimate! In a real investigation, you cannot submit a report without evidence.", state: 'thinking' },
+        { text: "Tag what made you suspicious first — check the sender's domain, false urgency, or deceptive links!", state: 'speaking' }
+      ]);
+    } else {
+      showToast('🚩 Evidence required! Flag at least one suspicious clue before reporting as phishing.', 'warning');
+    }
+    return;
+  }
+
   submitReport(true);
 }
 
@@ -4598,6 +4985,22 @@ function submitMarkLegitimate() {
 
   if (gameState.emailResults.some(r => r.emailId === email.id)) {
     showToast('⚠️ You have already submitted a verdict for this email.', 'warning');
+    return;
+  }
+
+  // ── Contradiction check: flagged evidence exists, but trying to mark as legitimate ──
+  if (gameState.currentEmailFlags && gameState.currentEmailFlags.length > 0) {
+    if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+      const toast = document.getElementById('toast');
+      if (toast) toast.classList.add('hidden');
+
+      RyanGuide.speak([
+        { text: "Wait a second, Detective! 🤔 You currently have suspicious evidence flagged on this email, but you're trying to mark it as legitimate.", state: 'concerned' },
+        { text: "Always think before you report or mark as legitimate! If you verified this email is truly safe, remove your flags first. If it's a threat, submit it as phishing!", state: 'thinking' }
+      ]);
+    } else {
+      showToast('⚠️ Contradiction! Remove flags before marking as legitimate, or submit as phishing.', 'warning');
+    }
     return;
   }
 
@@ -4666,20 +5069,20 @@ function submitReport(isPhishing) {
     if (reportBtn) {
       reportBtn.disabled = true;
       if (isPhishing) {
-        reportBtn.textContent = '✔ Submitted as Phishing';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Reported';
         reportBtn.classList.add('reported');
       } else {
-        reportBtn.textContent = '🚩 Report as Phishing';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report';
         reportBtn.classList.remove('reported');
       }
     }
     if (legitBtn) {
       legitBtn.disabled = true;
       if (!isPhishing) {
-        legitBtn.textContent = '✔ Marked as Legitimate';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Marked';
         legitBtn.classList.add('reported');
       } else {
-        legitBtn.textContent = '✓ Mark as Legitimate';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark';
         legitBtn.classList.remove('reported');
       }
     }
@@ -4731,7 +5134,29 @@ function submitReport(isPhishing) {
       emailContent.insertBefore(banner, emailContent.firstChild);
     }
 
-    showToast(isPhishing ? '🚩 Email submitted as phishing!' : '✅ Email marked as legitimate!', correctDecision ? 'success' : 'warning');
+    // If Ryan is guiding the player, don't show a toast that would sit behind his dialogue
+    if (typeof RyanGuide === 'undefined' || gameState.phase !== 'mission') {
+      showToast(isPhishing ? '🚩 Email submitted as phishing!' : '✅ Email marked as legitimate!', correctDecision ? 'success' : 'warning');
+    } else {
+      const toast = document.getElementById('toast');
+      if (toast) toast.classList.add('hidden');
+    }
+
+    // Push dynamic investigation log notification
+    if (typeof addSimulationNotification === 'function') {
+      const subjShort = email.subject.length > 30 ? email.subject.slice(0, 30) + '…' : email.subject;
+      addSimulationNotification({
+        id: 'notif-verdict-' + email.id,
+        source: 'Investigation Log',
+        icon: isPhishing ? '🚩' : '✅',
+        iconType: isPhishing ? 'warning' : 'shield',
+        title: (isPhishing ? 'Phishing Flagged: ' : 'Verified Safe: ') + subjShort,
+        body: `Decision recorded. ${bannerMsg}`,
+        time: 'Just now',
+        app: 'gmail',
+        emailId: email.id
+      }, false);
+    }
 
     updateHUD();
     updateFolderCounts();
@@ -5096,10 +5521,22 @@ function finishMission() {
   }
   setEl('results-rank-label', rankLabel);
 
-  // Pass a nominal score to completeCategory for chapter lock/unlock logic
   completeCategory('phishing', correct * 100, rank);
   updateAppLockStates();
   updateStickyNoteForPhase('malware');
+
+  if (typeof addSimulationNotification === 'function') {
+    addSimulationNotification({
+      id: 'notif-ch1-complete',
+      source: 'Mission Control',
+      icon: '🏆',
+      iconType: 'shield',
+      title: 'Chapter 1 Completed — Rank ' + rank,
+      body: `All 9 emails analyzed with ${Math.round(pct * 100)}% accuracy. Phishing attack neutralized!`,
+      time: 'Just now'
+    });
+  }
+
   showOverlay('overlay-results');
   if (typeof AudioManager !== 'undefined') AudioManager.playMissionComplete();
 }
@@ -5134,6 +5571,7 @@ function playAgain(showVN = false) {
   gameState.activeScanFileId = null;
   // Reset Chapter 1 dynamic inbox state
   ch1InboxEmails               = [];
+  ch1AnimatedEmailIds.clear();
   ch1PendingNotification       = false;
   ch1Stage                     = 0;
   ch1MistakeCount              = 0;
@@ -5319,6 +5757,48 @@ function extractHostFromUrl(url) {
 function getPhishingSiteForUrl(url) {
   if (!url) return null;
   const lower = url.toLowerCase();
+
+  // 1. Corporate SSO Phishing (Email 1)
+  if (lower.includes('business-account-verify.net')) {
+    return {
+      key: 'https://business-account-verify.net/login',
+      title: 'Business Inc. — SSO Verification',
+      icon: '🏢',
+      html: FAKE_SITES['https://business-account-verify.net/login']
+    };
+  }
+
+  // 2. Microsoft 365 Typosquat Phishing (Email 3)
+  if (lower.includes('m1crosoft')) {
+    return {
+      key: 'https://m1crosoft-account-verify.com/signin',
+      title: 'Sign in to your Microsoft account',
+      icon: '🪟',
+      html: FAKE_SITES['https://m1crosoft-account-verify.com/signin']
+    };
+  }
+
+  // 3. Urgent Bank Suspension Phishing (Email 7)
+  if (lower.includes('bankng')) {
+    return {
+      key: 'https://bankng-secure-verify.xyz/restore',
+      title: 'Secure Banking — Urgent Verification',
+      icon: '🏦',
+      html: FAKE_SITES['https://bankng-secure-verify.xyz/restore']
+    };
+  }
+
+  // 4. IT Security Compliance Phishing (Email 8)
+  if (lower.includes('business-it-support.com')) {
+    return {
+      key: 'https://business-it-support.com/compliance-portal',
+      title: 'IT Security Operations — Compliance Hub',
+      icon: '🛡️',
+      html: FAKE_SITES['https://business-it-support.com/compliance-portal']
+    };
+  }
+
+  // 5. Additional Demo Phishing Portals
   if (lower.includes('bpi-online-security.com')) {
     return {
       key: 'https://bpi-online-security.com/login',
@@ -5343,7 +5823,78 @@ function getPhishingSiteForUrl(url) {
       html: FAKE_SITES['https://gcash-claim-rewards.com/verify']
     };
   }
+
+  // 6. Direct match by exact URL in FAKE_SITES
+  if (FAKE_SITES[url]) {
+    return {
+      key: url,
+      title: 'Suspicious Portal — Verification Required',
+      icon: '⚠️',
+      html: FAKE_SITES[url]
+    };
+  }
+
+  // 7. Dynamic fallback for any other suspicious simulation URL
+  if (lower.includes('verify') || lower.includes('phish') || lower.includes('signin') || lower.includes('login') || lower.includes('restore')) {
+    const host = extractHostFromUrl(url);
+    return {
+      key: url,
+      title: `${host} — Security Portal`,
+      icon: '⚠️',
+      html: renderDynamicPhishingSite(url, host)
+    };
+  }
+
   return null;
+}
+
+function renderDynamicPhishingSite(url, host) {
+  return `
+    <div class="fakesite fakesite-corporate">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>${escapeHtml(host)}</code> is an unverified simulated domain!</span>
+      </div>
+      <div class="fakesite-header" style="background:#1e293b;">
+        <div class="fakesite-header-inner">
+          <div class="fakesite-logo">🔒 ${escapeHtml(host)} — Verification Center</div>
+          <div class="fakesite-subtag">Online Identity &amp; Account Protection</div>
+        </div>
+      </div>
+      <div class="fakesite-body">
+        <div class="fakesite-card">
+          <div class="fakesite-card-header">
+            <h2>Account Security Verification</h2>
+            <div class="fakesite-urgency-callout">
+              ⚠️ Immediate authentication required to prevent suspension of your profile.
+            </div>
+          </div>
+          <form onsubmit="event.preventDefault(); handlePhishingSubmit('${escapeHtml(host)}', '${escapeHtml(host)}');">
+            <div class="fakesite-field">
+              <label for="dyn-user">Account Email or Username</label>
+              <input type="text" id="dyn-user" placeholder="Enter username or email" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="dyn-pass">Password</label>
+              <input type="password" id="dyn-pass" placeholder="••••••••••••" required autocomplete="off" />
+            </div>
+            <button type="submit" class="fakesite-submit">
+              Confirm Credentials &amp; Unlock Account
+            </button>
+          </form>
+          <div class="fakesite-card-footer">
+            <p>256-Bit SSL Encrypted Verification • Identity Shield Protection</p>
+          </div>
+        </div>
+        <div class="fakesite-disclaimer">
+          ⚠️ <strong>Cyber Detective Clue:</strong> Look at the URL bar: <code>${escapeHtml(host)}</code>. Phishing attackers create fake login portals that mirror genuine login pages to steal personal credentials.
+        </div>
+      </div>
+      <div class="fakesite-footer">
+        <p>© 2026 ${escapeHtml(host)}. All rights reserved.</p>
+      </div>
+    </div>
+  `;
 }
 
 function isInternetConnected() {
@@ -6950,6 +7501,7 @@ function startMalwareMission() {
   }
 
   showToast('📁 Chapter 2: Inspect files in Folder and use Anti-Virus to quarantine all 4 malware threats!', 'warning');
+  if (typeof initChapterMissionNotifications === 'function') initChapterMissionNotifications('malware', true);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -8641,6 +9193,19 @@ function quarantineFile(fileId) {
     showToast(`🛡️ Neutralized ${file.name}! (+100 points)`, 'success');
     if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
 
+    if (typeof addSimulationNotification === 'function') {
+      addSimulationNotification({
+        id: 'notif-malware-' + file.id,
+        source: 'ShieldAV Defender',
+        icon: '🛡️',
+        iconType: 'av',
+        title: 'Threat Neutralized: ' + file.name,
+        body: `Malware quarantined safely into isolated vault (+100 pts). Threat level: Critical.`,
+        time: 'Just now',
+        app: 'antivirus'
+      }, false);
+    }
+
     if (gameState.malwareQuarantined >= TOTAL_MALWARE_COUNT) {
       setTimeout(finishMalwareMission, 1000);
     }
@@ -8650,6 +9215,19 @@ function quarantineFile(fileId) {
     updateHUD();
     if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
     showToast(`⚠️ False Positive! "${file.name}" is a clean, legitimate file (−25 pts).`, 'warning');
+
+    if (typeof addSimulationNotification === 'function') {
+      addSimulationNotification({
+        id: 'notif-fp-' + file.id,
+        source: 'ShieldAV Defender',
+        icon: '⚠️',
+        iconType: 'warning',
+        title: 'False Positive: ' + file.name,
+        body: `Clean legitimate file was quarantined (−25 pts). Verify extensions before quarantine.`,
+        time: 'Just now',
+        app: 'antivirus'
+      }, false);
+    }
   }
 }
 
@@ -8702,6 +9280,19 @@ function finishMalwareMission() {
   if (rankLabelEl) rankLabelEl.textContent = rankLabel;
 
   completeCategory('malware', gameState.score, rank);
+
+  if (typeof addSimulationNotification === 'function') {
+    addSimulationNotification({
+      id: 'notif-ch2-complete',
+      source: 'ShieldAV Defender',
+      icon: '🏆',
+      iconType: 'shield',
+      title: 'Chapter 2 Completed — Rank ' + rank,
+      body: `Neutralized ${gameState.malwareQuarantined} / ${TOTAL_MALWARE_COUNT} malware threats. Downloads secured.`,
+      time: 'Just now'
+    });
+  }
+
   showOverlay('overlay-malware-results');
   if (typeof AudioManager !== 'undefined') AudioManager.playMissionComplete();
 }
@@ -9004,6 +9595,7 @@ function startGroup4Mission() {
   // Show desktop and open Wi-Fi Settings for Stage 1
   hideAllOverlays();
   showToast('📶 Stage 1: Open Wi-Fi Settings and inspect the available networks before connecting.', 'info');
+  if (typeof initChapterMissionNotifications === 'function') initChapterMissionNotifications('social_engineering', true);
   setTimeout(() => {
     openApp('wifi-settings');
     renderG4WiFiSettings();
@@ -9786,6 +10378,18 @@ function g4ShowConsequences() {
   const rank = isSaferPath ? (g4State.score >= 300 ? 'S' : 'A') : 'B';
   completeCategory('social_engineering', g4State.score, rank);
 
+  if (typeof addSimulationNotification === 'function') {
+    addSimulationNotification({
+      id: 'notif-ch3-complete',
+      source: 'Mission Control',
+      icon: '🏆',
+      iconType: 'shield',
+      title: 'Chapter 3 Completed — Rank ' + rank,
+      body: `Safer decisions: ${saferCount}/4. Campus Wi-Fi vulnerabilities & social engineering contained.`,
+      time: 'Just now'
+    });
+  }
+
   const overlay = document.getElementById('overlay-social-results');
   if (overlay) {
     // Update results content
@@ -10077,12 +10681,13 @@ function startRansomwareMission() {
     logsEl.innerHTML = `
       <div class="rw-log-line rw-log-alert">[ALERT] Ransomware signature detected in project storage subsystem!</div>
       <div class="rw-log-line rw-log-warn">[WARN] Immediate action required: Isolate nodes and kill malicious payload droppers.</div>
-      <div class="rw-log-line">[SYS] Emergency Immutable Cloud Backup connected at time.cyberacademy.gov</div>
+      <div class="rw-log-line">[SYS] Emergency Immutable Cloud Backup connected at vault.cloud.backup</div>
     `;
   }
 
   renderRansomwareNodes();
   showToast('🔒 Chapter 4: Respond to ransomware, isolate infected drives, and restore the vault!', 'warning');
+  if (typeof initChapterMissionNotifications === 'function') initChapterMissionNotifications('ransomware', true);
 }
 
 function renderRansomwareNodes() {
@@ -10187,6 +10792,19 @@ function executeNodeAction(nodeId, action) {
   renderRansomwareNodes();
   updateHUD();
 
+  if (typeof addSimulationNotification === 'function') {
+    addSimulationNotification({
+      id: 'notif-rw-' + nodeId + '-' + action,
+      source: 'Ransomware Console',
+      icon: action === 'restore' ? '💾' : action === 'kill' ? '⛔' : action === 'isolate' ? '🔒' : '✓',
+      iconType: action === 'restore' ? 'shield' : action === 'isolate' ? 'warning' : 'av',
+      title: (action === 'isolate' ? 'Node Isolated: ' : action === 'restore' ? 'Snapshot Restored: ' : action === 'kill' ? 'Process Neutralized: ' : 'Audit Verified: ') + node.name,
+      body: action === 'isolate' ? `Storage node severed from network to prevent ransomware spread.` : action === 'restore' ? `Clean backup snapshot restored. Zero ransom paid.` : action === 'kill' ? `Malicious crypt_dropper payload terminated.` : `Cryptographic log audit verified clean.`,
+      time: 'Just now',
+      app: 'ransomware'
+    }, false);
+  }
+
   if (RANSOMWARE_NODES.every(n => n.status === 'clean' || n.status === 'restored')) {
     appendRwTerminalLog(`[SUCCESS] 100% System Vault Recovery Achieved! ZERO dollars paid in ransom!`, 'success');
     setTimeout(finishRansomwareMission, 1400);
@@ -10214,6 +10832,19 @@ function finishRansomwareMission() {
   if (labelEl) labelEl.textContent = 'RANSOMWARE INCIDENT COMMANDER';
 
   completeCategory('ransomware', gameState.score, rank);
+
+  if (typeof addSimulationNotification === 'function') {
+    addSimulationNotification({
+      id: 'notif-ch4-complete',
+      source: 'Mission Control',
+      icon: '🏆',
+      iconType: 'shield',
+      title: 'Chapter 4 Completed — Case Closed',
+      body: '100% of storage nodes recovered without ransom. Coordinated incident contained!',
+      time: 'Just now'
+    });
+  }
+
   showOverlay('overlay-ransomware-results');
   if (typeof AudioManager !== 'undefined') AudioManager.playMissionComplete();
 }
@@ -12040,6 +12671,19 @@ function connectToWifi(ssid) {
       const g4Net = G4_WIFI_NETWORKS.find(n => n.name === ssid);
       if (g4Net) g4State.wifiChoice = g4Net.id;
     }
+
+    if (typeof addSimulationNotification === 'function') {
+      addSimulationNotification({
+        id: 'notif-wifi-' + Date.now(),
+        source: 'Network Monitor',
+        icon: '📶',
+        iconType: 'vpn',
+        title: 'Connected: ' + ssid,
+        body: `Wi-Fi connection established. Security: ${ssid.includes('Free') ? 'UNENCRYPTED PUBLIC AP - HIGH RISK' : 'WPA2/WPA3 ENCRYPTED'}.`,
+        time: 'Just now',
+        app: 'wifi-settings'
+      }, false);
+    }
   }
   updateNetworkUI();
 }
@@ -12084,6 +12728,7 @@ function toggleCalendarFlyout(event) {
     if (clockBtn) clockBtn.classList.add('active');
     updateClock();
     renderCalendar(calCurrentDate.getFullYear(), calCurrentDate.getMonth());
+    renderSimulationNotifications();
     if (typeof AudioManager !== 'undefined') AudioManager.playMouseClick();
   } else {
     closeCalendarFlyout();
@@ -12169,43 +12814,252 @@ function resetCalendarToToday() {
   showToast('📅 Jumped to today\'s date.', 'info');
 }
 
-// Notifications handling
-function dismissNotification(id) {
+// ═══════════════════════════════════════════════════════════
+// DYNAMIC SIMULATION NOTIFICATION ENGINE
+// ═══════════════════════════════════════════════════════════
+
+let simNotifications = [];
+
+function initSimulationNotifications() {
+  const currentCat = window._currentChapterCategory || activeCategoryStory || (typeof gameState !== 'undefined' && gameState.phase) || 'phishing';
+  initChapterMissionNotifications(currentCat, false);
+}
+
+function initChapterMissionNotifications(chapterId, playChime = false) {
+  simNotifications = [];
+  const cat = (chapterId === 'mission' || chapterId === 'phishing') ? 'phishing' : chapterId;
+
+  if (cat === 'phishing') {
+    simNotifications.push({
+      id: 'notif-ch1-zmail-wave1',
+      source: 'Zmail',
+      icon: '📧',
+      iconType: 'mail',
+      title: 'New Email: Business Support Alert',
+      body: 'Subject: URGENT: Your Account Requires Immediate Verification. Click to inspect in Zmail.',
+      time: 'Just now',
+      app: 'gmail',
+      emailId: 1
+    });
+    simNotifications.push({
+      id: 'notif-ch1-directive',
+      source: 'Mission Directive',
+      icon: '🔍',
+      iconType: 'shield',
+      title: 'Chapter 1: The First Day',
+      body: 'Investigate incoming emails, inspect sender domains, and flag deceptive phishing attacks.',
+      time: '1m ago',
+      app: 'gmail'
+    });
+  } else if (cat === 'malware') {
+    simNotifications.push({
+      id: 'notif-ch2-zmail-ticket',
+      source: 'Zmail',
+      icon: '📧',
+      iconType: 'mail',
+      title: 'New Email: Incident Alert - Malware Detected',
+      body: 'Reports of malicious file attachments in student downloads. Review ticket in Zmail.',
+      time: 'Just now',
+      app: 'gmail'
+    });
+    simNotifications.push({
+      id: 'notif-ch2-defender',
+      source: 'ShieldAV Defender',
+      icon: '🛡️',
+      iconType: 'av',
+      title: 'Chapter 2: The Digital Trap',
+      body: 'Scan suspicious files in Downloads and quarantine all 4 malware threats.',
+      time: '1m ago',
+      app: 'antivirus'
+    });
+    simNotifications.push({
+      id: 'notif-ch2-folder',
+      source: 'File Explorer',
+      icon: '📁',
+      iconType: 'shield',
+      title: 'Downloads Directory Alert',
+      body: 'Unverified executable payloads detected. Inspect file extensions carefully.',
+      time: '2m ago',
+      app: 'folder'
+    });
+  } else if (cat === 'social_engineering') {
+    simNotifications.push({
+      id: 'notif-ch3-zmail-advisory',
+      source: 'Zmail',
+      icon: '📧',
+      iconType: 'mail',
+      title: 'New Email: Campus Wi-Fi Security Advisory',
+      body: 'Warning: Rogue public Wi-Fi hotspot detected on campus. MITM risk active.',
+      time: 'Just now',
+      app: 'gmail'
+    });
+    simNotifications.push({
+      id: 'notif-ch3-wifi',
+      source: 'Network Monitor',
+      icon: '📶',
+      iconType: 'vpn',
+      title: 'Chapter 3: The System Collapse',
+      body: 'Unsecured Wi-Fi access points detected in vicinity. Check Wi-Fi Settings.',
+      time: '1m ago',
+      app: 'wifi-settings'
+    });
+    simNotifications.push({
+      id: 'notif-ch3-comms',
+      source: 'Comms / Pia',
+      icon: '💬',
+      iconType: 'info',
+      title: 'Support Request from Pia',
+      body: 'Suspected credential theft after connecting to open campus network.',
+      time: '3m ago',
+      app: 'comms'
+    });
+  } else if (cat === 'ransomware') {
+    simNotifications.push({
+      id: 'notif-ch4-zmail-emergency',
+      source: 'Zmail',
+      icon: '📧',
+      iconType: 'mail',
+      title: 'New Email: EMERGENCY - System Outage',
+      body: 'Critical: Coordinated ransomware campaign targeting school storage servers.',
+      time: 'Just now',
+      app: 'gmail'
+    });
+    simNotifications.push({
+      id: 'notif-ch4-console',
+      source: 'Incident Response',
+      icon: '🚨',
+      iconType: 'warning',
+      title: 'Chapter 4: The Last Login',
+      body: 'Launch Ransomware Console, isolate infected storage nodes, and restore offline backups.',
+      time: '1m ago',
+      app: 'ransomware'
+    });
+  } else {
+    simNotifications.push({
+      id: 'notif-init-zmail',
+      source: 'Zmail',
+      icon: '📧',
+      iconType: 'mail',
+      title: 'New Email: Welcome to CyberZerØ',
+      body: 'Workstation ready. Check Zmail regularly for incoming incident communications.',
+      time: 'Just now',
+      app: 'gmail'
+    });
+    simNotifications.push({
+      id: 'notif-init-assessment',
+      source: 'CyberZerØ Simulation',
+      icon: '🛡️',
+      iconType: 'shield',
+      title: 'Simulation Ready',
+      body: 'Complete the pre-assessment exam to unlock active chapter investigations.',
+      time: '2m ago'
+    });
+  }
+
+  renderSimulationNotifications();
+  if (playChime && typeof AudioManager !== 'undefined') {
+    AudioManager.playNotification();
+  }
+}
+
+function addSimulationNotification(notif, playChime = true) {
+  if (!notif || !notif.id) return;
+  simNotifications = simNotifications.filter(n => n.id !== notif.id);
+  simNotifications.unshift(notif);
+  if (simNotifications.length > 25) simNotifications.pop();
+
+  renderSimulationNotifications();
+  if (playChime && typeof AudioManager !== 'undefined') {
+    AudioManager.playNotification();
+  }
+}
+
+function renderSimulationNotifications() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+
+  if (!simNotifications || simNotifications.length === 0) {
+    list.innerHTML = `
+      <div class="notif-empty-state" style="text-align:center;padding:24px 10px;color:var(--text-muted);font-size:12px;">
+        <div style="font-size:24px;margin-bottom:6px;">🔔</div>
+        <div>No new notifications</div>
+        <div style="font-size:10px;margin-top:2px;color:var(--accent-cyan);">Simulation notifications up to date</div>
+      </div>`;
+    updateNotifCount();
+    return;
+  }
+
+  list.innerHTML = simNotifications.map(n => {
+    const iconClass = n.iconType ? `notif-icon-${n.iconType}` : 'notif-icon-mail';
+    const appHint = n.app === 'gmail' ? 'Open in Zmail' : n.app ? `Open ${n.app}` : '';
+    return `
+      <div class="notif-card" id="${n.id}" onclick="handleNotificationClick('${n.id}')" role="button" tabindex="0" title="${appHint ? 'Click to ' + appHint : ''}">
+        <div class="notif-card-icon ${iconClass}">${n.icon || '🔔'}</div>
+        <div class="notif-card-content">
+          <div class="notif-card-top">
+            <span class="notif-card-source">${escapeHtml(n.source || 'Zmail')}</span>
+            <span class="notif-card-time">${escapeHtml(n.time || 'Just now')}</span>
+          </div>
+          <div class="notif-card-title">${escapeHtml(n.title || '')}</div>
+          <div class="notif-card-body">${escapeHtml(n.body || '')}</div>
+        </div>
+        <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('${n.id}', event)" title="Dismiss notification">✕</button>
+      </div>
+    `;
+  }).join('');
+
+  updateNotifCount();
+}
+
+function handleNotificationClick(notifId) {
+  const notif = simNotifications.find(n => n.id === notifId);
+  if (!notif) return;
+  closeCalendarFlyout();
+
+  if (notif.app === 'gmail') {
+    openApp('gmail');
+    if (typeof notif.emailId !== 'undefined' && notif.emailId !== null) {
+      const idx = ch1InboxEmails.findIndex(e => e.id === notif.emailId);
+      if (idx !== -1) {
+        openEmail(idx);
+      }
+    }
+  } else if (notif.app) {
+    openApp(notif.app);
+  }
+}
+
+function dismissNotification(id, event) {
+  if (event) event.stopPropagation();
   const card = document.getElementById(id);
+  simNotifications = simNotifications.filter(n => n.id !== id);
   if (card) {
     card.style.opacity = '0';
     card.style.transform = 'translateX(20px)';
     setTimeout(() => {
       card.remove();
       updateNotifCount();
+      if (simNotifications.length === 0) {
+        renderSimulationNotifications();
+      }
     }, 200);
+  } else {
+    renderSimulationNotifications();
   }
 }
 
-function clearAllNotifications() {
-  const list = document.getElementById('notif-list');
-  if (list) {
-    list.innerHTML = `
-      <div style="text-align:center;padding:24px 10px;color:var(--text-muted);font-size:12px;">
-        <div style="font-size:24px;margin-bottom:6px;">🛡️</div>
-        <div>No new notifications</div>
-        <div style="font-size:10px;margin-top:2px;color:var(--accent-cyan);">Cyber Crime Bureau terminal secure</div>
-      </div>`;
-  }
-  const badge = document.getElementById('notif-count-badge');
-  if (badge) badge.textContent = '0';
+function clearAllNotifications(event) {
+  if (event) event.stopPropagation();
+  simNotifications = [];
+  renderSimulationNotifications();
   if (typeof AudioManager !== 'undefined') AudioManager.playMouseClick();
   showToast('🧹 All notifications cleared.', 'info');
 }
 
 function updateNotifCount() {
-  const list = document.getElementById('notif-list');
-  const count = list ? list.querySelectorAll('.notif-card').length : 0;
+  const count = simNotifications.length;
   const badge = document.getElementById('notif-count-badge');
   if (badge) badge.textContent = count;
-  if (count === 0) {
-    clearAllNotifications();
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -12719,6 +13573,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadCategoriesProgress();
   initTitleParticles();
   initPreAssessment();
+  initSimulationNotifications();
   // Show main menu first (before name input)
   showMainMenu();
   renderEmailList();
@@ -13590,6 +14445,8 @@ const RyanGuide = (() => {
     if (activeCat !== 'phishing') return; // Only Chapter 1 has mentor guide Ryan
     const o = el().overlay;
     if (!o) return;
+    const toast = document.getElementById('toast');
+    if (toast) toast.classList.add('hidden'); // Clear any toast behind Ryan's dialogue
     o.classList.remove('hidden', 'ryan-animate-out');
     void o.offsetHeight; // trigger reflow
     o.classList.add('ryan-animate-in');
@@ -13882,9 +14739,9 @@ const RYAN_DIALOGUES = {
 
   // First email detail view
   firstEmailRead: [
-    { text: "Take a closer look at this message. Try checking the sender first.", state: 'speaking' },
-    { text: "Does the sender's actual address match the company they claim to represent? What stands out to you?", state: 'thinking' },
-    { text: "When you spot something suspicious, click 'Flag Mode' to tag the evidence, then submit your report.", state: 'speaking' }
+    { text: "Take a closer look at this message. Always think carefully before you report or mark an email as legitimate!", state: 'thinking' },
+    { text: "Does the sender's actual address match the company they claim to represent? What stands out to you?", state: 'speaking' },
+    { text: "Remember: you need to add a flag to report as phishing. Click '🚩 Flag Mode' to tag suspicious clues first!", state: 'speaking' }
   ],
 
   // Player clicked an unverified or phishing link
@@ -13971,21 +14828,12 @@ const RYAN_DIALOGUES = {
   };
 })();
 
-// Hook: renderEmailContent — only fires Ryan for Chapter 1 (phishing)
+// Hook: renderEmailContent — only fires for Chapter 1
 (function patchRenderEmailContent() {
   const _orig = window.renderEmailContent;
   if (typeof _orig !== 'function') return;
   window.renderEmailContent = function(email) {
     _orig.apply(this, arguments);
-    const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
-    if (curCat !== 'phishing') return;
-    RyanGuide.once('first-email-read', function() {
-      setTimeout(function() {
-        if ((window._currentChapterCategory || activeCategoryStory) === 'phishing') {
-          RyanGuide.speak(RYAN_DIALOGUES.firstEmailRead);
-        }
-      }, 750);
-    });
   };
 })();
 

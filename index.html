@@ -58,24 +58,28 @@
     </div>
   </div>
 
-  <!-- Sticky Note: Scoring Rules (pops up beside the desktop after the demo) — draggable, fixed title -->
+  <!-- Sticky Note: Scoring Rules & Mission Checklist — draggable, high contrast, prominent checklist -->
   <div id="sticky-note" class="sticky-note hidden">
-    <div class="sticky-note-tape" id="sticky-note-drag-handle" title="Drag to move"></div>
-    <button type="button" class="sticky-note-close" onclick="closeStickyNote()" title="Close note">✕</button>
-    <div class="sticky-note-header" id="sticky-note-drag-handle-2" title="Drag to move">
+    <div class="sticky-note-tape" id="sticky-note-drag-handle" title="Drag to move note"></div>
+    <div class="sticky-note-header" id="sticky-note-drag-handle-2" title="Drag to move note">
       <span id="sticky-note-title" class="sticky-note-title-text">📒 Detective's Notes</span>
+      <div class="sticky-note-actions">
+        <button type="button" class="sticky-note-btn" onclick="toggleStickyNoteCollapse()" title="Minimize / Expand note">─</button>
+        <button type="button" class="sticky-note-btn sticky-note-btn-close" onclick="closeStickyNote()" title="Close note">✕</button>
+      </div>
     </div>
     <div class="sticky-note-scroll">
-      <div class="sticky-note-title">How to Investigate</div>
-      <ul class="sticky-note-list">
-        <li><span class="sn-icon sn-good">🔍</span><span>Check the <strong>sender's email domain</strong> carefully</span></li>
-        <li><span class="sn-icon sn-good">⚠️</span><span>Look for <strong>false urgency</strong> or deadline threats</span></li>
-        <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — where do they <strong>really</strong> go?</span></li>
-        <li><span class="sn-icon sn-good">🚩</span><span>Use <strong>Flag Mode</strong> to mark red flags</span></li>
-        <li><span class="sn-icon sn-good">📧</span><span>Submit your <strong>verdict</strong> — Ryan will explain why</span></li>
-      </ul>
-      <div class="sticky-note-tip">💡 After every email, Ryan gives you a detailed explanation of why it was phishing or legitimate.</div>
-
+      <div id="sn-checklist-section"></div>
+      <div class="sn-rules-card">
+        <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
+        <ul class="sticky-note-list">
+          <li><span class="sn-icon sn-good">🌐</span><span>Verify the <strong>sender's email domain</strong> carefully</span></li>
+          <li><span class="sn-icon sn-good">⏳</span><span>Look for <strong>manufactured urgency</strong> or threats</span></li>
+          <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
+          <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
+        </ul>
+      </div>
+      <div class="sticky-note-tip">💡 <strong>Pro Tip:</strong> Ryan explains every verdict with educational feedback after submission.</div>
     </div>
   </div>
 
@@ -126,8 +130,8 @@
             <button type="button" class="back-btn" onclick="returnToInbox()">← Back</button>
             <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Mode</button>
             <div class="verdict-btn-group">
-              <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()">🚩 Report as Phishing</button>
-              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()">✓ Mark as Legitimate</button>
+              <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()" title="Report as Phishing" aria-label="Report as Phishing"><img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report</button>
+              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()" title="Mark as Legitimate" aria-label="Mark as Legitimate"><img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Mark</button>
             </div>
           </div>
 
@@ -136,15 +140,15 @@
           </div>
 
           <!-- Evidence Panel (Collapsible) -->
-          <div id="evidence-panel" class="evidence-panel">
+          <div id="evidence-panel" class="evidence-panel hidden collapsed">
             <div class="evidence-panel-header" onclick="toggleEvidencePanel()" title="Click to hide or show Investigation Evidence" style="cursor: pointer;">
               <div class="evidence-panel-title-wrap">
                 <span class="evidence-panel-title">🔍 Investigation Evidence</span>
                 <span id="evidence-count-badge" class="evidence-count-badge">0 FLAGS</span>
               </div>
               <button type="button" id="evidence-toggle-btn" class="evidence-toggle-btn" onclick="event.stopPropagation(); toggleEvidencePanel();" aria-label="Toggle Investigation Evidence">
-                <span id="evidence-toggle-label">Hide</span>
-                <span id="evidence-toggle-arrow">▼</span>
+                <span id="evidence-toggle-label">Show</span>
+                <span id="evidence-toggle-arrow">▲</span>
               </button>
             </div>
             <div id="evidence-list" class="evidence-list">
@@ -1130,7 +1134,7 @@
         <span id="tray-wifi-icon" class="tray-icon"><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="taskbar-icon-img"></span>
       </button>
       <button type="button" class="taskbar-clock" id="taskbar-clock-btn" onclick="toggleCalendarFlyout(event)" title="📅 View Calendar, Date in Words &amp; Notifications" aria-label="System Clock, Calendar and Notifications">
-        <span id="taskbar-time" class="clock-time">10:42</span>
+        <span id="taskbar-time" class="clock-time">10:42 AM</span>
         <span id="taskbar-date" class="clock-date">9/6/2026</span>
       </button>
     </div>
@@ -1458,7 +1462,6 @@
     <div class="cal-clock-display">
       <div class="cal-live-time" id="cal-live-time">10:42:00 AM</div>
       <div class="cal-date-words" id="cal-date-words">Wednesday, September 16, 2026</div>
-      <div class="cal-terminal-badge">CYBER CRIME BUREAU • SYSTEM TIME (LOCAL)</div>
     </div>
     <button type="button" class="volume-flyout-close" onclick="closeCalendarFlyout(event)" title="Close calendar and notifications">✕</button>
   </div>
@@ -1469,63 +1472,13 @@
       <div class="notif-center-header">
         <div class="notif-header-title">
           <span>🔔 NOTIFICATIONS</span>
-          <span class="notif-count-badge" id="notif-count-badge">4</span>
+          <span class="notif-count-badge" id="notif-count-badge">2</span>
         </div>
-        <button type="button" class="notif-clear-btn" id="btn-clear-notifs" onclick="clearAllNotifications()">Clear all</button>
+        <button type="button" class="notif-clear-btn" id="btn-clear-notifs" onclick="clearAllNotifications(event)">Clear all</button>
       </div>
 
       <div class="notif-list" id="notif-list">
-        <div class="notif-card" id="notif-1">
-          <div class="notif-card-icon notif-icon-shield">🛡️</div>
-          <div class="notif-card-content">
-            <div class="notif-card-top">
-              <span class="notif-card-source">Cyber Academy Assessment</span>
-              <span class="notif-card-time">Just now</span>
-            </div>
-            <div class="notif-card-title">CyberZerØ Simulation Ready</div>
-            <div class="notif-card-body">Follow Alex, IT Support Trainee, on a realistic cybersecurity investigation. Complete the pre-assessment to begin.</div>
-          </div>
-          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-1')" title="Dismiss notification">✕</button>
-        </div>
-
-        <div class="notif-card" id="notif-2">
-          <div class="notif-card-icon notif-icon-mail">📧</div>
-          <div class="notif-card-content">
-            <div class="notif-card-top">
-              <span class="notif-card-source">Zmail</span>
-              <span class="notif-card-time">12m ago</span>
-            </div>
-            <div class="notif-card-title">Student Support Request — Phishing Alert</div>
-            <div class="notif-card-body">A student reported receiving a suspicious scholarship email. Help Alex inspect the sender domain and links!</div>
-          </div>
-          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-2')" title="Dismiss notification">✕</button>
-        </div>
-
-        <div class="notif-card" id="notif-3">
-          <div class="notif-card-icon notif-icon-av">🦠</div>
-          <div class="notif-card-content">
-            <div class="notif-card-top">
-              <span class="notif-card-source">ShieldAV Defender</span>
-              <span class="notif-card-time">45m ago</span>
-            </div>
-            <div class="notif-card-title">Signatures Synchronized</div>
-            <div class="notif-card-body">Malware database updated to v2026.09. Heuristic protection active.</div>
-          </div>
-          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-3')" title="Dismiss notification">✕</button>
-        </div>
-
-        <div class="notif-card" id="notif-4">
-          <div class="notif-card-icon notif-icon-vpn">🔒</div>
-          <div class="notif-card-content">
-            <div class="notif-card-top">
-              <span class="notif-card-source">Cyber-Net Gateway</span>
-              <span class="notif-card-time">1h ago</span>
-            </div>
-            <div class="notif-card-title">Encrypted VPN Established</div>
-            <div class="notif-card-body">WireGuard 256-bit encryption tunnel connected to Cyber Crime Bureau headquarters.</div>
-          </div>
-          <button type="button" class="notif-dismiss-btn" onclick="dismissNotification('notif-4')" title="Dismiss notification">✕</button>
-        </div>
+        <!-- Rendered dynamically based on simulation events by renderSimulationNotifications() -->
       </div>
     </div>
 
@@ -1547,10 +1500,7 @@
     </div>
   </div>
 
-  <div class="volume-flyout-footer flyout-footer-between">
-    <span class="flyout-footer-note">
-      🕒 Time sync: <strong>time.cyberacademy.gov</strong>
-    </span>
+  <div class="volume-flyout-footer flyout-footer-centered">
     <button type="button" class="vol-test-btn btn-jump-today" onclick="resetCalendarToToday()">
       📅 Jump to Today
     </button>
