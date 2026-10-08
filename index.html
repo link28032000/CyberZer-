@@ -129,8 +129,8 @@
             <button type="button" class="back-btn" onclick="returnToInbox()">← Back</button>
             <button type="button" id="flag-mode-btn" class="flag-mode-btn" onclick="toggleFlagMode()">🚩 Flag Mode</button>
             <div class="verdict-btn-group">
-              <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()" title="Report as Phishing" aria-label="Report as Phishing"><img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report</button>
-              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()" title="Mark as Legit" aria-label="Mark as Legit"><img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit</button>
+              <button type="button" id="report-btn" class="verdict-btn verdict-phishing" onclick="submitReportPhishing()" title="Flag and submit as Phishing" aria-label="Phishing"><img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Phishing</button>
+              <button type="button" id="legit-btn" class="verdict-btn verdict-legit" onclick="submitMarkLegitimate()" title="Confirm and submit as Non-phishing" aria-label="Non-phishing"><img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Non-phishing</button>
             </div>
           </div>
 
@@ -659,7 +659,7 @@
         </div>
 
         <div class="smartscreen-actions">
-          <button type="button" class="btn-danger" id="smartscreen-btn-quarantine" onclick="smartscreenQuarantine()">🛡️ Quarantine Immediately (+100 pts)</button>
+          <button type="button" class="btn-danger" id="smartscreen-btn-quarantine" onclick="smartscreenQuarantine()">🛡️ Quarantine Immediately</button>
           <button type="button" class="btn-primary" id="smartscreen-btn-scan" onclick="smartscreenScan()">⚡ Deep Scan with ShieldAV</button>
           <button type="button" class="btn-ghost" onclick="closeSmartScreenModal()">Don't Run (Safe)</button>
         </div>
@@ -698,7 +698,7 @@
           </button>
         </div>
         <div class="av-stats-badge" id="av-stats-badge">
-          <span id="av-quarantine-count">0</span> / 4 QUARANTINED
+          <span class="av-badge-dot"></span> <span id="av-quarantine-status-text">SYSTEM PROTECTED</span>
         </div>
       </div>
 
@@ -706,22 +706,52 @@
       <div class="av-main">
         <div class="av-scanner-box">
           <div class="av-target-card" id="av-target-card">
-            <div class="av-tc-icon" id="av-tc-icon">📁</div>
+            <div class="av-tc-icon" id="av-tc-icon">🛡️</div>
             <div class="av-tc-info">
-              <div class="av-tc-name" id="av-tc-name">No file selected for scan</div>
-              <div class="av-tc-detail" id="av-tc-detail">Select a file from the Folder app or click "Quick Scan All"</div>
+              <div class="av-tc-name" id="av-tc-name">Quick scan</div>
+              <div class="av-tc-detail" id="av-tc-detail">Check system memory, startup programs, and Downloads folder for active threats.</div>
             </div>
-            <button type="button" class="av-scan-btn" id="av-scan-btn" onclick="startActiveScan()">⚡ Scan File</button>
+            <button type="button" class="av-scan-btn" id="av-scan-btn" onclick="startActiveScan()">⚡ Quick scan</button>
           </div>
 
-          <!-- Scanning Progress Bar / Radar -->
+          <!-- Scanning Progress Bar / Radar (Windows Defender Style) -->
           <div class="av-progress-wrap hidden" id="av-progress-wrap">
-            <div class="av-progress-label">
-              <span id="av-progress-text">Deep scanning file signatures…</span>
-              <span id="av-progress-pct">0%</span>
+            <div class="av-scan-header-row">
+              <div class="av-scan-status-title">
+                <span class="av-radar-spinner"></span>
+                <span id="av-progress-text">Quick scan in progress…</span>
+              </div>
+              <span id="av-progress-pct" class="av-pct-badge">0%</span>
             </div>
+
+            <!-- Streaming File Path Ticker (Windows Defender Signature) -->
+            <div class="av-scan-file-ticker">
+              <span class="av-ticker-label">Scanning:</span>
+              <span class="av-ticker-path" id="av-scanning-filepath">C:\Windows\System32\drivers\etc\hosts</span>
+            </div>
+
             <div class="av-progress-bar">
               <div class="av-progress-fill" id="av-progress-fill"></div>
+            </div>
+
+            <!-- Windows Defender Live Scan Metrics Grid -->
+            <div class="av-scan-metrics-grid">
+              <div class="av-metric-item">
+                <span class="av-metric-lbl">Estimated time remaining:</span>
+                <span class="av-metric-val" id="av-scan-timer">00:03</span>
+              </div>
+              <div class="av-metric-item">
+                <span class="av-metric-lbl">Files scanned:</span>
+                <span class="av-metric-val" id="av-files-scanned-count">128</span>
+              </div>
+              <div class="av-metric-item">
+                <span class="av-metric-lbl">Threats found:</span>
+                <span class="av-metric-val" id="av-threats-found-count">0</span>
+              </div>
+            </div>
+
+            <div class="av-scan-cancel-row">
+              <button type="button" class="btn-ghost btn-sm av-cancel-btn" id="av-cancel-scan-btn" onclick="cancelActiveScan()">Cancel scan</button>
             </div>
           </div>
 
@@ -734,8 +764,8 @@
         <!-- Threats / Quarantine List -->
         <div class="av-threats-section">
           <div class="av-threats-header">
-            <span>🛡️ Quarantined Threats Log</span>
-            <span class="av-threats-counter" id="av-log-count">0 / 4 Neutralized</span>
+            <span>🛡️ Protection History & Quarantined Threats</span>
+            <span class="av-threats-counter" id="av-log-count">Protection Active</span>
           </div>
           <div class="av-threats-list" id="av-threats-list">
             <div class="av-threats-empty">No quarantined files yet. Inspect suspicious files in the Folder!</div>
@@ -2417,6 +2447,66 @@
   </div>
 </div>
 
+<!-- ── CHAPTER 2 COMIC STRIP VIEWER ── -->
+<div id="overlay-comic-strip-ch2" class="overlay comic-strip-overlay">
+  <!-- Deep cinematic black background with subtle comic vignette -->
+  <div class="comic-bg-black"></div>
+
+  <!-- Comic strip stage: clean, scrollable viewport with full comic layout -->
+  <div class="comic-stage" id="comic-stage-ch2" onclick="comicStripCh2Advance(event)">
+    <div class="comic-strip-container comic-strip-container-ch2" id="comic-strip-container-ch2">
+
+      <!-- Row 1: Panel 1 (Left: Ethan gaming enthusiast) & Panel 2 (Right: Searching GTA 6 free download) -->
+      <div class="comic-row comic-row-split comic-row-ch2-1">
+        <div class="comic-panel-card panel-left" id="comic-panel-ch2-0" data-panel="0">
+          <img src="assets/Chapter2/Panel1.png" alt="Panel 1" class="comic-panel-img" draggable="false" onerror="comicPanelCh2Fallback(this, 'Panel1')">
+          <div class="comic-panel-highlight-border"></div>
+        </div>
+        <div class="comic-panel-card panel-right" id="comic-panel-ch2-1" data-panel="1">
+          <img src="assets/Chapter2/Panel2.png" alt="Panel 2" class="comic-panel-img" draggable="false" onerror="comicPanelCh2Fallback(this, 'Panel2')">
+          <div class="comic-panel-highlight-border"></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Panel 3 (Left: Fake GameHub offer) & Panel 4 (Right: Trojan installer setup) -->
+      <div class="comic-row comic-row-split comic-row-ch2-2">
+        <div class="comic-panel-card panel-left" id="comic-panel-ch2-2" data-panel="2">
+          <img src="assets/Chapter2/Panel3.png" alt="Panel 3" class="comic-panel-img" draggable="false" onerror="comicPanelCh2Fallback(this, 'Panel3')">
+          <div class="comic-panel-highlight-border"></div>
+        </div>
+        <div class="comic-panel-card panel-right" id="comic-panel-ch2-3" data-panel="3">
+          <img src="assets/Chapter2/Panel4.png" alt="Panel 4" class="comic-panel-img" draggable="false" onerror="comicPanelCh2Fallback(this, 'Panel4')">
+          <div class="comic-panel-highlight-border"></div>
+        </div>
+      </div>
+
+      <!-- Row 3: Panel 5 (Wide panel - Ethan and Alex at TechSolutions) -->
+      <div class="comic-row comic-row-wide comic-row-ch2-3">
+        <div class="comic-panel-card" id="comic-panel-ch2-4" data-panel="4">
+          <img src="assets/Chapter2/Panel5.png" alt="Panel 5" class="comic-panel-img" draggable="false" onerror="comicPanelCh2Fallback(this, 'Panel5')">
+          <div class="comic-panel-highlight-border"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Finish Action: Shown ONLY after all panels finish revealing -->
+    <div class="comic-finish-wrap" id="comic-finish-wrap-ch2">
+      <button type="button" class="comic-tap-continue-btn" id="comic-tap-continue-btn-ch2" onclick="event.stopPropagation(); comicStripCh2Finish()">
+        <svg class="comic-desktop-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        <span>Tap to continue</span>
+      </button>
+    </div>
+
+    <!-- Tap hint: bottom-center, fades in after first panel -->
+    <div class="comic-tap-hint" id="comic-tap-hint-ch2">Tap anywhere to advance ▶</div>
+  </div>
+</div>
+
 <!-- ── TRAINING SLIDES ── -->
 <div id="overlay-training" class="overlay">
   <div class="training-card">
@@ -2811,7 +2901,7 @@
             </button>
           </div>
           <div class="av-stats-badge" id="gdemo-mav-stats">
-            <span id="gdemo-mav-qcount">0</span> / 4 QUARANTINED
+            <span class="av-badge-dot"></span> <span>PROTECTION ACTIVE</span>
           </div>
         </div>
 
@@ -2918,6 +3008,16 @@
       <span class="results-score-max">correct out of <span id="res-max-score">9</span> emails</span>
     </div>
 
+    <!-- Evidence Breakdown per Email -->
+    <div class="res-evidence-breakdown" id="res-evidence-breakdown">
+      <div class="res-evb-header">
+        <span class="res-evb-title">🔍 Investigation Evidence Breakdown</span>
+        <span class="res-evb-sub">Flags you found vs. flags you missed per email</span>
+      </div>
+      <div class="res-evb-list" id="res-evb-list">
+        <!-- Populated by JS finishMission() -->
+      </div>
+    </div>
 
     <!-- Ryan Mentor Final Debrief -->
     <div class="ryan-results-card">
@@ -2967,7 +3067,7 @@
         <span class="results-stat-label">False Positives</span>
         <span class="results-stat-value" id="res-malware-fp">0</span>
       </div>
-      <div class="results-stat">
+      <div class="results-stat" style="display:none;">
         <span class="results-stat-label">Chapter Score</span>
         <span class="results-stat-value stat-val-cyan" id="res-malware-score">0</span>
       </div>
@@ -3000,7 +3100,7 @@
         <span class="results-stat-label">Vectors Neutralized</span>
         <span class="results-stat-value stat-val-purple">Phishing / Vishing / Smishing</span>
       </div>
-      <div class="results-stat">
+      <div class="results-stat" style="display:none;">
         <span class="results-stat-label">Chapter Score</span>
         <span class="results-stat-value stat-val-cyan" id="res-social-score">0</span>
       </div>
@@ -3033,7 +3133,7 @@
         <span class="results-stat-label">Extortion Ransom Paid</span>
         <span class="results-stat-value stat-val-green">$0 (Zero Ransom)</span>
       </div>
-      <div class="results-stat">
+      <div class="results-stat" style="display:none;">
         <span class="results-stat-label">Chapter Score</span>
         <span class="results-stat-value stat-val-cyan" id="res-rw-score">0</span>
       </div>
@@ -3090,7 +3190,7 @@
 
         <!-- Score summary -->
         <div class="grand-score-summary">
-          <div class="gss-item">
+          <div class="gss-item" style="display:none;">
             <span class="gss-lbl">TOTAL SCORE:</span>
             <span class="gss-val" id="grand-total-score">0 pts</span>
           </div>

@@ -2769,7 +2769,12 @@ function _comicKeyHandler(e) {
 }
 
 /** Open the Chapter 1 Comic Strip Viewer and start automatic playback */
-function showComicStrip() {
+function showComicStrip(chapter) {
+  if (chapter === 'malware' || chapter === 2 || chapter === 'Chapter2' || chapter === 'ch2') {
+    showComicStripCh2();
+    return;
+  }
+
   const overlay = document.getElementById('overlay-comic-strip');
   if (!overlay) {
     _proceedToAlexPassword();
@@ -2969,6 +2974,240 @@ function _proceedToAlexPassword() {
       inp.focus();
     }
   }, 380);
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHAPTER 2 COMIC STRIP VIEWER (ETHAN GAMING & MALWARE SETUP)
+// ═══════════════════════════════════════════════════════════
+
+const COMIC_CH2_PANEL_COUNT = 5;
+const comicStateCh2 = {
+  panel: 0,
+  autoTimer: null,
+  isFinished: false,
+  keyHandlerAttached: false
+};
+
+// Panel read durations in milliseconds for automatic show
+const COMIC_CH2_PANEL_DELAYS = [2800, 2600, 2600, 2600, 2800];
+
+function comicPanelCh2Fallback(img, panelName) {
+  imgCaseFallback(img, 'assets/Chapter2', panelName);
+}
+
+/** Global keyboard handler for Chapter 2 comic viewer */
+function _comicKeyHandlerCh2(e) {
+  const overlay = document.getElementById('overlay-comic-strip-ch2');
+  if (!overlay || !overlay.classList.contains('active')) return;
+
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (!comicStateCh2.isFinished) {
+      comicStripCh2Advance();
+    } else {
+      comicStripCh2Finish();
+    }
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    comicStripCh2Finish();
+  }
+}
+
+/** Open Chapter 2 Comic Strip Viewer and start automatic playback */
+function showComicStripCh2() {
+  const overlay = document.getElementById('overlay-comic-strip-ch2');
+  if (!overlay) {
+    _launchChapter2FromComic();
+    return;
+  }
+
+  // Hide desktop behind overlay
+  const desktop = document.getElementById('desktop');
+  if (desktop) desktop.style.visibility = 'hidden';
+
+  // Deactivate any other overlays cleanly
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+  overlay.classList.add('active');
+
+  // Clear any existing timer
+  if (comicStateCh2.autoTimer) {
+    clearTimeout(comicStateCh2.autoTimer);
+    comicStateCh2.autoTimer = null;
+  }
+
+  comicStateCh2.panel = 0;
+  comicStateCh2.isFinished = false;
+
+  // Reset finish button
+  const finishWrap = document.getElementById('comic-finish-wrap-ch2');
+  if (finishWrap) {
+    finishWrap.style.opacity = '0';
+    finishWrap.style.pointerEvents = 'none';
+  }
+
+  // Reset all panel card states
+  for (let i = 0; i < COMIC_CH2_PANEL_COUNT; i++) {
+    const card = document.getElementById(`comic-panel-ch2-${i}`);
+    if (card) {
+      card.classList.remove('revealed', 'active');
+    }
+  }
+
+  // Attach keyboard controls once
+  if (!comicStateCh2.keyHandlerAttached) {
+    window.addEventListener('keydown', _comicKeyHandlerCh2);
+    comicStateCh2.keyHandlerAttached = true;
+  }
+
+  // Reset scroll
+  const stage = document.getElementById('comic-stage-ch2');
+  if (stage) {
+    stage.scrollTop = 0;
+    stage.classList.remove('finished');
+  }
+
+  comicStripCh2ShowPanel(0);
+}
+
+/** Show a specific Chapter 2 comic panel (0-indexed: 0 to 4) and schedule next panel */
+function comicStripCh2ShowPanel(index) {
+  if (index < 0 || index >= COMIC_CH2_PANEL_COUNT) return;
+  comicStateCh2.panel = index;
+
+  for (let i = 0; i < COMIC_CH2_PANEL_COUNT; i++) {
+    const card = document.getElementById(`comic-panel-ch2-${i}`);
+    if (!card) continue;
+    if (i < index) {
+      card.classList.add('revealed');
+      card.classList.remove('active');
+    } else if (i === index) {
+      card.classList.add('revealed', 'active');
+    } else {
+      card.classList.remove('revealed', 'active');
+    }
+  }
+
+  // Play audio chime
+  _playComicPanelSound(index);
+
+  if (comicStateCh2.autoTimer) {
+    clearTimeout(comicStateCh2.autoTimer);
+    comicStateCh2.autoTimer = null;
+  }
+
+  if (index === COMIC_CH2_PANEL_COUNT - 1) {
+    // Last panel shown: reveal the "Tap to continue" button
+    comicStateCh2.autoTimer = setTimeout(() => {
+      _showComicCh2FinishButton();
+    }, 900);
+  } else {
+    // Show tap hint on first panel, hide afterwards
+    const hint = document.getElementById('comic-tap-hint-ch2');
+    if (hint) {
+      if (index === 0) {
+        setTimeout(() => hint.classList.add('visible'), 1200);
+      } else {
+        hint.classList.remove('visible');
+      }
+    }
+    const delay = COMIC_CH2_PANEL_DELAYS[index] || 2600;
+    comicStateCh2.autoTimer = setTimeout(() => {
+      comicStripCh2ShowPanel(index + 1);
+    }, delay);
+  }
+}
+
+/** Reveal Chapter 2 finish button (Tap to continue + desktop icon) */
+function _showComicCh2FinishButton() {
+  comicStateCh2.isFinished = true;
+  const finishWrap = document.getElementById('comic-finish-wrap-ch2');
+  if (finishWrap) {
+    finishWrap.style.opacity = '1';
+    finishWrap.style.pointerEvents = 'auto';
+  }
+  const stage = document.getElementById('comic-stage-ch2');
+  if (stage) {
+    stage.classList.add('finished');
+  }
+  const hint = document.getElementById('comic-tap-hint-ch2');
+  if (hint) hint.classList.remove('visible');
+}
+
+/** Advance Chapter 2 comic to next panel on tap/click */
+function comicStripCh2Advance(e) {
+  if (comicStateCh2.isFinished) {
+    return;
+  }
+
+  if (comicStateCh2.autoTimer) {
+    clearTimeout(comicStateCh2.autoTimer);
+    comicStateCh2.autoTimer = null;
+  }
+
+  const next = comicStateCh2.panel + 1;
+  if (next >= COMIC_CH2_PANEL_COUNT) {
+    _showComicCh2FinishButton();
+  } else {
+    comicStripCh2ShowPanel(next);
+  }
+}
+
+/** Finish Chapter 2 comic strip and launch Chapter 2 mission */
+function comicStripCh2Finish() {
+  if (comicStateCh2.autoTimer) {
+    clearTimeout(comicStateCh2.autoTimer);
+    comicStateCh2.autoTimer = null;
+  }
+
+  const stage = document.getElementById('comic-stage-ch2');
+  if (stage) stage.classList.remove('finished');
+
+  const overlay = document.getElementById('overlay-comic-strip-ch2');
+  if (overlay) overlay.classList.remove('active');
+
+  const hint = document.getElementById('comic-tap-hint-ch2');
+  if (hint) hint.classList.remove('visible');
+
+  if (comicStateCh2.keyHandlerAttached) {
+    window.removeEventListener('keydown', _comicKeyHandlerCh2);
+    comicStateCh2.keyHandlerAttached = false;
+  }
+
+  _launchChapter2FromComic();
+}
+
+/** Smooth transition into Chapter 2 desktop with Windows 10 loading screen */
+function _launchChapter2FromComic() {
+  const ls = document.getElementById('overlay-loading-screen');
+  if (ls) {
+    const titleEl = document.getElementById('win-loading-title');
+    if (titleEl) titleEl.textContent = 'Just a moment...';
+    ls.classList.remove('ls-leaving');
+    ls.classList.add('ls-active');
+    if (typeof _playLoadingBeep === 'function') _playLoadingBeep(320, 0.12, 0);
+
+    const DURATION = 3200;
+    const noteEl = document.getElementById('win-loading-note-text');
+    if (typeof LOADING_TIPS !== 'undefined' && LOADING_TIPS.length > 0) {
+      let tipIdx = Math.floor(Math.random() * LOADING_TIPS.length);
+      if (noteEl) noteEl.textContent = LOADING_TIPS[tipIdx].text;
+    }
+
+    setTimeout(() => {
+      if (typeof _playLoadingBeep === 'function') {
+        _playLoadingBeep(440, 0.12, 0);
+        _playLoadingBeep(660, 0.12, 0.12);
+        _playLoadingBeep(880, 0.18, 0.24);
+      }
+      openChapterDesktopDirect('malware');
+      setTimeout(() => {
+        ls.classList.add('ls-leaving');
+        setTimeout(() => ls.classList.remove('ls-active', 'ls-leaving'), 800);
+      }, 300);
+    }, DURATION);
+  } else {
+    openChapterDesktopDirect('malware');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3923,14 +4162,13 @@ function updateStickyNoteForPhase(phase) {
         </div>
       </div>
       <div class="sn-rules-card">
-        <div class="sn-rules-title" style="color: #6b21a8;">🛡️ Malware Scoring Rules</div>
+        <div class="sn-rules-title" style="color: #6b21a8;">🛡️ Malware Guidelines</div>
         <ul class="sticky-note-list">
-          <li><span class="sn-icon sn-good">🛡️</span><span>Quarantine real Malware: <strong>+100</strong> (highest)</span></li>
-          <li><span class="sn-icon sn-bad">⚠️</span><span>False Positive (Clean file): <strong>−25</strong></span></li>
+          <li><span class="sn-icon sn-good">🛡️</span><span>Quarantine real Malware safely</span></li>
+          <li><span class="sn-icon sn-bad">⚠️</span><span>Verify clean files before quarantining</span></li>
           <li><span class="sn-icon sn-good">⚡</span><span>Anti-Virus Scan: <strong>Free check</strong></span></li>
           <li><span class="sn-icon sn-good">🎯</span><span>Goal: Neutralize all <strong>4 threats</strong></span></li>
-          <li><span class="sn-icon sn-good">🏆</span><span>Rank S Target: <strong>4/4, 0 False Positives</strong></span></li>
-          <li><span class="sn-icon sn-good">📊</span><span>Watch your live score in <strong>top-right HUD</strong></span></li>
+          <li><span class="sn-icon sn-good">🏆</span><span>Target: <strong>4/4 Threats Neutralized</strong></span></li>
         </ul>
       </div>
       <div class="sticky-note-tip" style="border-left: 3px solid #9333ea; background: rgba(147, 51, 234, 0.08); color: #581c87;">
@@ -4153,11 +4391,11 @@ function renderEmailList() {
 
     let badgeHtml = '';
     if (result) {
-      // Show what the PLAYER submitted, not the email's actual type
-      const playerSaidPhishing = result.playerDecision;
-      const label = playerSaidPhishing ? '🚩 REPORTED' : '✓ CLEARED';
-      const cls   = playerSaidPhishing ? 'phishing' : 'legit';
-      badgeHtml = `<span class="email-done-badge ${cls}">${label}</span>`;
+      const isCorrect = result.correctDecision;
+      const actualType = result.isPhishing ? 'Phishing' : 'Non-phishing';
+      const label = isCorrect ? '✓ CORRECT' : '✗ WRONG';
+      const cls   = isCorrect ? 'correct' : 'wrong';
+      badgeHtml = `<span class="email-done-badge ${cls}" title="${isCorrect ? 'Correct' : 'Wrong'} — ${actualType}">${label}</span>`;
     } else if (isCurrent) {
       badgeHtml = `<div class="email-status-dot"></div>`;
     }
@@ -4377,10 +4615,10 @@ function openEmail(idx) {
     if (reportBtn) {
       reportBtn.disabled = true;
       if (existingResult.playerDecision) {
-        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Reported';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Phishing';
         reportBtn.classList.add('reported');
       } else {
-        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Phishing';
         reportBtn.classList.remove('reported');
       }
       reportBtn.title = 'Verdict already submitted for this email.';
@@ -4388,10 +4626,10 @@ function openEmail(idx) {
     if (legitBtn) {
       legitBtn.disabled = true;
       if (!existingResult.playerDecision) {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Non-phishing';
         legitBtn.classList.add('reported');
       } else {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Non-phishing';
         legitBtn.classList.remove('reported');
       }
       legitBtn.title = 'Verdict already submitted for this email.';
@@ -4401,15 +4639,15 @@ function openEmail(idx) {
   } else {
     if (reportBtn) {
       reportBtn.disabled = false;
-      reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report';
+      reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Phishing';
       reportBtn.classList.remove('reported');
       reportBtn.title = 'Flag and submit this email as Phishing';
     }
     if (legitBtn) {
       legitBtn.disabled = false;
-      legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
+      legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Non-phishing';
       legitBtn.classList.remove('reported');
-      legitBtn.title = 'Confirm and submit this email as Legit';
+      legitBtn.title = 'Confirm and submit this email as Non-phishing';
     }
     flagModeBtn.disabled = false;
     flagModeBtn.title = '';
@@ -4420,10 +4658,17 @@ function openEmail(idx) {
   if (typeof updateVerdictButtonsHighlight === 'function') updateVerdictButtonsHighlight();
   updateHUD();
 
-  // ── Default hide investigation evidence on email open unless flags exist ──
+  // ── Default hide investigation evidence on email open unless flags exist or already submitted ──
   const evPanel = document.getElementById('evidence-panel');
   if (evPanel) {
-    if (gameState.currentEmailFlags.length === 0) {
+    if (existingResult) {
+      evPanel.classList.remove('hidden');
+      evPanel.classList.remove('collapsed');
+      const label = document.getElementById('evidence-toggle-label');
+      const arrow = document.getElementById('evidence-toggle-arrow');
+      if (label) label.textContent = 'Hide';
+      if (arrow) arrow.textContent = '▼';
+    } else if (gameState.currentEmailFlags.length === 0) {
       evPanel.classList.add('hidden');
       evPanel.classList.add('collapsed');
       const label = document.getElementById('evidence-toggle-label');
@@ -4462,11 +4707,13 @@ function renderEmailContent(email) {
   const existingResult = gameState.emailResults.find(r => r.emailId === email.id);
   if (existingResult) {
     content.classList.add('case-closed-reviewed');
-    const verdictText = existingResult.playerDecision ? '🚩 Reported as Phishing' : '✓ Marked as Legitimate';
-    const verdictClass = existingResult.playerDecision ? 'phishing' : 'legit';
+    const isCorrect = existingResult.correctDecision;
+    const actualType = existingResult.isPhishing ? 'Phishing' : 'Non-phishing';
+    const verdictText = isCorrect ? '✅ Correct' : '❌ Wrong';
+    const verdictClass = isCorrect ? 'correct' : 'wrong';
     const banner = document.createElement('div');
     banner.className = `case-closed-banner ${verdictClass}`;
-    banner.innerHTML = `🔒 <strong>CASE CLOSED</strong> — ${verdictText} (${existingResult.score >= 0 ? '+' : ''}${existingResult.score} pts). You can review this email, but reports can only be submitted once.`;
+    banner.innerHTML = `🔒 <strong>CASE CLOSED</strong> — ${verdictText}: ${actualType}. You can review this email, but verdicts can only be submitted once.`;
     content.appendChild(banner);
   } else {
     content.classList.remove('case-closed-reviewed');
@@ -4474,6 +4721,7 @@ function renderEmailContent(email) {
 
   // Header block
   const isSenderFlagged = gameState.currentEmailFlags.some(f => f.type === 'fake_sender');
+  const senderClass = 'flaggable' + (isSenderFlagged ? ' flagged' : '');
   const header = document.createElement('div');
   header.className = 'email-header-block';
   header.innerHTML = `
@@ -4481,7 +4729,7 @@ function renderEmailContent(email) {
     <div class="email-meta-row">
       <span class="email-meta-label">FROM</span>
       <span class="email-meta-value">
-        <span class="flaggable${isSenderFlagged ? ' flagged' : ''}" data-flag-id="sender" data-flag-type="fake_sender" data-flag-label="FAKE SENDER"
+        <span class="${senderClass}" data-flag-id="sender" data-flag-type="fake_sender" data-flag-label="FAKE SENDER"
           data-flag-text="${email.sender.address}"
           onclick="handleFlaggableClick(this)">${email.sender.name} &lt;${email.sender.address}&gt;</span>
       </span>
@@ -4511,7 +4759,7 @@ function renderEmailContent(email) {
       const p = document.createElement('p');
       const span = document.createElement('span');
       const isFlagged = gameState.currentEmailFlags.some(f => f.type === part.flagType);
-      span.className = `flaggable${isFlagged ? ' flagged' : ''}`;
+      span.className = 'flaggable' + (isFlagged ? ' flagged' : '');
       span.dataset.flagId = part.flagId;
       span.dataset.flagType = part.flagType;
       span.dataset.flagLabel = part.label;
@@ -4531,7 +4779,7 @@ function renderEmailContent(email) {
       // 1. Primary flaggable link
       const link = document.createElement('a');
       const isFlagged = gameState.currentEmailFlags.some(f => f.type === part.flagType);
-      link.className = `email-link flaggable${isFlagged ? ' flagged' : ''}`;
+      link.className = 'email-link flaggable' + (isFlagged ? ' flagged' : '');
       link.href = '#';
       link.dataset.flagId = part.flagId;
       link.dataset.flagType = part.flagType;
@@ -4790,9 +5038,15 @@ function ryanExplainFlag(flagType, flagText, flagLabel) {
     ]
   };
 
-  const slides = dialogues[flagType] || [
-    { text: `Good find! You flagged "${flagLabel}". Every red flag you identify builds a stronger case. Keep looking for more suspicious clues before you report.`, state: 'speaking' }
+  const slides = dialogues[flagType] ? [...dialogues[flagType]] : [
+    { text: `Good find! You flagged "${flagLabel}". Every red flag you identify builds a stronger case.`, state: 'speaking' }
   ];
+
+  // First email only: guide the player that they need to submit Phishing or Non-phishing
+  slides.push({
+    text: "Now that you've flagged evidence, you need to submit your verdict! Click 'Phishing' if you believe this email is an attack, or 'Non-phishing' if you think it's safe.",
+    state: 'success'
+  });
 
   RyanGuide.speak(slides);
 }
@@ -4833,29 +5087,179 @@ function removeFlag(flagType) {
   showToast(`🗑 Unflagged: ${removed.label}`, '');
 }
 
+function getEmailMissedFlagInfo(email, evType) {
+  let label = evType ? evType.replace(/_/g, ' ').toUpperCase() : 'RED FLAG';
+  let text = '';
+  let reason = '';
+  let icon = '⚠️';
+
+  if (!email) return { type: evType, label, text, reason, icon };
+
+  if (evType === 'fake_sender') {
+    label = 'FAKE SENDER';
+    icon = '👤';
+    text = email.sender ? `${email.sender.name} <${email.sender.address}>` : 'Sender Address';
+    if (email.capybaraAnalysis && email.capybaraAnalysis.fake_sender && email.capybaraAnalysis.fake_sender.missed) {
+      reason = email.capybaraAnalysis.fake_sender.missed.replace(/^🚩\s*MISSED\s*—\s*[^\n]+\n?/, '').trim();
+    } else {
+      reason = 'The sender domain does not match the official organization domain.';
+    }
+  } else if (evType === 'false_urgency') {
+    label = 'FALSE URGENCY';
+    icon = '⏰';
+    const part = (email.body || []).find(b => b.flagType === 'false_urgency');
+    text = part ? part.text : 'Urgent deadline or account suspension threat';
+    if (part && part.label) label = part.label;
+    if (email.capybaraAnalysis && email.capybaraAnalysis.false_urgency && email.capybaraAnalysis.false_urgency.missed) {
+      reason = email.capybaraAnalysis.false_urgency.missed.replace(/^🚩\s*MISSED\s*—\s*[^\n]+\n?/, '').trim();
+    } else {
+      reason = 'Manufactured time pressure designed to cause panic before verification.';
+    }
+  } else if (evType === 'suspicious_link') {
+    label = 'SUSPICIOUS LINK';
+    icon = '🔗';
+    const part = (email.body || []).find(b => b.flagType === 'suspicious_link');
+    text = part ? (part.destination || part.text) : 'Suspicious link destination';
+    if (part && part.label) label = part.label;
+    if (email.capybaraAnalysis && email.capybaraAnalysis.suspicious_link && email.capybaraAnalysis.suspicious_link.missed) {
+      reason = email.capybaraAnalysis.suspicious_link.missed.replace(/^🚩\s*MISSED\s*—\s*[^\n]+\n?/, '').trim();
+    } else {
+      reason = 'Link leads to an unverified external portal designed to capture credentials.';
+    }
+  } else {
+    const part = (email.body || []).find(b => b.flagType === evType);
+    if (part) {
+      label = part.label || label;
+      text = part.text || part.destination || '';
+    }
+    reason = 'Suspicious indicator that should be flagged.';
+  }
+
+  reason = reason.replace(/<code>/g, '“').replace(/<\/code>/g, '”');
+  return { type: evType, label, text, reason, icon };
+}
+
 function renderEvidencePanel() {
   const list = document.getElementById('evidence-list');
   const badge = document.getElementById('evidence-count-badge');
-  const flags = gameState.currentEmailFlags;
-  const currentEmailObj = EMAILS[gameState.currentEmail];
-  const isClosed = currentEmailObj && gameState.emailResults.some(r => r.emailId === currentEmailObj.id);
+  if (!list || !badge) return;
 
-  badge.textContent = isClosed ? `${flags.length} SUBMITTED` : `${flags.length} FLAG${flags.length !== 1 ? 'S' : ''}`;
+  const flags = gameState.currentEmailFlags || [];
+  const currentEmailObj = (ch1InboxEmails && ch1InboxEmails[gameState.currentEmail]) || (EMAILS && EMAILS[gameState.currentEmail]);
+  const isClosed = currentEmailObj && gameState.emailResults && gameState.emailResults.some(r => r.emailId === currentEmailObj.id);
 
+  // Reset classes on badge
+  badge.className = 'evidence-count-badge';
 
+  if (!isClosed) {
+    badge.textContent = `${flags.length} FLAG${flags.length !== 1 ? 'S' : ''}`;
+    list.innerHTML = '';
+    if (flags.length === 0) {
+      list.innerHTML = '<div class="evidence-empty">No flags placed yet. Click <strong>Flag Evidence</strong> to mark clues.</div>';
+    } else {
+      flags.forEach(flag => {
+        const item = document.createElement('div');
+        item.className = 'evidence-item';
+        item.innerHTML = `
+          <span class="evidence-item-icon">🚩</span>
+          <span class="evidence-item-text">${flag.text.length > 60 ? flag.text.slice(0,60)+'…' : flag.text}</span>
+          <span class="evidence-item-type">${flag.label}</span>
+          <button class="evidence-remove-btn" onclick="removeFlag('${flag.type}')" title="Remove flag">✕</button>`;
+        list.appendChild(item);
+      });
+    }
+  } else {
+    // ── Case is closed / submitted: show found vs missed flags ──
+    const expected = (currentEmailObj && currentEmailObj.evidence) ? currentEmailObj.evidence : [];
+    const flaggedTypes = flags.map(f => f.type);
+    const foundTypes = expected.filter(t => flaggedTypes.includes(t));
+    const missedTypes = expected.filter(t => !flaggedTypes.includes(t));
 
-  list.innerHTML = '';
-  flags.forEach(flag => {
-    const item = document.createElement('div');
-    item.className = 'evidence-item';
-    const removeBtnHtml = isClosed ? '' : `<button class="evidence-remove-btn" onclick="removeFlag('${flag.type}')" title="Remove flag">✕</button>`;
-    item.innerHTML = `
-      <span class="evidence-item-icon">🚩</span>
-      <span class="evidence-item-text">${flag.text.length > 60 ? flag.text.slice(0,60)+'…' : flag.text}</span>
-      <span class="evidence-item-type">${flag.label}</span>
-      ${removeBtnHtml}`;
-    list.appendChild(item);
-  });
+    list.innerHTML = '';
+
+    if (currentEmailObj && currentEmailObj.phishing) {
+      // Phishing email
+      if (missedTypes.length === 0) {
+        badge.textContent = `${flags.length}/${expected.length} ALL FLAGS FOUND 🚩✅`;
+        badge.classList.add('badge-all-found');
+      } else {
+        badge.textContent = `${foundTypes.length}/${expected.length} FLAGS (${missedTypes.length} MISSED 🚩)`;
+        badge.classList.add('badge-has-missed');
+      }
+
+      // Render flags found by player
+      flags.forEach(flag => {
+        const isLegitFlag = expected.includes(flag.type);
+        const item = document.createElement('div');
+        item.className = 'evidence-item ' + (isLegitFlag ? 'evidence-item-found' : 'evidence-item-fp');
+        item.innerHTML = `
+          <span class="evidence-item-icon">🚩</span>
+          <div class="evidence-item-body">
+            <div class="evidence-item-header">
+              <span class="evidence-status-pill ${isLegitFlag ? 'pill-found' : 'pill-fp'}">${isLegitFlag ? 'FLAGGED (FOUND)' : 'EXTRA FLAG'}</span>
+              <span class="evidence-item-type">${flag.label}</span>
+            </div>
+            <span class="evidence-item-text">${flag.text}</span>
+            ${!isLegitFlag ? '<div class="evidence-item-hint">This element was normal and safe.</div>' : ''}
+          </div>`;
+        list.appendChild(item);
+      });
+
+      // Render flags missed by player
+      missedTypes.forEach(mType => {
+        const mInfo = getEmailMissedFlagInfo(currentEmailObj, mType);
+        const item = document.createElement('div');
+        item.className = 'evidence-item evidence-item-missed';
+        item.innerHTML = `
+          <span class="evidence-item-icon">🚩</span>
+          <div class="evidence-item-body">
+            <div class="evidence-item-header">
+              <span class="evidence-status-pill pill-missed">🚩 MISSED FLAG</span>
+              <span class="evidence-item-type">${mInfo.label}</span>
+            </div>
+            <span class="evidence-item-text">${mInfo.text}</span>
+          </div>`;
+        list.appendChild(item);
+      });
+
+    } else {
+      // Legitimate email
+      if (flags.length === 0) {
+        badge.textContent = 'CLEAN EMAIL (0 FLAGS) ✅';
+        badge.classList.add('badge-all-found');
+        const item = document.createElement('div');
+        item.className = 'evidence-item evidence-item-clean';
+        item.innerHTML = `
+          <span class="evidence-item-icon">🛡️</span>
+          <div class="evidence-item-body">
+            <div class="evidence-item-header">
+              <span class="evidence-status-pill pill-found">SAFE &amp; VERIFIED</span>
+            </div>
+            <span class="evidence-item-text">Clean message — no phishing red flags present.</span>
+            <div class="evidence-item-hint">Verified sender domain with standard non-urgent communication.</div>
+          </div>`;
+        list.appendChild(item);
+      } else {
+        badge.textContent = `${flags.length} FALSE FLAG${flags.length > 1 ? 'S' : ''} ⚠️`;
+        badge.classList.add('badge-has-missed');
+        flags.forEach(flag => {
+          const item = document.createElement('div');
+          item.className = 'evidence-item evidence-item-fp';
+          item.innerHTML = `
+            <span class="evidence-item-icon">⚠️</span>
+            <div class="evidence-item-body">
+              <div class="evidence-item-header">
+                <span class="evidence-status-pill pill-fp">FALSE ALARM</span>
+                <span class="evidence-item-type">${flag.label}</span>
+              </div>
+              <span class="evidence-item-text">${flag.text}</span>
+              <div class="evidence-item-hint">This email was legitimate. This element was safe.</div>
+            </div>`;
+          list.appendChild(item);
+        });
+      }
+    }
+  }
 
   if (typeof updateVerdictButtonsHighlight === 'function') {
     updateVerdictButtonsHighlight();
@@ -4871,13 +5275,9 @@ function updateVerdictButtonsHighlight() {
   const isFirstEmail = (gameState.currentEmail === 0 || (currentEmailObj && currentEmailObj.id === 1));
   const isClosed = currentEmailObj && gameState.emailResults && gameState.emailResults.some(r => r.emailId === currentEmailObj.id);
 
-  // Highlight both report and legit button only on first email if the player flagged all evidence
+  // Highlight both report and legit button on first email once the player flags at least one evidence
   if (isFirstEmail && !isClosed && currentEmailObj && currentEmailObj.evidence && currentEmailObj.evidence.length > 0) {
-    const allFlagged = currentEmailObj.evidence.every(evType =>
-      gameState.currentEmailFlags && gameState.currentEmailFlags.some(f => f.type === evType)
-    );
-
-    if (allFlagged) {
+    if (gameState.currentEmailFlags && gameState.currentEmailFlags.length >= 1) {
       reportBtn.classList.add('verdict-btn-highlight');
       legitBtn.classList.add('verdict-btn-highlight');
       return;
@@ -5108,20 +5508,20 @@ function submitReport(isPhishing) {
     if (reportBtn) {
       reportBtn.disabled = true;
       if (isPhishing) {
-        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Reported';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Phishing';
         reportBtn.classList.add('reported');
       } else {
-        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Report';
+        reportBtn.innerHTML = '<img src="assets/icons/email/Phishing.png" alt="" class="verdict-btn-icon"> Phishing';
         reportBtn.classList.remove('reported');
       }
     }
     if (legitBtn) {
       legitBtn.disabled = true;
       if (!isPhishing) {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Non-phishing';
         legitBtn.classList.add('reported');
       } else {
-        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Legit';
+        legitBtn.innerHTML = '<img src="assets/icons/email/Legitimate.png" alt="" class="verdict-btn-icon"> Non-phishing';
         legitBtn.classList.remove('reported');
       }
     }
@@ -5140,37 +5540,38 @@ function submitReport(isPhishing) {
       const old = emailContent.querySelector('.verdict-banner');
       if (old) old.remove();
       const banner = document.createElement('div');
-      banner.className = 'verdict-banner verdict-banner-' + (isPhishing ? 'phishing' : 'legit');
+      banner.className = 'verdict-banner ' + (correctDecision ? 'verdict-banner-correct' : 'verdict-banner-wrong');
 
       let bannerTitle = '';
       let bannerMsg = '';
       let bannerIcon = '';
 
-      if (isPhishing && correctDecision) {
-        bannerIcon = '🚩';
-        bannerTitle = 'PHISHING REPORTED';
-        bannerMsg = 'Good catch! You correctly identified this phishing email.';
-      } else if (isPhishing && !correctDecision) {
-        bannerIcon = '⚠️';
-        bannerTitle = 'REPORTED AS PHISHING';
-        bannerMsg = 'This was actually a legitimate email.';
-      } else if (!isPhishing && correctDecision) {
+      if (correctDecision) {
         bannerIcon = '✅';
-        bannerTitle = 'CLEARED AS LEGITIMATE';
-        bannerMsg = 'Correct! This email is safe and legitimate.';
+        if (email.phishing) {
+          bannerTitle = 'CORRECT — PHISHING';
+          bannerMsg = 'Good catch! You correctly identified this as a phishing email.';
+        } else {
+          bannerTitle = 'CORRECT — NON-PHISHING';
+          bannerMsg = 'Correct! This email is safe and non-phishing.';
+        }
       } else {
-        bannerIcon = '🚨';
-        bannerTitle = 'MARKED AS LEGITIMATE';
-        bannerMsg = 'This was actually a phishing email!';
+        bannerIcon = '❌';
+        if (email.phishing) {
+          bannerTitle = 'WRONG — PHISHING';
+          bannerMsg = 'Incorrect. This was actually a phishing email!';
+        } else {
+          bannerTitle = 'WRONG — NON-PHISHING';
+          bannerMsg = 'Incorrect. This was actually a safe, non-phishing email.';
+        }
       }
 
       banner.innerHTML = `
         <span class="vb-icon">${bannerIcon}</span>
         <div style="flex:1;">
           <strong>${bannerTitle}</strong> — ${bannerMsg}
-          <div style="font-size:12px;opacity:0.85;margin-top:4px;">Returning to inbox in a moment…</div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="nextEmail()" style="font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;background:var(--accent-blue,#4fc3f7);color:#000;font-weight:700;border:none;white-space:nowrap;">
+        <button type="button" class="btn btn-primary" onclick="nextEmail()" style="font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;background:var(--accent-blue,#4fc3f7);color:#000;font-weight:700;border:none;white-space:nowrap;align-self:center;">
           Next Email ➔
         </button>`;
       emailContent.insertBefore(banner, emailContent.firstChild);
@@ -5178,7 +5579,10 @@ function submitReport(isPhishing) {
 
     // If Ryan is guiding the player, don't show a toast that would sit behind his dialogue
     if (typeof RyanGuide === 'undefined' || gameState.phase !== 'mission') {
-      showToast(isPhishing ? '🚩 Email submitted as phishing!' : '✅ Email marked as legitimate!', correctDecision ? 'success' : 'warning');
+      const toastText = correctDecision
+        ? (email.phishing ? '✅ Correct! Email is Phishing.' : '✅ Correct! Email is Non-phishing.')
+        : (email.phishing ? '❌ Wrong! Email is actually Phishing.' : '❌ Wrong! Email is actually Non-phishing.');
+      showToast(toastText, correctDecision ? 'success' : 'warning');
     } else {
       const toast = document.getElementById('toast');
       if (toast) toast.classList.add('hidden');
@@ -5190,9 +5594,9 @@ function submitReport(isPhishing) {
       addSimulationNotification({
         id: 'notif-verdict-' + email.id,
         source: 'Investigation Log',
-        icon: isPhishing ? '🚩' : '✅',
-        iconType: isPhishing ? 'warning' : 'shield',
-        title: (isPhishing ? 'Phishing Flagged: ' : 'Verified Safe: ') + subjShort,
+        icon: correctDecision ? '✅' : '❌',
+        iconType: correctDecision ? 'shield' : 'warning',
+        title: (correctDecision ? '✅ Correct: ' : '❌ Wrong: ') + (email.phishing ? 'Phishing' : 'Non-phishing') + ' — ' + subjShort,
         body: `Decision recorded. ${bannerMsg}`,
         time: 'Just now',
         app: 'gmail',
@@ -5204,10 +5608,25 @@ function submitReport(isPhishing) {
     updateFolderCounts();
     updateStickyChecklist();
 
-    // Auto-advance to next email / inbox after 2.5s so the game flow never hangs
-    ch1AutoAdvanceTimer = setTimeout(() => {
-      nextEmail();
-    }, 2500);
+
+
+    // ── Update and expand Investigation Evidence panel to show found and missed flags ──
+    renderEvidencePanel();
+    const evPanel = document.getElementById('evidence-panel');
+    if (evPanel) {
+      evPanel.classList.remove('hidden');
+      evPanel.classList.remove('collapsed');
+      const label = document.getElementById('evidence-toggle-label');
+      const arrow = document.getElementById('evidence-toggle-arrow');
+      if (label) label.textContent = 'Hide';
+      if (arrow) arrow.textContent = '▼';
+    }
+
+    // Clear any previous auto-advance: allow player to read the verdict and review missed flags without being rushed!
+    if (ch1AutoAdvanceTimer) {
+      clearTimeout(ch1AutoAdvanceTimer);
+      ch1AutoAdvanceTimer = null;
+    }
 
     // Ryan gives his educational briefing
     if (typeof RyanGuide !== 'undefined') {
@@ -5242,14 +5661,8 @@ function submitReport(isPhishing) {
 
       setTimeout(() => {
         RyanGuide.speak(messages, {
-          autoDismiss: 4000,
-          onDone: () => {
-            if (ch1AutoAdvanceTimer) {
-              clearTimeout(ch1AutoAdvanceTimer);
-              ch1AutoAdvanceTimer = null;
-            }
-            nextEmail();
-          }
+          autoDismiss: 6000
+          // Do not auto-advance away from the email: player stays to review missed flags and clicks 'Next Email ➔'
         });
       }, 300);
     }
@@ -5314,24 +5727,24 @@ function showCapybaraResult(result, email) {
       verdictTitle.textContent = '✓ PHISHING CONFIRMED';
       verdictTitle.className = 'correct';
       decisionRow.className = 'review-decision-row correct';
-      decisionRow.innerHTML = '✓ Correct decision (+100) — You correctly identified this as a phishing email.';
+      decisionRow.innerHTML = '✓ Correct decision — You correctly identified this as a phishing email.';
     } else {
       verdictTitle.textContent = '✗ MISSED PHISHING';
       verdictTitle.className = 'incorrect';
       decisionRow.className = 'review-decision-row incorrect';
-      decisionRow.innerHTML = '✗ Incorrect (−50) — This was a phishing email. You marked it as legitimate.';
+      decisionRow.innerHTML = '✗ Incorrect — This was a phishing email. You marked it as non-phishing.';
     }
   } else {
     if (correctDecision) {
-      verdictTitle.textContent = '✓ LEGITIMATE EMAIL';
+      verdictTitle.textContent = '✓ NON-PHISHING EMAIL';
       verdictTitle.className = 'correct';
       decisionRow.className = 'review-decision-row correct';
-      decisionRow.innerHTML = '✓ Correct (+50) — You correctly identified this as a legitimate email.';
+      decisionRow.innerHTML = '✓ Correct — You correctly identified this as a non-phishing email.';
     } else {
       verdictTitle.textContent = '✗ FALSE POSITIVE';
       verdictTitle.className = 'incorrect';
       decisionRow.className = 'review-decision-row incorrect';
-      decisionRow.innerHTML = '✗ Incorrect (−50) — This was a legitimate email. You reported it as phishing.';
+      decisionRow.innerHTML = '✗ Incorrect — This was a non-phishing email. You marked it as phishing.';
     }
   }
 
@@ -5546,6 +5959,94 @@ function finishMission() {
 
   const totalEvidence = EMAILS.reduce((sum, e) => sum + e.evidence.length, 0);
 
+  // ── Populate Investigation Evidence Breakdown (Found & Missed flags per email) ──
+  const evbList = document.getElementById('res-evb-list');
+  let totalFoundAcrossAll = 0;
+  if (evbList) {
+    evbList.innerHTML = '';
+    EMAILS.forEach((email, idx) => {
+      const res = gameState.emailResults.find(r => r.emailId === email.id);
+      const isReviewed = !!res;
+      const playerFlags = (res && res.savedFlags) ? res.savedFlags : [];
+      const flaggedTypes = playerFlags.map(f => f.type);
+      const expected = email.evidence || [];
+      const foundTypes = expected.filter(t => flaggedTypes.includes(t));
+      totalFoundAcrossAll += foundTypes.length;
+      const missedTypes = expected.filter(t => !flaggedTypes.includes(t));
+
+      const card = document.createElement('div');
+      card.className = 'res-evb-card';
+
+      let statusBadge = '';
+      if (!isReviewed) {
+        statusBadge = '<span class="res-evb-badge res-evb-unreviewed">UNREVIEWED</span>';
+      } else if (res.correctDecision) {
+        statusBadge = `<span class="res-evb-badge res-evb-correct">✅ CORRECT (${email.phishing ? 'Phishing' : 'Non-phishing'})</span>`;
+      } else {
+        statusBadge = `<span class="res-evb-badge res-evb-wrong">❌ WRONG (${email.phishing ? 'Phishing' : 'Non-phishing'})</span>`;
+      }
+
+      let evidenceSummary = '';
+      if (email.phishing) {
+        if (missedTypes.length === 0) {
+          evidenceSummary = `<span class="res-evb-stat res-evb-stat-perfect">All ${expected.length} flags found</span>`;
+        } else {
+          evidenceSummary = `<span class="res-evb-stat res-evb-stat-missed">${foundTypes.length}/${expected.length} flags found • ${missedTypes.length} missed</span>`;
+        }
+      } else {
+        evidenceSummary = `<span class="res-evb-stat res-evb-stat-clean">Clean email • 0 flags</span>`;
+      }
+
+      let flagsListHtml = '';
+      if (email.phishing) {
+        flagsListHtml += '<div class="res-evb-items">';
+        foundTypes.forEach(t => {
+          const mInfo = getEmailMissedFlagInfo(email, t);
+          flagsListHtml += `
+            <div class="res-evb-item res-evb-item-found">
+              <span class="res-evb-item-icon">✅</span>
+              <div class="res-evb-item-info">
+                <span class="res-evb-item-type">FLAGGED: ${mInfo.label}</span>
+                <span class="res-evb-item-snippet">${mInfo.text}</span>
+              </div>
+            </div>`;
+        });
+        missedTypes.forEach(t => {
+          const mInfo = getEmailMissedFlagInfo(email, t);
+          flagsListHtml += `
+            <div class="res-evb-item res-evb-item-missed">
+              <span class="res-evb-item-icon">⚠️</span>
+              <div class="res-evb-item-info">
+                <span class="res-evb-item-type">MISSED: ${mInfo.label}</span>
+                <span class="res-evb-item-snippet">${mInfo.text}</span>
+                <span class="res-evb-item-reason">${mInfo.reason}</span>
+              </div>
+            </div>`;
+        });
+        flagsListHtml += '</div>';
+      } else {
+        flagsListHtml = `<div class="res-evb-clean-note">🛡️ Legitimate communication — verified sender and safe message content.</div>`;
+      }
+
+      card.innerHTML = `
+        <div class="res-evb-card-header">
+          <div class="res-evb-card-title-group">
+            <span class="res-evb-email-num">Email #${idx + 1}</span>
+            <span class="res-evb-subject">${email.subject}</span>
+          </div>
+          <div class="res-evb-card-meta">
+            ${statusBadge}
+            ${evidenceSummary}
+          </div>
+        </div>
+        ${flagsListHtml}`;
+
+      evbList.appendChild(card);
+    });
+  }
+
+  gameState.evidenceFoundTotal = totalFoundAcrossAll;
+
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   setEl('res-emails',    `${gameState.emailResults.length} / ${total}`);
   setEl('res-decisions', `${correct} / ${total}`);
@@ -5706,6 +6207,75 @@ function updateBrowserPhishingNotice(isPhishing, url) {
   }
 }
 
+const _lastPhishAwarenessTime = {};
+
+function triggerRyanPhishingAwareness(url) {
+  if (typeof RyanGuide === 'undefined') return;
+  const curCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+  if (curCat !== 'phishing') return;
+
+  const host = extractHostFromUrl(url);
+  const now = Date.now();
+  if (_lastPhishAwarenessTime[host] && (now - _lastPhishAwarenessTime[host] < 20000)) {
+    return; // Prevent duplicate rapid triggers on tab switches
+  }
+  _lastPhishAwarenessTime[host] = now;
+
+  const lower = (url || '').toLowerCase();
+  let dialogue;
+
+  if (lower.includes('business-account-verify.net')) {
+    dialogue = [
+      { text: `⚠️ Awareness Alert! Look at the browser address bar: you're visiting "${host}" — an unverified fake domain.`, state: 'concerned' },
+      { text: "Notice how this page clones a corporate Single Sign-On (SSO) login. Attackers design these to trick employees into surrendering real workplace credentials.", state: 'speaking' },
+      { text: "Always verify the address bar before typing passwords. If it's not the official organization domain, never type your password — close this tab immediately!", state: 'thinking' }
+    ];
+  } else if (lower.includes('m1crosoft')) {
+    dialogue = [
+      { text: `⚠️ Notice the URL bar! "${host}" replaces the letter "i" with the number "1" — this is called typosquatting!`, state: 'concerned' },
+      { text: "It copies the official Microsoft 365 sign-in page, but any credentials entered here are captured directly by the adversary.", state: 'speaking' },
+      { text: "Never judge a site by logos alone. Always scrutinize every character of the domain name in the address bar!", state: 'thinking' }
+    ];
+  } else if (lower.includes('bankng') || lower.includes('bpi-online-security')) {
+    dialogue = [
+      { text: `⚠️ High Alert! Look at the domain: "${host}". Legitimate financial institutions will never host verification pages on unverified or lookalike domains.`, state: 'concerned' },
+      { text: "Attackers manufacture urgent account suspension warnings to scare you into entering your banking password and PINs.", state: 'speaking' },
+      { text: "If you ever receive an urgent banking link, never log in through it. Open a fresh tab and navigate to the bank's official website directly.", state: 'thinking' }
+    ];
+  } else if (lower.includes('business-it-support.com')) {
+    dialogue = [
+      { text: `⚠️ Stay alert! This website pretends to be an IT Security compliance portal at "${host}".`, state: 'concerned' },
+      { text: "Adversaries frequently impersonate internal IT staff to pressure workers into entering credentials under the guise of 'routine compliance'.", state: 'speaking' },
+      { text: "Authentic IT departments never ask you to submit your password on an external, unverified link. Close this tab safely!", state: 'thinking' }
+    ];
+  } else {
+    dialogue = [
+      { text: `⚠️ Phishing Awareness Alert! Take a close look at the address bar: "${host}" is a simulated phishing website.`, state: 'concerned' },
+      { text: "Notice how the page presents a login form designed to capture your credentials, personal info, or session tokens.", state: 'speaking' },
+      { text: "Always verify the address bar before entering any information. When in doubt, close the browser tab!", state: 'thinking' }
+    ];
+  }
+
+  setTimeout(() => {
+    RyanGuide.speak(dialogue);
+  }, 450);
+}
+
+function onPhishTabClosed() {
+  if (typeof showToast === 'function') {
+    showToast('🛡️ Excellent! You safely closed the suspicious phishing website.', 'success');
+  }
+  if (typeof RyanGuide !== 'undefined' && (window._currentChapterCategory || activeCategoryStory) === 'phishing') {
+    RyanGuide.once('phish-tab-closed-reinforce', function() {
+      setTimeout(function() {
+        RyanGuide.speak([
+          { text: "Good decision closing that phishing tab! 🛡️ In a real workplace, closing unverified sites prevents accidental credential theft.", state: 'success' }
+        ]);
+      }, 300);
+    });
+  }
+}
+
 function initBrowserTabs() {
   browserTabs = [];
   browserTabCounter = 0;
@@ -5749,11 +6319,7 @@ function closeTab(tabId, event) {
   if (browserTabs.length === 0) {
     // Re-open a blank tab
     initBrowserTabs();
-    if (wasPhish) {
-      if (typeof showToast === 'function') {
-        showToast('🛡️ Excellent! You safely closed the suspicious phishing website.', 'success');
-      }
-    }
+    if (wasPhish) onPhishTabClosed();
     return;
   }
   if (browserActiveTabId === tabId) {
@@ -5762,11 +6328,7 @@ function closeTab(tabId, event) {
   }
   renderTabStrip();
   renderActiveTab();
-  if (wasPhish) {
-    if (typeof showToast === 'function') {
-      showToast('🛡️ Excellent! You safely closed the suspicious phishing website.', 'success');
-    }
-  }
+  if (wasPhish) onPhishTabClosed();
 }
 
 function createNewBrowserTab(url) {
@@ -6207,6 +6769,7 @@ function _applyPageToContent(url) {
     setTabMeta(phishSite.title, phishSite.icon, '⚠️ Not Secure', 'not-secure');
     content.innerHTML = phishSite.html;
     updateBrowserPhishingNotice(true, url);
+    triggerRyanPhishingAwareness(url);
     return;
   }
 
@@ -6283,6 +6846,15 @@ function handlePhishingSubmit(domain, brand) {
       security.style.color = '';
       security.style.fontWeight = '';
     }, 4000);
+  }
+
+  if (typeof RyanGuide !== 'undefined' && (window._currentChapterCategory || activeCategoryStory) === 'phishing') {
+    setTimeout(function() {
+      RyanGuide.speak([
+        { text: `🚨 Stop! You just submitted credentials to "${domain}"!`, state: 'concerned' },
+        { text: "On a real phishing site, your username and password would now be in the attacker's hands. Always verify the domain in the address bar before entering any data!", state: 'concerned' }
+      ]);
+    }, 400);
   }
 }
 
@@ -6920,7 +7492,176 @@ function calculateScore(correctDecision, correct, incorrect, penaltyPerIncorrect
 
 const TOTAL_MALWARE_COUNT = 4;
 
-const FOLDER_FILES = [];
+const FOLDER_FILES = [
+  {
+    id: 'f_bonus',
+    name: 'bonus_payroll_sept.pdf.exe',
+    fakeExt: 'pdf',
+    realExt: 'exe',
+    type: 'Executable Application (.exe)',
+    size: '2.4 MB',
+    date: '9/6/2026 10:14 AM',
+    icon: '<img src="assets/icons/apps/mail.svg" alt="PDF" />',
+    isMalware: true,
+    threatName: 'Trojan.Win32.DoubleExt',
+    threatCategory: 'TROJAN DROPPER',
+    hash: 'a94f82c1b483e1029c7d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b',
+    analysis: '⚠️ DOUBLE EXTENSION: Disguised as a PDF document, but the real file extension is .exe. Executing this installs a backdoor dropper.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_roadmap',
+    name: 'project_roadmap_2026.docx',
+    fakeExt: 'docx',
+    realExt: 'docx',
+    type: 'Microsoft Word Document',
+    size: '340 KB',
+    date: '9/6/2026 09:30 AM',
+    icon: '📄',
+    isMalware: false,
+    threatName: 'Clean Document',
+    threatCategory: 'SAFE',
+    hash: 'c8317e0892a4f5d1e2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5',
+    analysis: '✅ Verified clean Word document. Normal Office OpenXML structure, zero macro scripts detected.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_patch',
+    name: 'security_credential_patch.scr',
+    fakeExt: 'scr',
+    realExt: 'scr',
+    type: 'Windows Screensaver Binary (.scr)',
+    size: '1.8 MB',
+    date: '9/6/2026 11:45 AM',
+    icon: '⚙️',
+    isMalware: true,
+    threatName: 'Backdoor.Win32.ScreenScrape',
+    threatCategory: 'SPYWARE',
+    hash: 'e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3',
+    analysis: '⚠️ MALICIOUS SCREENSAVER: .scr files are standard Windows executables. Contains keylogger and screenshot capture payloads.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_meeting',
+    name: 'meeting_recording_notes.pdf',
+    fakeExt: 'pdf',
+    realExt: 'pdf',
+    type: 'Adobe Acrobat Document (.pdf)',
+    size: '1.1 MB',
+    date: '9/5/2026 04:20 PM',
+    icon: '📄',
+    isMalware: false,
+    threatName: 'Clean Document',
+    threatCategory: 'SAFE',
+    hash: 'f1e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2',
+    analysis: '✅ Clean PDF document. Valid PDF 1.7 specification, zero embedded JavaScript or external launch actions.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_invoice',
+    name: 'overdue_invoice_inv3891.vbs',
+    fakeExt: 'vbs',
+    realExt: 'vbs',
+    type: 'VBScript Script (.vbs)',
+    size: '28 KB',
+    date: '9/6/2026 01:15 PM',
+    icon: '📜',
+    isMalware: true,
+    threatName: 'Trojan.Script.Dropper',
+    threatCategory: 'VBS DROPPER',
+    hash: 'b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4',
+    analysis: '⚠️ VBSCRIPT DROPPER: Contains obfuscated powershell execution command that attempts to download remote payload from unverified host.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_team',
+    name: 'team_photo_offsite.jpg',
+    fakeExt: 'jpg',
+    realExt: 'jpg',
+    type: 'JPEG Image',
+    size: '2.8 MB',
+    date: '9/4/2026 03:50 PM',
+    icon: '🖼️',
+    isMalware: false,
+    threatName: 'Clean Image',
+    threatCategory: 'SAFE',
+    hash: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2',
+    analysis: '✅ Standard photograph. Valid JFIF headers, clean pixel raster with no hidden data streams.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_miner',
+    name: 'bitcoin_mining_accelerator.exe',
+    fakeExt: 'exe',
+    realExt: 'exe',
+    type: 'Executable Binary (.exe)',
+    size: '5.2 MB',
+    date: '9/6/2026 02:30 PM',
+    icon: '⚡',
+    isMalware: true,
+    threatName: 'Coinminer.Win32.XMRig',
+    threatCategory: 'UNAUTHORIZED MINER',
+    hash: 'd9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8',
+    analysis: '⚠️ COINMINER: Cryptojacking binary designed to hijack GPU/CPU compute cycles and connect to mining pool.',
+    quarantined: false,
+    scanned: false
+  },
+  {
+    id: 'f_sheet',
+    name: 'q3_financial_statement.xlsx',
+    fakeExt: 'xlsx',
+    realExt: 'xlsx',
+    type: 'Microsoft Excel Spreadsheet',
+    size: '620 KB',
+    date: '9/5/2026 11:10 AM',
+    icon: '📊',
+    isMalware: false,
+    threatName: 'Clean Spreadsheet',
+    threatCategory: 'SAFE',
+    hash: '0f1e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2',
+    analysis: '✅ Clean OpenXML workbook. Strict XML schemas, zero VBA macros or external workbook data connections.',
+    quarantined: false,
+    scanned: false
+  }
+];
+
+const WIN_DEFENDER_SCAN_PATHS = [
+  'C:\\Windows\\System32\\drivers\\etc\\hosts',
+  'C:\\Windows\\System32\\ntoskrnl.exe',
+  'C:\\Windows\\SysWOW64\\kernel32.dll',
+  'C:\\Users\\Alex\\Downloads\\project_roadmap_2026.docx',
+  'C:\\Windows\\System32\\winlogon.exe',
+  'C:\\Users\\Alex\\Downloads\\bonus_payroll_sept.pdf.exe',
+  'C:\\Windows\\System32\\hal.dll',
+  'C:\\Program Files\\Common Files\\System\\ado\\msado15.dll',
+  'C:\\Users\\Alex\\Downloads\\team_photo_offsite.jpg',
+  'C:\\Windows\\System32\\svchost.exe -k netsvcs',
+  'C:\\Users\\Alex\\Downloads\\security_credential_patch.scr',
+  'C:\\Windows\\System32\\lsass.exe',
+  'C:\\Users\\Alex\\AppData\\Local\\Temp\\~DF8491.tmp',
+  'C:\\Users\\Alex\\Downloads\\overdue_invoice_inv3891.vbs',
+  'C:\\Windows\\System32\\csrss.exe',
+  'C:\\Users\\Alex\\Downloads\\meeting_recording_notes.pdf',
+  'C:\\Windows\\System32\\cmd.exe',
+  'C:\\Users\\Alex\\Downloads\\bitcoin_mining_accelerator.exe',
+  'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe',
+  'C:\\Users\\Alex\\Downloads\\q3_financial_statement.xlsx',
+  'C:\\Windows\\System32\\rundll32.exe',
+  'C:\\Program Files\\Windows Defender\\MsMpEng.exe',
+  'C:\\Users\\Alex\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup',
+  'C:\\Windows\\System32\\tasks\\Microsoft\\Windows\\Maintenance',
+  'C:\\Windows\\System32\\wbem\\WmiPrvSE.exe',
+  'C:\\Users\\Alex\\Downloads\\Archive_Backup_2026.zip',
+  'C:\\Windows\\System32\\dwm.exe',
+  'C:\\Windows\\System32\\services.exe',
+  'C:\\Users\\Alex\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Cache'
+];
 
 // ═══════════════════════════════════════════════════════════
 // CHAPTER 2: MALWARE GUIDED DEMO — Interactive Walkthrough
@@ -6979,7 +7720,7 @@ const MALWARE_DEMO_SCRIPT = [
     step: 6,
     label: 'Quarantine Threat',
     objective: 'Lock malware into the encrypted vault',
-    speech: `🚨 <strong>CONFIRMED THREAT — QUARANTINE!</strong><br><br>ShieldAV detected a Trojan dropper payload. Click <strong>🚩 QUARANTINE THREAT</strong> to isolate the file into the secure vault and earn <strong>+100 points</strong>!`,
+    speech: `🚨 <strong>CONFIRMED THREAT — QUARANTINE!</strong><br><br>ShieldAV detected a Trojan dropper payload. Click <strong>🚩 QUARANTINE THREAT</strong> to isolate the file into the secure vault and secure the system!`,
     btn: 'Quarantine Malware →',
     action: 'quarantine-threat'
   },
@@ -6987,7 +7728,7 @@ const MALWARE_DEMO_SCRIPT = [
     step: 7,
     label: 'Clean Files',
     objective: 'Identify safe legitimate files',
-    speech: `⚠️ <strong>BEWARE FALSE POSITIVES</strong><br><br>Do NOT quarantine every file you find! Quarantining a clean legitimate file incurs a <strong>−25 point penalty</strong>.<br><br>Let's inspect a safe business document: <em style="color:#00e5ff;font-weight:700">project_roadmap_2026.docx</em> →`,
+    speech: `⚠️ <strong>BEWARE FALSE POSITIVES</strong><br><br>Do NOT quarantine every file you find! Quarantining a clean legitimate file is considered a false positive error.<br><br>Let's inspect a safe business document: <em style="color:#00e5ff;font-weight:700">project_roadmap_2026.docx</em> →`,
     btn: 'Inspect Clean File →',
     action: 'select-clean-file'
   },
@@ -7317,7 +8058,7 @@ function executeMalwareDemoAction(action, callback) {
                       <div class="av-threat-desc" id="gdemo-mav-res-desc">Disguised executable binary. Signature matches known backdoor dropper payload.</div>
                     </div>
                     <div>
-                      <button class="btn-danger btn-sm" id="gdemo-mav-quarantine-btn" onclick="malwareDemoTriggerQuarantine()">🚩 QUARANTINE THREAT (+100)</button>
+                      <button class="btn-danger btn-sm" id="gdemo-mav-quarantine-btn" onclick="malwareDemoTriggerQuarantine()">🚩 QUARANTINE THREAT</button>
                     </div>`;
                 }
                 setTimeout(re, 400);
@@ -7339,7 +8080,7 @@ function executeMalwareDemoAction(action, callback) {
             resultCard.innerHTML = `
               <div class="av-result-left">
                 <div class="av-threat-title" style="color:var(--accent-green)">🛡️ THREAT NEUTRALIZED: Trojan.Win32.DoubleExt</div>
-                <div class="av-threat-desc">File successfully quarantined and moved into the encrypted vault (+100 pts).</div>
+                <div class="av-threat-desc">File successfully quarantined and moved into the encrypted vault.</div>
               </div>
               <div>
                 <span style="font-size:12px;color:var(--accent-green);font-weight:700">✓ QUARANTINED</span>
@@ -8505,17 +9246,9 @@ function selectFolderFile(fileId) {
     <div class="fdp-analysis-box ${analysisClass}">
       ${file.analysis}
     </div>`;
-
-  // Pre-load target in Anti-Virus window
-  const avTcName = document.getElementById('av-tc-name');
-  const avTcDetail = document.getElementById('av-tc-detail');
-  const avTcIcon = document.getElementById('av-tc-icon');
-  if (avTcName && avTcDetail && avTcIcon) {
-    avTcName.textContent = file.name;
-    avTcDetail.textContent = `${file.type} • ${file.size} • SHA-256: ${file.hash.slice(0, 10)}…`;
-    avTcIcon.innerHTML = file.icon;
-  }
 }
+
+
 
 function scanFileInAntivirus(fileId) {
   selectFolderFile(fileId);
@@ -8541,14 +9274,7 @@ function openFileFromFolder(fileId) {
     } else {
       // Pre-load this shortcut into the AV target card when opening antivirus
       if (file.appId === 'antivirus') {
-        const avTcName   = document.getElementById('av-tc-name');
-        const avTcDetail = document.getElementById('av-tc-detail');
-        const avTcIcon   = document.getElementById('av-tc-icon');
-        if (avTcName && avTcDetail && avTcIcon) {
-          avTcName.textContent   = file.name;
-          avTcDetail.textContent = `${file.type} \u2022 ${file.size} \u2022 SHA-256: ${file.hash.slice(0, 10)}\u2026`;
-          avTcIcon.innerHTML     = file.icon;
-        }
+        // Just open the app — target card stays as default Quick scan
       }
       openApp(file.appId);
     }
@@ -9174,6 +9900,32 @@ function updateAntiVirusProtectionUI() {
 }
 
 let scanInProgress = false;
+let activeScanInterval = null;
+let activeScanTickerInterval = null;
+
+function cancelActiveScan() {
+  if (!scanInProgress) return;
+  scanInProgress = false;
+  if (activeScanInterval) {
+    clearInterval(activeScanInterval);
+    activeScanInterval = null;
+  }
+  if (activeScanTickerInterval) {
+    clearInterval(activeScanTickerInterval);
+    activeScanTickerInterval = null;
+  }
+
+  const progressWrap = document.getElementById('av-progress-wrap');
+  const targetCard = document.getElementById('av-target-card');
+  const scanBtn = document.getElementById('av-scan-btn');
+
+  if (progressWrap) progressWrap.classList.add('hidden');
+  if (targetCard) targetCard.classList.remove('hidden');
+  if (scanBtn) scanBtn.disabled = false;
+
+  showToast('ℹ️ Quick scan cancelled.', 'info');
+}
+
 function startActiveScan() {
   if (scanInProgress) return;
   if (!gameState.antivirusProtection) {
@@ -9185,48 +9937,171 @@ function startActiveScan() {
     }
     return;
   }
-  const fileId = gameState.selectedFolderFileId;
-  const file = FOLDER_FILES.find(f => f.id === fileId);
+
+  // In Chapter 1 (phishing), the AV always shows a clean system — no malware in this chapter
+  const isPhishingChapter = (window._currentChapterCategory || activeCategoryStory || 'phishing') === 'phishing';
+
+  // Determine target file: either explicitly selected file or a scan target
+  let fileId = gameState.selectedFolderFileId;
+  let file = FOLDER_FILES.find(f => f.id === fileId);
+
   if (!file) {
-    showToast('💡 Please select a file from the Folder first.', 'warning');
-    return;
+    if (isPhishingChapter) {
+      // Chapter 1: scan picks only clean files — no malware
+      file = FOLDER_FILES.find(f => !f.isMalware) || null;
+    } else {
+      // Chapter 2+: prioritize finding an unquarantined malware
+      const firstMalware = FOLDER_FILES.find(f => f.isMalware && !f.quarantined);
+      file = firstMalware || FOLDER_FILES.find(f => f.isMalware) || FOLDER_FILES[0];
+    }
   }
 
   scanInProgress = true;
   const progressWrap = document.getElementById('av-progress-wrap');
   const progressFill = document.getElementById('av-progress-fill');
   const progressPct = document.getElementById('av-progress-pct');
+  const progressText = document.getElementById('av-progress-text');
+  const tickerEl = document.getElementById('av-scanning-filepath');
+  const timerEl = document.getElementById('av-scan-timer');
+  const filesCountEl = document.getElementById('av-files-scanned-count');
+  const threatsCountEl = document.getElementById('av-threats-found-count');
   const resultCard = document.getElementById('av-result-card');
   const scanBtn = document.getElementById('av-scan-btn');
+  const targetCard = document.getElementById('av-target-card');
 
   if (progressWrap) progressWrap.classList.remove('hidden');
   if (resultCard) resultCard.classList.add('hidden');
   if (scanBtn) scanBtn.disabled = true;
 
+  // Initialize Windows Defender metrics
   let pct = 0;
-  const interval = setInterval(() => {
-    pct += 20;
+  let filesScanned = 118;
+  let threatsFound = 0;
+  if (progressFill) progressFill.style.width = '0%';
+  if (progressPct) progressPct.textContent = '0%';
+  if (progressText) progressText.textContent = file ? `Quick scan: scanning ${file.name}…` : 'Quick scan in progress…';
+  if (timerEl) timerEl.textContent = '00:03';
+  if (filesCountEl) filesCountEl.textContent = filesScanned.toLocaleString();
+  if (threatsCountEl) {
+    threatsCountEl.textContent = '0';
+    threatsCountEl.classList.remove('threat-detected');
+  }
+
+  // Windows Defender live file path ticker
+  let pathIdx = 0;
+  const scanPaths = (typeof WIN_DEFENDER_SCAN_PATHS !== 'undefined' && WIN_DEFENDER_SCAN_PATHS.length > 0)
+    ? [...WIN_DEFENDER_SCAN_PATHS]
+    : [
+        'C:\\Windows\\System32\\ntoskrnl.exe',
+        'C:\\Windows\\System32\\drivers\\etc\\hosts',
+        'C:\\Users\\Alex\\Downloads\\' + (file ? file.name : 'bonus_payroll_sept.pdf.exe'),
+        'C:\\Windows\\System32\\winlogon.exe',
+        'C:\\Program Files\\Windows Defender\\MsMpEng.exe'
+      ];
+
+  if (file && !scanPaths.some(p => p.includes(file.name))) {
+    scanPaths.splice(4, 0, `C:\\Users\\Alex\\Downloads\\${file.name}`);
+  }
+
+  if (activeScanTickerInterval) clearInterval(activeScanTickerInterval);
+  activeScanTickerInterval = setInterval(() => {
+    pathIdx = (pathIdx + 1) % scanPaths.length;
+    if (tickerEl) {
+      tickerEl.textContent = scanPaths[pathIdx];
+    }
+  }, 65);
+
+  if (activeScanInterval) clearInterval(activeScanInterval);
+
+  // Main scan progress loop: 45 ticks x 60ms = ~2.7s
+  const totalTicks = 45;
+  let currentTick = 0;
+
+  activeScanInterval = setInterval(() => {
+    currentTick++;
+    pct = Math.min(100, Math.round((currentTick / totalTicks) * 100));
+
+    // Rapid increment of files scanned
+    filesScanned += Math.floor(Math.random() * 85) + 42;
+    if (filesCountEl) filesCountEl.textContent = filesScanned.toLocaleString();
+
+    // Live countdown timer
+    if (timerEl) {
+      if (pct < 35) timerEl.textContent = '00:03';
+      else if (pct < 70) timerEl.textContent = '00:02';
+      else if (pct < 98) timerEl.textContent = '00:01';
+      else timerEl.textContent = '00:00';
+    }
+
+    // Threats discovered trigger halfway through if target is malware AND not in phishing chapter
+    if (pct >= 55 && file && file.isMalware && !file.quarantined && threatsFound === 0 && !isPhishingChapter) {
+      threatsFound = 1;
+      if (threatsCountEl) {
+        threatsCountEl.textContent = '1';
+        threatsCountEl.classList.add('threat-detected');
+      }
+    }
+
     if (progressFill) progressFill.style.width = pct + '%';
     if (progressPct) progressPct.textContent = pct + '%';
 
-    if (pct >= 100) {
-      clearInterval(interval);
+    if (currentTick >= totalTicks) {
+      clearInterval(activeScanInterval);
+      clearInterval(activeScanTickerInterval);
+      activeScanInterval = null;
+      activeScanTickerInterval = null;
+
+      if (progressFill) progressFill.style.width = '100%';
+      if (progressPct) progressPct.textContent = '100%';
+      if (timerEl) timerEl.textContent = '00:00';
+
       setTimeout(() => {
         scanInProgress = false;
-        file.scanned = true;
+        if (file) {
+          file.scanned = true;
+          gameState.selectedFolderFileId = file.id;
+        }
+
         if (progressWrap) progressWrap.classList.add('hidden');
         if (scanBtn) scanBtn.disabled = false;
+
+
         renderFolderFiles(document.getElementById('folder-search-input')?.value || '');
-        selectFolderFile(file.id);
-        displayScanResult(file);
-      }, 300);
+        if (isPhishingChapter) {
+          // Chapter 1: always show a clean system result
+          displayCleanSystemResult();
+        } else if (file) {
+          selectFolderFile(file.id);
+          displayScanResult(file);
+        }
+      }, 400);
     }
-  }, 120);
+  }, 60);
+}
+
+function displayCleanSystemResult() {
+  const resultCard = document.getElementById('av-result-card');
+  if (!resultCard) return;
+  resultCard.classList.remove('hidden', 'threat');
+  resultCard.classList.add('clean');
+  resultCard.innerHTML = `
+    <div class="av-result-left">
+      <div class="av-threat-title">✅ NO THREATS FOUND</div>
+      <div class="av-threat-desc">Quick scan complete. All scanned files are clean — no malware, ransomware, or suspicious executables detected. Your system is protected.</div>
+    </div>
+    <div><span style="font-size:12px;color:var(--accent-green);font-weight:700">✓ SYSTEM CLEAN</span></div>`;
 }
 
 function displayScanResult(file) {
   const resultCard = document.getElementById('av-result-card');
   if (!resultCard) return;
+
+  // In phishing chapter, always force clean result
+  const isPhishingChapter = (window._currentChapterCategory || activeCategoryStory || 'phishing') === 'phishing';
+  if (isPhishingChapter) {
+    displayCleanSystemResult();
+    return;
+  }
 
   resultCard.classList.remove('hidden', 'threat', 'clean');
   resultCard.classList.add(file.isMalware ? 'threat' : 'clean');
@@ -9235,7 +10110,7 @@ function displayScanResult(file) {
   if (file.quarantined) {
     actionBtn = '<span style="font-size:12px;color:var(--text-muted);font-weight:700">✓ ALREADY QUARANTINED</span>';
   } else if (file.isMalware) {
-    actionBtn = `<button class="btn-danger btn-sm" onclick="quarantineFile('${file.id}')">🚩 QUARANTINE THREAT (+100)</button>`;
+    actionBtn = `<button class="btn-danger btn-sm" onclick="quarantineFile('${file.id}')">🚩 QUARANTINE THREAT</button>`;
   } else {
     actionBtn = '<span style="font-size:12px;color:var(--accent-green);font-weight:700">✓ NO ACTION NEEDED</span>';
   }
@@ -9278,7 +10153,7 @@ function quarantineFile(fileId) {
     selectFolderFile(file.id);
     displayScanResult(file);
 
-    showToast(`🛡️ Neutralized ${file.name}! (+100 points)`, 'success');
+    showToast(`🛡️ Neutralized ${file.name}!`, 'success');
     if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
 
     if (typeof addSimulationNotification === 'function') {
@@ -9288,7 +10163,7 @@ function quarantineFile(fileId) {
         icon: '🛡️',
         iconType: 'av',
         title: 'Threat Neutralized: ' + file.name,
-        body: `Malware quarantined safely into isolated vault (+100 pts). Threat level: Critical.`,
+        body: `Malware quarantined safely into isolated vault. Threat level: Critical.`,
         time: 'Just now',
         app: 'antivirus'
       }, false);
@@ -9302,7 +10177,7 @@ function quarantineFile(fileId) {
     gameState.score = Math.max(0, gameState.score - 25);
     updateHUD();
     if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
-    showToast(`⚠️ False Positive! "${file.name}" is a clean, legitimate file (−25 pts).`, 'warning');
+    showToast(`⚠️ False Positive! "${file.name}" is a clean, legitimate file.`, 'warning');
 
     if (typeof addSimulationNotification === 'function') {
       addSimulationNotification({
@@ -9311,7 +10186,7 @@ function quarantineFile(fileId) {
         icon: '⚠️',
         iconType: 'warning',
         title: 'False Positive: ' + file.name,
-        body: `Clean legitimate file was quarantined (−25 pts). Verify extensions before quarantine.`,
+        body: `Clean legitimate file was quarantined. Verify extensions before quarantine.`,
         time: 'Just now',
         app: 'antivirus'
       }, false);
@@ -9320,15 +10195,27 @@ function quarantineFile(fileId) {
 }
 
 function updateAntivirusUI() {
+  const statusText = document.getElementById('av-quarantine-status-text');
   const countBadge = document.getElementById('av-quarantine-count');
   const logCount = document.getElementById('av-log-count');
   const threatsList = document.getElementById('av-threats-list');
   const banner = document.getElementById('av-status-banner');
 
-  if (countBadge) countBadge.textContent = gameState.malwareQuarantined;
-  if (logCount) logCount.textContent = `${gameState.malwareQuarantined} / ${TOTAL_MALWARE_COUNT} Neutralized`;
-
   const quarantinedFiles = FOLDER_FILES.filter(f => f.quarantined);
+
+  if (statusText) {
+    statusText.textContent = quarantinedFiles.length > 0
+      ? `${quarantinedFiles.length} THREAT${quarantinedFiles.length > 1 ? 'S' : ''} SECURED`
+      : 'SYSTEM PROTECTED';
+  }
+  if (countBadge) {
+    countBadge.textContent = quarantinedFiles.length;
+  }
+  if (logCount) {
+    logCount.textContent = quarantinedFiles.length === 0
+      ? 'Protection Active'
+      : `${quarantinedFiles.length} Threat${quarantinedFiles.length > 1 ? 's' : ''} Secured`;
+  }
 
   if (quarantinedFiles.length > 0 && banner) {
     banner.classList.add('alert');
@@ -9897,7 +10784,7 @@ function g4ToggleSetting(settingId) {
           <span style="font-size:20px">✅</span>
           <div>
             <div style="font-weight:700;color:var(--accent-green)">Security Action Completed</div>
-            <div style="font-size:12px;color:var(--text-secondary)">File Sharing and Device Discovery are now OFF. Device Protected. (+100 pts)</div>
+            <div style="font-size:12px;color:var(--text-secondary)">File Sharing and Device Discovery are now OFF. Device Protected.</div>
           </div>
         </div>
       `;
@@ -11349,6 +12236,15 @@ function lsSignIn() {
   const name = char.name;
 
   applyPlayerName(name, char.img);
+
+  // If entering password for Chapter 2 (malware): show Chapter 2 Comic Strip!
+  if (currentCatId === 'malware') {
+    window._pendingStoryChapter = null;
+    const tm = document.getElementById('overlay-title-menu');
+    if (tm) tm.classList.remove('active');
+    showComicStripCh2();
+    return;
+  }
 
   // If the player came here via Story Selection → Chapter card, show loading then go to chapter (no narrator)
   if (window._pendingStoryChapter) {
