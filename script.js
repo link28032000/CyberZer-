@@ -396,13 +396,80 @@ const EMAILS = [
         { text: 'Ticket notifications are routine automated emails. No credential requests, no urgency threats. The key check: is the sender on the official domain, and does it ask for anything? If no to both \u2014 it\'s legitimate.', state: 'speaking' }
       ]
     }
+  },
+
+  // === EMAIL 10: Phishing Scholarship Lure with Malicious File Attachment — Wave 4 ===
+  {
+    id: 10,
+    sender: { name: 'Northfield Scholarship Committee', address: 'grants-approval@northfield-scholarship.com' },
+    subject: 'URGENT: Scholarship Grant Approval Form & Required Documents',
+    time: '2:40 PM',
+    preview: 'Congratulations! Your academic grant has been approved. Download and submit the attached verification form within 24 hours to secure your funds...',
+    phishing: true,
+    evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
+    body: [
+      { type: 'p', text: 'Dear Student / Grant Applicant,' },
+      { type: 'p', text: 'We are pleased to inform you that your academic financial grant application has passed preliminary review and is eligible for immediate disbursement of ₱50,000.' },
+      {
+        type: 'p-flag',
+        flagId: 'urgency',
+        flagType: 'false_urgency',
+        text: 'CRITICAL NOTICE: Due to strict grant cycle quotas, you must download and submit your signed verification form within 24 hours or your scholarship award will be permanently forfeited.',
+        label: 'FALSE URGENCY'
+      },
+      { type: 'p', text: 'Please review and execute the required grant documentation and student agreement forms below:' },
+      {
+        type: 'attachment',
+        flagId: 'attach1',
+        flagType: 'suspicious_link',
+        filename: 'Scholarship_Grant_Form.pdf.exe',
+        size: '2.4 MB',
+        label: 'SUSPICIOUS ATTACHMENT / MALICIOUS FILE',
+        destination: 'https://northfield-scholarship.com/download/Scholarship_Grant_Form.pdf.exe'
+      },
+      {
+        type: 'link',
+        flagId: 'link1',
+        flagType: 'suspicious_link',
+        text: 'Download Official Grant Approval Form (.EXE Package)',
+        destination: 'https://northfield-scholarship.com/download/Scholarship_Grant_Form.pdf.exe',
+        label: 'SUSPICIOUS LINK'
+      },
+      { type: 'p', text: 'Ensure you open and run the form installer immediately to finalize your student grant records.\n\nNorthfield Scholarship Foundation\nFinancial Assistance & Awards Office' }
+    ],
+    capybaraAnalysis: {
+      fake_sender: {
+        correct: '🚩 SENDER — CORRECT\nThe sender uses <code>grants-approval@northfield-scholarship.com</code> — NOT the school\'s real official domain <code>northfield.edu.ph</code>. Attackers spoof scholarship committees using look-alike domain names.',
+        missed: '🚩 MISSED — FAKE SENDER\nThe sender is <code>grants-approval@northfield-scholarship.com</code>. This external domain is not affiliated with the official school domain <code>northfield.edu.ph</code>.'
+      },
+      false_urgency: {
+        correct: '🚩 URGENCY — CORRECT\nThe 24-hour deadline threatening permanent forfeiture is social engineering urgency designed to panic students into opening dangerous files without verification.',
+        missed: '🚩 MISSED — FALSE URGENCY\nThe \'24 hours or award forfeited\' warning creates false urgency. Official scholarship programs provide ample notice and multiple verification channels.'
+      },
+      suspicious_link: {
+        correct: '🚩 MALICIOUS FILE / LINK — CORRECT\nThe attachment appears to be a document but carries a dangerous double extension: <code>Scholarship_Grant_Form.pdf.exe</code>! This is an executable program (malware), not a legitimate PDF document.',
+        missed: '🚩 MISSED — MALICIOUS FILE / LINK\nThe attached file has a hidden double extension (<code>.pdf.exe</code>). Opening executable files disguised as documents will compromise and infect the computer.'
+      }
+    },
+    ryanTutor: {
+      correct: [
+        { text: '🎯 Outstanding observation! This was an extremely dangerous phishing email carrying a malicious file attachment!', state: 'success' },
+        { text: 'Notice the double extension on "Scholarship_Grant_Form.pdf.exe"? Attackers disguise dangerous executable files as harmless PDFs to trick people into running malware.', state: 'speaking' },
+        { text: 'Also notice the fake sender domain "northfield-scholarship.com" instead of the official school domain, paired with a panic-inducing 24-hour deadline. You caught all the red flags!', state: 'success' }
+      ],
+      wrong: [
+        { text: '⚠️ Watch out! That was a high-risk phishing attack carrying malware disguised as a scholarship application!', state: 'concerned' },
+        { text: 'The attachment looked like a PDF, but its real extension was ".pdf.exe" — an executable program that installs malware onto the computer when opened.', state: 'speaking' },
+        { text: 'Combined with the fake domain "northfield-scholarship.com" and extreme 24-hour urgency, this is a classic spear-phishing attack. Always check file extensions before opening attachments!', state: 'thinking' }
+      ]
+    }
   }
 ];
 
 // ═══════════════════════════════════════════════════════════
 // CHAPTER 1 — DYNAMIC INBOX STATE
-// Inbox starts EMPTY. Emails are injected in 4 waves based on
-// player progress. Notification badge shows (1) before first open.
+// Inbox starts with initial wave. Emails are injected in 4 waves based on
+// player progress.
 // ═══════════════════════════════════════════════════════════
 
 // Live inbox — populated dynamically as player progresses
@@ -412,13 +479,15 @@ let ch1PendingNotification       = false; // true = show badge (1) before player
 let ch1Stage                     = 0;     // 0=start,1=wave1,2=wave2,3=wave3,4=wave4
 let ch1MistakeCount              = 0;     // adaptive mentor coaching tracker
 let ch1InvestigationTutorialDone = false; // true after first-email investigation lesson is shown
+let ch1FlaggedLegitWarnedOnce    = false; // tracks if user has been cautioned once about legit email flags
+let ch1SecondEmailNotesHintDone  = false; // tracks if second email sticky notes dialogue was shown
 
 // Wave definitions: which email IDs are injected at each stage
 const CH1_WAVE_DEFS = {
-  1: [1],           // First phishing email (injected on first gmail open)
-  2: [2, 3, 4],     // After email 1 reported: HR legit + Microsoft phish + IT legit
-  3: [5],           // After wave 2 cleared: Technical Solutions legit
-  4: [6, 7, 8, 9]   // Final scenario: payroll legit + obvious phish + sophisticated phish + IT ticket legit
+  1: [1],                 // First phishing email (injected on start)
+  2: [2, 3, 4],           // After email 1 reported: HR legit + Microsoft phish + IT legit
+  3: [5],                 // After wave 2 cleared: Technical Solutions legit
+  4: [6, 7, 8, 9, 10]     // Final scenario: payroll legit + obvious phish + sophisticated phish + IT ticket legit + scholarship file phish
 };
 
 function ch1GetEmailDef(id) {
@@ -442,8 +511,10 @@ function ch1InjectWave(waveNum) {
   updateFolderCounts();
 
   setTimeout(() => {
-    showToast('📧 New emails arrived in your inbox.', 'success');
-    if (typeof AudioManager !== 'undefined') AudioManager.playNotification();
+    if (waveNum > 1) {
+      showToast('📧 New emails arrived in your inbox.', 'success');
+      if (typeof AudioManager !== 'undefined') AudioManager.playNotification();
+    }
 
     // Push dynamic Zmail simulation notifications based on wave
     if (typeof addSimulationNotification === 'function') {
@@ -851,6 +922,38 @@ const FAKE_SITES = {
       <div class="fakesite-footer">
         <p>GCash is regulated by the Bangko Sentral ng Pilipinas (BSP).</p>
       </div>
+    </div>`,
+
+  'https://northfield-scholarship.com/download/Scholarship_Grant_Form.pdf.exe': `
+    <div class="fakesite fakesite-corporate">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>northfield-scholarship.com</code> is a fake phishing website attempting to distribute malware disguised as a PDF (.pdf.exe)!</span>
+      </div>
+      <div class="fakesite-header" style="background:#1e293b;">
+        <div class="fakesite-header-inner">
+          <div class="fakesite-logo" style="color:#38bdf8;">🎓 Northfield Scholarship Foundation (SIMULATED MALICIOUS DOMAIN)</div>
+          <div class="fakesite-subtag">Student Financial Assistance Portal</div>
+        </div>
+      </div>
+      <div class="fakesite-body" style="text-align:center;padding:48px 24px;">
+        <div class="fakesite-card" style="max-width:520px;margin:0 auto;">
+          <div style="font-size:42px;margin-bottom:12px;">⚠️</div>
+          <h2 style="color:#ef4444;font-size:20px;margin-bottom:12px;">High-Risk Download Blocked</h2>
+          <p style="color:#cbd5e1;line-height:1.6;margin-bottom:20px;font-size:14px;">
+            The file <code>Scholarship_Grant_Form.pdf.exe</code> contains a dangerous double extension. Attackers disguise executable files as PDF documents to deploy spyware, trojans, or ransomware.
+          </p>
+          <div style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:16px;text-align:left;font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div><strong>Threat Classification:</strong> Malicious Executable (.EXE Trojan)</div>
+            <div><strong>Sender Domain:</strong> northfield-scholarship.com (Spoofed)</div>
+            <div><strong>Official School Domain:</strong> northfield.edu.ph</div>
+            <div><strong>Action:</strong> Flagged as suspicious evidence in CyberZerØ Sandbox.</div>
+          </div>
+        </div>
+      </div>
+      <div class="fakesite-footer">
+        <p>CyberZerØ Threat Intelligence Simulation • Northfield High School Security Lab</p>
+      </div>
     </div>`
 };
 
@@ -1020,16 +1123,20 @@ function openApp(appName) {
   if (appName === 'gmail') {
     updateFolderCounts();
     if (gameState.phase === 'mission') {
+      if (ch1InboxEmails.length === 0 && ch1Stage === 0) {
+        ch1InjectWave(1);
+      }
       if (ch1InboxEmails.length > 0) {
         setTimeout(function() {
           updateStickyChecklist();
 
-          // Ryan gives a guided intro: click the email → then check notes
+          // Ryan gives a guided intro: click the email to start investigating
           setTimeout(function() {
-            if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+            if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission' && !window._ryanFirstEmailSpoken) {
+              window._ryanFirstEmailSpoken = true;
               RyanGuide.speak([
                 { text: "You've got mail! 📧 Click the email in your inbox to open it and start investigating.", state: 'speaking' },
-                { text: "Before you dive in — check your Detective's Notes for tips and your mission checklist!", state: 'thinking' }
+                { text: "Remember: you can check your Detective's Notes anytime for tips and your mission checklist!", state: 'thinking' }
               ], {
                 onDone: function() {
                   setTimeout(function() {
@@ -1044,22 +1151,8 @@ function openApp(appName) {
                 }
               });
             }
-          }, 1000);
+          }, 800);
         }, 300);
-      } else {
-        // Player opened Zmail before opening notes:
-        setTimeout(function() {
-          if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
-            RyanGuide.speak([
-              { text: "Before you can begin investigating, open your Detective's Notes on your desktop!", state: 'speaking' },
-              { text: "Your notes contain your investigation checklist. Once you open them, your first email will arrive here in Zmail.", state: 'thinking' }
-            ], {
-              onDone: function() {
-                if (typeof IconAttention !== 'undefined') IconAttention.show('notes');
-              }
-            });
-          }
-        }, 500);
       }
     }
   }
@@ -2014,6 +2107,26 @@ function updateLoginScreenForChapter(categoryId) {
   if (typeof initChapterMissionNotifications === 'function') {
     initChapterMissionNotifications(categoryId, false);
   }
+
+  // Synchronize player corporate email address across views
+  const emailVal = getCurrentPlayerEmail();
+  const gTo1 = document.getElementById('gdemo-to-user');
+  const gTo2 = document.getElementById('gdemo-to-user-legit');
+  if (gTo1) gTo1.textContent = emailVal;
+  if (gTo2) gTo2.textContent = emailVal;
+}
+
+/**
+ * Get the real corporate email address for the active chapter's character
+ * E.g., Alex <alex@techsolutions.com>, Ethan <ethan@techsolutions.com>, etc.
+ */
+function getCurrentPlayerEmail() {
+  const curCatId = window._currentChapterCategory || activeCategoryStory || 'phishing';
+  const foundCat = (typeof CATEGORIES !== 'undefined' && CATEGORIES.find(c => c.id === curCatId));
+  const charObj = (foundCat && foundCat.character) ? foundCat.character : (window._currentChapterCharacter || { name: 'Alex' });
+  const name = charObj.name || (typeof gameState !== 'undefined' && gameState.playerName) || 'Alex';
+  const handle = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return `${name} <${handle}@techsolutions.com>`;
 }
 
 let activeCategoryStory = 'phishing';
@@ -2231,36 +2344,7 @@ const VN_STORIES = {
     }
   ],
 
-  malware: [
-    {
-      speaker: 'NARRATOR',
-      text: 'CHAPTER 2: THE DIGITAL TRAP\n\nThe scholarship phishing investigation revealed an attachment that was downloaded. Alex opens File Explorer to investigate what was installed.',
-      speed: 26,
-      scene: 'story'
-    },
-    {
-      speaker: 'SYSTEM',
-      text: '📧 NEW SUPPORT REQUEST\nFrom: student.r.deleon@northfield.edu.ph\nSubject: My computer is acting strange after opening an email\n\n"Hi, I opened an attachment from a scholarship email. Now there are strange files in my Downloads and my browser keeps redirecting. Please help."',
-      speed: 26,
-      scene: 'story'
-    },
-    {
-      speaker: 'ZERO',
-      tag: '🤖 AI SECURITY GUIDE',
-      bg: 'assets/Cover.png',
-      text: 'Open File Explorer and check the Downloads folder. The attachment installed hidden files. Look for double extensions like .pdf.exe, suspicious .vbs scripts, and unknown executables.',
-      speed: 24,
-      scene: 'story'
-    },
-    {
-      speaker: 'ZERO',
-      tag: '🤖 AI SECURITY GUIDE',
-      bg: 'assets/Cover.png',
-      text: 'Once you identify the malware, use ShieldAV Anti-Virus to scan and quarantine every threat. Do not open any suspicious file — scan first, quarantine second.',
-      speed: 24,
-      scene: 'story'
-    }
-  ],
+  malware: [],
 
   social_engineering: [
     {
@@ -2357,6 +2441,12 @@ const vnState = {
 };
 
 function playCategoryStory(categoryId) {
+  if (categoryId === 'malware') {
+    // Remove narration on Chapter 2: directly open clean Chapter 2 desktop
+    hideAllOverlays();
+    openChapterDesktopDirect('malware');
+    return;
+  }
   activeCategoryStory = categoryId;
   VN_DIALOGUE = VN_STORIES[categoryId] || VN_STORIES.phishing;
   hideAllOverlays();
@@ -3815,12 +3905,16 @@ function startMission(openGmail = false) {
   gameState.readSentIds = [];
 
   // ── Chapter 1 dynamic inbox reset ──────────────────────────
-  ch1InboxEmails               = [];    // Start completely empty
+  ch1InboxEmails               = [];    // Dynamic inbox
   ch1AnimatedEmailIds.clear();
-  ch1Stage                     = 0;     // No waves injected yet
-  ch1PendingNotification       = false; // Badge shows only after Ryan's intro finishes
+  ch1Stage                     = 0;     
+  ch1PendingNotification       = false; 
   ch1MistakeCount              = 0;
   ch1InvestigationTutorialDone = false; // Reset investigation tutorial flag
+  window._ryanFirstEmailSpoken = false;
+
+  // Immediately inject Wave 1 so the first email is ready in the inbox without requiring notes first
+  ch1InjectWave(1);
 
   hideAllOverlays();
   renderEmailList();
@@ -3885,11 +3979,10 @@ function startMission(openGmail = false) {
         { text: "Don't let urgency make the decision for you.", state: 'concerned' },
         // === Transition to Zmail ===
         { text: "Now let's put that knowledge into practice.", state: 'speaking' },
-        { text: "First, open your Detective's Notes on your desktop to review your tips and checklist.", state: 'speaking' },
-        { text: "Once you check your notes, your first email will arrive in Zmail!", state: 'thinking' }
+        { text: "Open Zmail to inspect incoming cases. You can also refer to your Detective's Notes on the desktop anytime for tips and checklist items!", state: 'thinking' }
       ], {
         onDone: function() {
-          if (typeof IconAttention !== 'undefined') IconAttention.show('notes');
+          if (typeof IconAttention !== 'undefined') IconAttention.show('gmail');
           updateFolderCounts();
         }
       });
@@ -3964,7 +4057,7 @@ function showStickyNote() {
   const icon = document.getElementById('icon-notes');
   if (!note) return;
 
-  note.classList.remove('hidden', 'sticky-note-pop', 'sticky-note-highlight', 'sticky-note-pulse-once');
+  note.classList.remove('hidden', 'sticky-note-pop', 'sticky-note-highlight', 'sticky-note-pulse-once', 'highlight-attention');
 
   if (icon) icon.classList.remove('hidden');
 
@@ -3973,34 +4066,30 @@ function showStickyNote() {
 
   updateStickyChecklist();
 
-  // ── Mission Chapter 1: Opening notes adds inbox 1 email and makes it visible ──
-  if (gameState.phase === 'mission' && ch1Stage === 0 && ch1InboxEmails.length === 0) {
-    ch1PendingNotification = false;
-    ch1InjectWave(1); // Adds the 1st email to inbox!
-    updateFolderCounts(); // Shows Inbox (1)
-
-    // If Zmail app is open, refresh the email list immediately so the email is visible
-    if (typeof appState !== 'undefined' && appState['gmail'] && appState['gmail'].open) {
-      renderEmailList();
-      setTimeout(function() {
-        const firstRow = document.querySelector('#email-list .email-list-item');
-        if (firstRow) {
-          firstRow.classList.remove('email-row-pulse');
-          void firstRow.offsetWidth;
-          firstRow.classList.add('email-row-pulse');
-          setTimeout(function() { firstRow.classList.remove('email-row-pulse'); }, 3000);
-        }
-      }, 200);
-    } else {
-      // Guide player to open Zmail
-      if (typeof IconAttention !== 'undefined') IconAttention.show('gmail');
-    }
+  // If inbox was somehow empty on mission start, inject wave 1 as safety fallback
+  if (gameState.phase === 'mission' && ch1InboxEmails.length === 0) {
+    ch1InjectWave(1);
+    updateFolderCounts();
   }
 }
 
 function closeStickyNote() {
   const note = document.getElementById('sticky-note');
-  if (note) note.classList.add('hidden');
+  if (note) {
+    note.classList.add('hidden');
+    note.classList.remove('highlight-attention');
+  }
+  if (typeof IconAttention !== 'undefined') IconAttention.hide('notes');
+}
+
+function highlightStickyNotesHint() {
+  if (typeof IconAttention !== 'undefined') {
+    IconAttention.show('notes');
+  }
+  const note = document.getElementById('sticky-note');
+  if (note && !note.classList.contains('hidden')) {
+    note.classList.add('highlight-attention');
+  }
 }
 
 function toggleStickyNoteCollapse() {
@@ -4013,42 +4102,48 @@ const SN_ACHIEVEMENTS = [
   {
     id: 'first_catch',
     icon: '🎯',
-    label: 'First Catch',
-    desc: 'Report your first phishing email',
-    check: () => gameState.phishingDetected >= 1,
-    progress: () => `${Math.min(gameState.phishingDetected,1)}/1`
+    label: 'First Incident Intake',
+    desc: 'Submit your first email evaluation (Phishing or Non-phishing)',
+    check: () => gameState.emailResults.length >= 1,
+    progress: () => `${Math.min(gameState.emailResults.length, 1)}/1`
   },
   {
-    id: 'phishing_hunter',
+    id: 'phishing_eval',
     icon: '🚩',
-    label: 'Phishing Hunter',
-    desc: 'Detect all 5 phishing emails',
-    check: () => gameState.phishingDetected >= 5,
-    progress: () => `${gameState.phishingDetected}/5`
+    label: 'Phishing Threat Evaluation',
+    desc: 'Evaluate and report emails identified as Phishing',
+    check: () => gameState.emailResults.filter(r => r.playerDecision === true).length >= 3,
+    progress: () => {
+      const count = gameState.emailResults.filter(r => r.playerDecision === true).length;
+      return `${Math.min(count, 3)}/3`;
+    }
   },
   {
-    id: 'trust_check',
-    icon: '✅',
-    label: 'Trust Verified',
-    desc: 'Correctly identify all 4 legitimate emails',
-    check: () => gameState.legitimateDetected >= 4,
-    progress: () => `${gameState.legitimateDetected}/4`
+    id: 'safe_check',
+    icon: '🛡️',
+    label: 'Safe Email Verification',
+    desc: 'Verify and confirm safe communications as Non-phishing',
+    check: () => gameState.emailResults.filter(r => r.playerDecision === false).length >= 3,
+    progress: () => {
+      const count = gameState.emailResults.filter(r => r.playerDecision === false).length;
+      return `${Math.min(count, 3)}/3`;
+    }
   },
   {
     id: 'halfway',
-    icon: '📧',
-    label: 'Halfway There',
-    desc: 'Review 5 out of 9 emails',
+    icon: '📈',
+    label: 'Mid-Mission Awareness',
+    desc: 'Investigate 5 incoming email cases',
     check: () => gameState.emailResults.length >= 5,
-    progress: () => `${gameState.emailResults.length}/9`
+    progress: () => `${Math.min(gameState.emailResults.length, 5)}/5`
   },
   {
     id: 'chapter_complete',
     icon: '🏆',
-    label: 'Chapter Complete',
-    desc: 'Investigate all 9 emails',
-    check: () => gameState.emailResults.length >= 9,
-    progress: () => `${gameState.emailResults.length}/9`
+    label: 'Mission Knowledge & Awareness',
+    desc: 'Complete all 10 email evaluations to finish the training',
+    check: () => gameState.emailResults.length >= 10,
+    progress: () => `${gameState.emailResults.length}/10`
   }
 ];
 
@@ -4069,7 +4164,7 @@ function updateStickyChecklist() {
   let html = `
     <div class="sn-progress-card">
       <div class="sn-progress-header">
-        <span class="sn-progress-title">🎯 Mission Checklist</span>
+        <span class="sn-progress-title">🎯 Awareness Checklist</span>
         <span class="sn-progress-count">${completedCount}/${totalGoals} (${progressPercent}%)</span>
       </div>
       <div class="sn-progress-bar-track">
@@ -4102,7 +4197,6 @@ function updateStickyChecklist() {
 
   html += '</ul>';
   section.innerHTML = html;
-
 }
 
 function showAchievementToast(ach) {
@@ -4117,7 +4211,7 @@ function showAchievementToast(ach) {
     <div class="ach-toast-glow"></div>
     <div class="ach-toast-icon">${ach.icon}</div>
     <div class="ach-toast-body">
-      <div class="ach-toast-title">Achievement Unlocked!</div>
+      <div class="ach-toast-title">Awareness Goal Reached!</div>
       <div class="ach-toast-name">${ach.label}</div>
       <div class="ach-toast-desc">${ach.desc}</div>
     </div>
@@ -4187,6 +4281,9 @@ function updateStickyNoteForPhase(phase) {
           <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
           <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
         </ul>
+      </div>
+      <div class="sticky-note-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
+        💡 <strong>Mission Goal:</strong> Build Phishing Knowledge & Awareness. Submitting Phishing or Non-phishing verdicts updates your live checklist progress.
       </div>`;
     updateStickyChecklist();
   }
@@ -4341,21 +4438,9 @@ function renderEmailList() {
   const list = document.getElementById('email-list');
   list.innerHTML = '';
 
-  // ── Chapter 1 dynamic injection: requires opening notes first ──
-  // If notes haven't been opened yet and inbox is empty:
-  if (gameState.phase === 'mission' && ch1Stage === 0 && ch1InboxEmails.length === 0) {
-    list.innerHTML = `
-      <div class="email-empty-state" style="padding:48px 24px;text-align:center;">
-        <div style="font-size:38px;margin-bottom:12px;">📒</div>
-        <div style="font-size:16px;font-weight:700;color:var(--accent-blue);margin-bottom:8px;">Open Detective's Notes to Begin</div>
-        <div style="font-size:13px;color:var(--text-secondary);max-width:360px;margin:0 auto 16px;line-height:1.5;">
-          Check your Detective's Notes on the desktop for tips and your checklist. Opening your notes will dispatch your first email to this inbox!
-        </div>
-        <button type="button" class="btn btn-primary" onclick="showStickyNote()" style="font-size:13px;padding:8px 20px;border-radius:6px;cursor:pointer;background:var(--accent-blue);color:#000;font-weight:700;border:none;">
-          📒 Open Detective's Notes
-        </button>
-      </div>`;
-    return;
+  // Dynamic wave injection fallback: ensure wave 1 is injected if inbox is empty
+  if (gameState.phase === 'mission' && ch1InboxEmails.length === 0) {
+    ch1InjectWave(1);
   }
   // If no emails yet (after review/all done), show empty state
   if (ch1InboxEmails.length === 0) {
@@ -4593,6 +4678,26 @@ function openEmail(idx) {
     }
   }
 
+  // ── Second email: guide player to open Sticky Notes & highlight it ───────────
+  if (!ch1SecondEmailNotesHintDone && gameState.emailResults.length === 1 && !existingResult && gameState.phase === 'mission') {
+    ch1SecondEmailNotesHintDone = true;
+    if (typeof RyanGuide !== 'undefined') {
+      setTimeout(function() {
+        highlightStickyNotesHint();
+        RyanGuide.speak([
+          {
+            text: "Welcome to your second email case! 📒 Notice your Sticky Notes app on the desktop — I've highlighted it for you.",
+            state: 'speaking'
+          },
+          {
+            text: "Open your Sticky Notes to check your live Mission Checklist progress and consult your Red Flag Guidelines as you inspect this message!",
+            state: 'success'
+          }
+        ]);
+      }, 400);
+    }
+  }
+
   if (existingResult) {
     gameState.currentEmailFlags = existingResult.savedFlags ? [...existingResult.savedFlags] : [];
   } else {
@@ -4736,7 +4841,7 @@ function renderEmailContent(email) {
     </div>
     <div class="email-meta-row">
       <span class="email-meta-label">TO</span>
-      <span class="email-meta-value" style="color:var(--text-muted)">me@cybercorp.com</span>
+      <span class="email-meta-value" style="color:var(--text-muted)">${getCurrentPlayerEmail()}</span>
     </div>
     <div class="email-meta-row">
       <span class="email-meta-label">DATE</span>
@@ -4802,6 +4907,40 @@ function renderEmailContent(email) {
 
       wrap.appendChild(actionsRow);
       body.appendChild(wrap);
+
+    } else if (part.type === 'attachment') {
+      const attachBox = document.createElement('div');
+      attachBox.className = 'email-attachment-card';
+      const isFlagged = gameState.currentEmailFlags.some(f => f.type === part.flagType);
+
+      attachBox.innerHTML = `
+        <div class="email-attachment-header">
+          <span class="email-attach-icon">📎</span>
+          <span class="email-attach-title">Attached File (1 item)</span>
+        </div>
+        <div class="email-attachment-body flaggable ${isFlagged ? 'flagged' : ''}"
+             data-flag-id="${part.flagId || 'attach1'}"
+             data-flag-type="${part.flagType || 'suspicious_link'}"
+             data-flag-label="${part.label || 'MALICIOUS ATTACHMENT'}"
+             data-flag-text="${part.filename}">
+          <div class="email-attach-file-icon">📄</div>
+          <div class="email-attach-file-info">
+            <div class="email-attach-filename">
+              <span>${part.filename}</span>
+              <span class="email-attach-warning-tag">⚠️ .exe</span>
+            </div>
+            <div class="email-attach-filesize">${part.size || '2.4 MB'} &bull; Executable Application</div>
+          </div>
+          <button type="button" class="email-attach-inspect-btn" onclick="event.stopPropagation(); showToast('⚠️ Warning: File has dangerous double extension (.pdf.exe)! Do not execute.', 'error');">
+            🔍 Inspect
+          </button>
+        </div>
+      `;
+      const attachBody = attachBox.querySelector('.email-attachment-body');
+      if (attachBody) {
+        attachBody.setAttribute('onclick', 'handleFlaggableClick(this)');
+      }
+      body.appendChild(attachBox);
     }
   });
 
@@ -5427,18 +5566,20 @@ function submitMarkLegitimate() {
     return;
   }
 
-  // ── Contradiction check: flagged evidence exists, but trying to mark as legitimate ──
-  if (gameState.currentEmailFlags && gameState.currentEmailFlags.length > 0) {
+  // ── Contradiction caution: flagged evidence exists, but marking as legitimate ──
+  // Show Ryan's warning ONLY ONCE across the playthrough; user can submit non-phishing with flags!
+  if (gameState.currentEmailFlags && gameState.currentEmailFlags.length > 0 && !ch1FlaggedLegitWarnedOnce) {
+    ch1FlaggedLegitWarnedOnce = true;
     if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
       const toast = document.getElementById('toast');
       if (toast) toast.classList.add('hidden');
 
       RyanGuide.speak([
         { text: "Wait a second, Detective! 🤔 You currently have suspicious evidence flagged on this email, but you're trying to mark it as legitimate.", state: 'concerned' },
-        { text: "Always think before you report or mark as legitimate! If you verified this email is truly safe, remove your flags first. If it's a threat, submit it as phishing!", state: 'thinking' }
+        { text: "Always think before you report or mark as legitimate! If you verified this email is safe, click Non-phishing again to confirm submission with flags.", state: 'thinking' }
       ]);
     } else {
-      showToast('⚠️ Contradiction! Remove flags before marking as legitimate, or submit as phishing.', 'warning');
+      showToast('⚠️ Note: You have flagged evidence. Click Non-phishing again to confirm.', 'warning');
     }
     return;
   }
@@ -5622,13 +5763,25 @@ function submitReport(isPhishing) {
       if (arrow) arrow.textContent = '▼';
     }
 
-    // Clear any previous auto-advance: allow player to read the verdict and review missed flags without being rushed!
+    // Clear any previous auto-advance timer
     if (ch1AutoAdvanceTimer) {
       clearTimeout(ch1AutoAdvanceTimer);
       ch1AutoAdvanceTimer = null;
     }
 
-    // Ryan gives his educational briefing
+    // ── Immediately close the open email and return back to the inbox list ──
+    const detailView = document.getElementById('email-detail-view');
+    const listView   = document.getElementById('email-list-view');
+    if (detailView) detailView.classList.remove('active');
+    if (listView)   listView.classList.add('active');
+
+    gameState.currentEmailFlags = [];
+    gameState.flagModeActive = false;
+    if (flagModeBtn) flagModeBtn.classList.remove('active');
+    const gmailBody = document.querySelector('.gmail-body');
+    if (gmailBody) gmailBody.classList.remove('flag-mode-active');
+
+    // Ryan gives his educational briefing in real-time above the inbox list
     if (typeof RyanGuide !== 'undefined') {
       const tutor = email.ryanTutor;
       let messages;
@@ -5659,12 +5812,75 @@ function submitReport(isPhishing) {
         }
       }
 
+      // If this was the first email submitted, guide player to open Sticky Notes and highlight it
+      if (gameState.emailResults.length === 1) {
+        messages = [
+          ...messages,
+          {
+            text: "Great work submitting your first email! 📒 Now that the next incoming emails have arrived, notice your Sticky Notes on the desktop — I've highlighted it for you.",
+            state: 'speaking'
+          },
+          {
+            text: "Open your Sticky Notes to check your live Mission Checklist progress before opening the next email!",
+            state: 'success'
+          }
+        ];
+
+        setTimeout(() => {
+          highlightStickyNotesHint();
+        }, 400);
+      }
+
       setTimeout(() => {
         RyanGuide.speak(messages, {
           autoDismiss: 6000
-          // Do not auto-advance away from the email: player stays to review missed flags and clicks 'Next Email ➔'
         });
-      }, 300);
+      }, 150);
+    }
+
+    // Check if ALL emails in the mission are finished
+    if (gameState.emailResults.length >= EMAILS.length) {
+      renderEmailList();
+      updateHUD();
+      setTimeout(finishMission, 400);
+      return;
+    }
+
+    // Check if current wave is complete
+    const reviewedInWave = ch1InboxEmails.length > 0 && ch1InboxEmails.every(e => gameState.emailResults.some(r => r.emailId === e.id));
+    if (reviewedInWave) {
+      let nextWave = ch1Stage + 1;
+      if (nextWave <= 1) nextWave = 2;
+      if (nextWave <= 4 && CH1_WAVE_DEFS[nextWave]) {
+        renderEmailList();
+        updateHUD();
+        ch1InjectWave(nextWave);
+        return;
+      } else {
+        finishMission();
+        return;
+      }
+    }
+
+    // Still have unreviewed emails in current wave
+    const nextIdx = ch1InboxEmails.findIndex(e => !gameState.emailResults.some(r => r.emailId === e.id));
+    if (nextIdx !== -1) {
+      gameState.currentEmail = nextIdx;
+    }
+
+    renderEmailList();
+    updateHUD();
+
+    if (nextIdx !== -1) {
+      setTimeout(() => {
+        const nextRow = document.getElementById(`email-item-${ch1InboxEmails[nextIdx].id}`);
+        if (nextRow) {
+          nextRow.classList.remove('email-row-pulse');
+          void nextRow.offsetWidth;
+          nextRow.classList.add('email-row-pulse');
+          nextRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 80);
     }
 
   } finally {
@@ -6075,13 +6291,56 @@ function finishMission() {
       icon: '🏆',
       iconType: 'shield',
       title: 'Chapter 1 Completed — Rank ' + rank,
-      body: `All 9 emails analyzed with ${Math.round(pct * 100)}% accuracy. Phishing attack neutralized!`,
+      body: `All ${EMAILS.length} emails analyzed with ${Math.round(pct * 100)}% accuracy. Phishing attack neutralized!`,
       time: 'Just now'
     });
   }
 
-  showOverlay('overlay-results');
+  // Remove overlay mission complete: ensure overlay-results is never shown
+  closeOverlay('overlay-results');
+  const resultsOv = document.getElementById('overlay-results');
+  if (resultsOv) {
+    resultsOv.classList.remove('active');
+    resultsOv.style.display = 'none';
+  }
+
+  // Close Zmail window so Ryan mentor is cleanly and prominently visible
+  const gmailWin = document.getElementById('win-gmail');
+  if (gmailWin) {
+    gmailWin.classList.add('hidden');
+    if (typeof appState !== 'undefined' && appState['gmail']) appState['gmail'].open = false;
+    if (typeof updateTaskbar === 'function') updateTaskbar();
+  }
+
   if (typeof AudioManager !== 'undefined') AudioManager.playMissionComplete();
+
+  // Show Ryan's congratulatory dialogue for Phishing Knowledge and Awareness mission task
+  if (typeof RyanGuide !== 'undefined') {
+    RyanGuide.speak([
+      {
+        text: `🎉 Outstanding job! Congratulations on completing your mission task for Chapter 1! You've successfully finished your Phishing Knowledge and Awareness training with Rank ${rank}!`,
+        state: 'success'
+      },
+      {
+        text: `You investigated all ${EMAILS.length} emails with ${Math.round(pct * 100)}% accuracy, uncovering digital evidence and neutralizing every phishing threat.`,
+        state: 'speaking'
+      },
+      {
+        text: "You've mastered the essential defense habits: stopping before reacting, verifying sender domains, spotting false urgency deadlines, and inspecting suspicious links and file attachments.",
+        state: 'success'
+      },
+      {
+        text: "Thanks to your keen eye and security awareness, the entire organization is safe. Let's proceed to Story Selection!",
+        state: 'speaking'
+      }
+    ], {
+      onDone: function() {
+        openCategoryHub();
+      }
+    });
+  } else {
+    openCategoryHub();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6119,6 +6378,8 @@ function playAgain(showVN = false) {
   ch1Stage                     = 0;
   ch1MistakeCount              = 0;
   ch1InvestigationTutorialDone = false;
+  ch1FlaggedLegitWarnedOnce    = false;
+  ch1SecondEmailNotesHintDone  = false;
   if (typeof FOLDER_FILES !== 'undefined') {
     FOLDER_FILES.forEach(f => { f.quarantined = false; f.scanned = false; });
   }
@@ -7806,14 +8067,12 @@ function setMalwareDemoAvActive(isActive) {
     if (banner) banner.classList.remove('disabled');
     if (icon) icon.textContent = '🛡️';
     if (title) title.textContent = 'DEFENSE ENGINE ACTIVE';
-    if (sub) sub.textContent = 'Definitions v2026.09 • Real-Time Protection Online';
   } else {
     if (toggleBtn) toggleBtn.classList.remove('active');
     if (toggleText) toggleText.textContent = 'OFF';
     if (banner) banner.classList.add('disabled');
     if (icon) icon.textContent = '⚠️';
     if (title) title.textContent = 'DEFENSE ENGINE DISABLED';
-    if (sub) sub.textContent = '⚠️ Real-Time Protection is OFF • Turn ON to scan threats';
   }
 }
 
@@ -9865,6 +10124,8 @@ function updateAntiVirusProtectionUI() {
   const shieldIcon = document.getElementById('av-shield-icon');
   const title = document.getElementById('av-status-title');
   const sub = document.getElementById('av-status-sub');
+  const statusText = document.getElementById('av-quarantine-status-text');
+  const statsBadge = document.getElementById('av-stats-badge');
 
   if (gameState.antivirusProtection) {
     if (toggleBtn) toggleBtn.classList.add('active');
@@ -9872,14 +10133,21 @@ function updateAntiVirusProtectionUI() {
     if (banner) banner.classList.remove('disabled');
     if (shieldIcon) shieldIcon.textContent = '🛡️';
     if (title) title.textContent = 'DEFENSE ENGINE ACTIVE';
-    if (sub) sub.textContent = 'Definitions v2026.09 • Real-Time Protection Online';
+    if (statsBadge) statsBadge.classList.remove('unprotected');
+    if (statusText) {
+      const quarantinedFiles = (typeof FOLDER_FILES !== 'undefined') ? FOLDER_FILES.filter(f => f.quarantined) : [];
+      statusText.textContent = quarantinedFiles.length > 0
+        ? `${quarantinedFiles.length} THREAT${quarantinedFiles.length > 1 ? 'S' : ''} SECURED`
+        : 'SYSTEM PROTECTED';
+    }
   } else {
     if (toggleBtn) toggleBtn.classList.remove('active');
     if (toggleText) toggleText.textContent = 'OFF';
     if (banner) banner.classList.add('disabled');
     if (shieldIcon) shieldIcon.textContent = '⚠️';
     if (title) title.textContent = 'DEFENSE ENGINE DISABLED';
-    if (sub) sub.textContent = '⚠️ Real-Time Protection is OFF • Turn ON to scan threats';
+    if (statsBadge) statsBadge.classList.add('unprotected');
+    if (statusText) statusText.textContent = 'YOUR SYSTEM IS NOT PROTECTED';
   }
 
   // Synchronize Quick Settings Anti-Virus Tile
@@ -10196,6 +10464,7 @@ function quarantineFile(fileId) {
 
 function updateAntivirusUI() {
   const statusText = document.getElementById('av-quarantine-status-text');
+  const statsBadge = document.getElementById('av-stats-badge');
   const countBadge = document.getElementById('av-quarantine-count');
   const logCount = document.getElementById('av-log-count');
   const threatsList = document.getElementById('av-threats-list');
@@ -10204,9 +10473,16 @@ function updateAntivirusUI() {
   const quarantinedFiles = FOLDER_FILES.filter(f => f.quarantined);
 
   if (statusText) {
-    statusText.textContent = quarantinedFiles.length > 0
-      ? `${quarantinedFiles.length} THREAT${quarantinedFiles.length > 1 ? 'S' : ''} SECURED`
-      : 'SYSTEM PROTECTED';
+    if (!gameState.antivirusProtection) {
+      statusText.textContent = 'YOUR SYSTEM IS NOT PROTECTED';
+      if (statsBadge) statsBadge.classList.add('unprotected');
+    } else if (quarantinedFiles.length > 0) {
+      statusText.textContent = `${quarantinedFiles.length} THREAT${quarantinedFiles.length > 1 ? 'S' : ''} SECURED`;
+      if (statsBadge) statsBadge.classList.remove('unprotected');
+    } else {
+      statusText.textContent = 'SYSTEM PROTECTED';
+      if (statsBadge) statsBadge.classList.remove('unprotected');
+    }
   }
   if (countBadge) {
     countBadge.textContent = quarantinedFiles.length;
@@ -15423,9 +15699,10 @@ const RyanGuide = (() => {
   let _onDoneCallback = null;
   let _seen           = {};
   let _dismissTimer   = null;
+  let _opts           = {};
 
-  const CHAR_DELAY  = 24;  // smooth typing speed
-  const MAX_CHARS   = 220; // instant render if text is very long
+  const CHAR_DELAY  = 18;  // responsive, smooth typing speed
+  const MAX_CHARS   = 1000; // allow full text animation for long coaching messages
 
   // Show / hide overlay
   function _show() {
@@ -15446,6 +15723,8 @@ const RyanGuide = (() => {
   }
 
   function _hide() {
+    clearTimeout(_dismissTimer);
+    _dismissTimer = null;
     document.body.classList.remove('has-ryan-dialogue');
     if (typeof adjustAppsForDialogue === 'function') adjustAppsForDialogue(false);
     const o = el().overlay;
@@ -15509,11 +15788,24 @@ const RyanGuide = (() => {
     const step = _queue[0];
     if (_cursorEl && _cursorEl.parentNode) _cursorEl.parentNode.removeChild(_cursorEl);
     if (step && step._fullText) textEl.innerHTML = step._fullText;
+
+    // After skipping typing, schedule smart auto-advance if enabled
+    if (_opts && _opts.autoDismiss) {
+      clearTimeout(_dismissTimer);
+      if (_queue.length > 1) {
+        _dismissTimer = setTimeout(function() { advance(); }, 3800);
+      } else {
+        _dismissTimer = setTimeout(function() { advance(); }, 4500);
+      }
+    }
   }
 
   // Display current message in queue
   function _showStep() {
     if (_queue.length === 0) return;
+    clearTimeout(_dismissTimer);
+    _dismissTimer = null;
+
     const step = _queue[0];
     const refs = el();
 
@@ -15522,12 +15814,24 @@ const RyanGuide = (() => {
     refs.continueBtn.classList.remove('hidden');
 
     const isLast = _queue.length === 1;
-    refs.continueLabel.textContent = isLast ? 'TAP / CLICK TO CONTINUE' : 'TAP TO CONTINUE';
+    refs.continueLabel.textContent = isLast ? 'TAP / CLICK TO CLOSE' : 'TAP TO CONTINUE';
 
     // Guard: ensure text is always a valid string before typing
     const safeText = (step.text !== undefined && step.text !== null) ? String(step.text) : '';
     step._fullText = safeText;
-    _typeText(safeText, function() {});
+    _typeText(safeText, function() {
+      // Called when message typing is completely finished
+      if (_opts && _opts.autoDismiss) {
+        clearTimeout(_dismissTimer);
+        if (_queue.length > 1) {
+          // Auto-advance to the next message in queue so all points are heard
+          _dismissTimer = setTimeout(function() { advance(); }, 4000);
+        } else {
+          // Last message in queue: auto-close after reading time
+          _dismissTimer = setTimeout(function() { advance(); }, 4800);
+        }
+      }
+    });
   }
 
   // Public API
@@ -15543,12 +15847,13 @@ const RyanGuide = (() => {
       dismiss();
       return;
     }
-    opts = opts || {};
+    _opts = opts || {};
     if (!messages || messages.length === 0) return;
 
     // ── FIX: Clear any running typing animation to prevent race conditions ──
     clearTimeout(_typeTimeout);
     clearTimeout(_dismissTimer);
+    _dismissTimer = null;
     _typing = false;
     if (_cursorEl && _cursorEl.parentNode) {
       _cursorEl.parentNode.removeChild(_cursorEl);
@@ -15563,7 +15868,8 @@ const RyanGuide = (() => {
       if (m && typeof m === 'object') {
         return {
           text: (m.text !== undefined && m.text !== null) ? String(m.text) : '',
-          state: (typeof m.state === 'string') ? m.state : 'speaking'
+          state: (typeof m.state === 'string') ? m.state : 'speaking',
+          action: m.action || null
         };
       }
       return { text: '', state: 'speaking' };
@@ -15571,20 +15877,18 @@ const RyanGuide = (() => {
 
     if (_queue.length === 0) return;
 
-    _onDoneCallback = opts.onDone || null;
+    _onDoneCallback = _opts.onDone || null;
 
     _show();
     _showStep();
-
-    if (opts.autoDismiss) {
-      _dismissTimer = setTimeout(function() { dismiss(); }, opts.autoDismiss);
-    }
   }
 
   /**
    * Advance to next dialogue or close if finished
    */
   function advance() {
+    clearTimeout(_dismissTimer);
+    _dismissTimer = null;
     if (_typing) {
       _skipTyping();
       return;

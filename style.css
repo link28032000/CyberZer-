@@ -1169,6 +1169,88 @@ body.has-ryan-dialogue .app-window.maximized {
   border-radius: 4px;
 }
 
+/* Email Attachment Card */
+.email-attachment-card {
+  margin: 16px 0;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 12px 14px;
+}
+.email-attachment-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+.email-attachment-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.email-attachment-body:hover {
+  background: rgba(51, 65, 85, 0.85);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+.email-attach-file-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+.email-attach-file-info {
+  flex: 1;
+  min-width: 0;
+}
+.email-attach-filename {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  word-break: break-all;
+}
+.email-attach-warning-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 4px;
+  padding: 1px 6px;
+  letter-spacing: 0.3px;
+}
+.email-attach-filesize {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+.email-attach-inspect-btn {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.email-attach-inspect-btn:hover {
+  background: rgba(56, 189, 248, 0.3);
+  color: #fff;
+}
+
 /* Verdict Banner Missed Evidence Box */
 .vb-missed-box {
   margin-top: 10px;
@@ -7895,6 +7977,18 @@ body.has-ryan-dialogue .app-window.maximized {
   align-items: center;
   gap: 7px;
   letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.av-stats-badge.unprotected {
+  color: #ff5252;
+  border-color: rgba(255, 82, 82, 0.45);
+  background: rgba(255, 23, 68, 0.16);
+}
+
+.av-stats-badge.unprotected .av-badge-dot {
+  background: #ff5252;
+  box-shadow: 0 0 8px rgba(255, 82, 82, 0.95);
 }
 
 .av-badge-dot {
@@ -16195,9 +16289,35 @@ body.g4-infected {
 }
 
 /* ── Dismiss transition ────────────────────── */
-.desktop-icon.icon-attention-dismiss {
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: none !important;
+.desktop-icon#icon-notes.icon-attention {
+  border-color: rgba(245, 158, 11, 0.9) !important;
+  background: rgba(245, 158, 11, 0.16) !important;
+  animation: icon-notes-attention-glow 1.4s ease-in-out infinite !important;
+}
+
+@keyframes icon-notes-attention-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.7), 0 0 16px 4px rgba(245, 158, 11, 0.35);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 1), 0 0 26px 8px rgba(245, 158, 11, 0.65);
+    transform: scale(1.05);
+  }
+}
+
+.sticky-note.highlight-attention {
+  box-shadow: 0 0 0 3px #f59e0b, 0 12px 32px rgba(245, 158, 11, 0.5) !important;
+  animation: sticky-note-attention-pulse 1.4s ease-in-out infinite !important;
+}
+
+@keyframes sticky-note-attention-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px #f59e0b, 0 10px 25px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 5px #fbbf24, 0 16px 38px rgba(245, 158, 11, 0.7);
+  }
 }
 
 /* ════════════════════════════════════════════

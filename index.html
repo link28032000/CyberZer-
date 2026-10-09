@@ -79,6 +79,9 @@
           <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
         </ul>
       </div>
+      <div class="sticky-note-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
+        💡 <strong>Mission Goal:</strong> Build Phishing Knowledge & Awareness. Submitting Phishing or Non-phishing verdicts updates your live checklist progress.
+      </div>
     </div>
   </div>
 
@@ -687,7 +690,6 @@
         <div class="av-shield-icon" id="av-shield-icon">🛡️</div>
         <div class="av-status-text">
           <div class="av-status-title" id="av-status-title">DEFENSE ENGINE ACTIVE</div>
-          <div class="av-status-subtitle" id="av-status-sub">Definitions v2026.09 • Real-Time Protection Online</div>
         </div>
         <!-- Real-Time Protection Toggle Button -->
         <div class="av-toggle-wrap">
@@ -2624,7 +2626,7 @@
           </div>
           <div class="gdemo-meta-row">
             <span class="gdemo-meta-label">TO</span>
-            <span class="gdemo-meta-val gdemo-to-muted">me@cybercorp.com</span>
+            <span class="gdemo-meta-val gdemo-to-muted" id="gdemo-to-user">Alex &lt;alex@techsolutions.com&gt;</span>
           </div>
         </div>
         <!-- Body -->
@@ -2656,11 +2658,11 @@
           <div class="gdemo-email-subject gdemo-legit-subject">✅ September Employee Benefits Update</div>
           <div class="gdemo-meta-row">
             <span class="gdemo-meta-label">FROM</span>
-            <span class="gdemo-meta-val" id="gdemo-legit-sender">HR Department &lt;hr@cybercorp.com&gt;</span>
+            <span class="gdemo-meta-val" id="gdemo-legit-sender">HR Department &lt;hr@techsolutions.com&gt;</span>
           </div>
           <div class="gdemo-meta-row">
             <span class="gdemo-meta-label">TO</span>
-            <span class="gdemo-meta-val gdemo-to-muted">me@cybercorp.com</span>
+            <span class="gdemo-meta-val gdemo-to-muted" id="gdemo-to-user-legit">Alex &lt;alex@techsolutions.com&gt;</span>
           </div>
         </div>
         <!-- Body -->
@@ -2669,15 +2671,15 @@
           <p>We hope you are doing well. The September employee benefits information is now available for your review.</p>
           <p>This month's update includes details about the health plan renewal, updated leave policies, and the company wellness program.</p>
           <p>Please review the information through the company's internal HR portal, accessible through your standard work credentials.</p>
-          <p>If you have any questions, feel free to reach out to the HR team directly at <strong>hr@cybercorp.com</strong>.</p>
-          <p>Thank you,<br>HR Department<br>CyberCorp Inc.</p>
+          <p>If you have any questions, feel free to reach out to the HR team directly at <strong>hr@techsolutions.com</strong>.</p>
+          <p>Thank you,<br>HR Department<br>TechSolutions Inc.</p>
         </div>
         <!-- Legitimacy checklist (revealed in step 7) -->
         <div class="gdemo-legit-checklist hidden" id="gdemo-legit-checklist">
           <div class="gdemo-legit-title">✅ Why this email is LEGITIMATE:</div>
           <div class="gdemo-legit-item" id="gdemo-lcheck-1">
             <span class="gdemo-lcheck-icon">⬜</span>
-            <div><strong>Sender matches company domain</strong> — <code>hr@cybercorp.com</code> is an internal corporate address</div>
+            <div><strong>Sender matches company domain</strong> — <code>hr@techsolutions.com</code> is an internal corporate address</div>
           </div>
           <div class="gdemo-legit-item" id="gdemo-lcheck-2">
             <span class="gdemo-lcheck-icon">⬜</span>
@@ -2890,7 +2892,6 @@
           <div class="av-shield-icon" id="gdemo-mav-shield-icon">⚠️</div>
           <div class="av-status-text">
             <div class="av-status-title" id="gdemo-mav-status-title">DEFENSE ENGINE DISABLED</div>
-            <div class="av-status-subtitle" id="gdemo-mav-status-sub">⚠️ Real-Time Protection is OFF • Turn ON to scan threats</div>
           </div>
           <!-- Real-Time Protection Toggle in Demo -->
           <div class="av-toggle-wrap">
