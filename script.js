@@ -427,14 +427,6 @@ const EMAILS = [
         label: 'SUSPICIOUS ATTACHMENT / MALICIOUS FILE',
         destination: 'https://northfield-scholarship.com/download/Scholarship_Grant_Form.pdf.exe'
       },
-      {
-        type: 'link',
-        flagId: 'link1',
-        flagType: 'suspicious_link',
-        text: 'Download Official Grant Approval Form (.EXE Package)',
-        destination: 'https://northfield-scholarship.com/download/Scholarship_Grant_Form.pdf.exe',
-        label: 'SUSPICIOUS LINK'
-      },
       { type: 'p', text: 'Ensure you open and run the form installer immediately to finalize your student grant records.\n\nNorthfield Scholarship Foundation\nFinancial Assistance & Awards Office' }
     ],
     capybaraAnalysis: {
@@ -1507,9 +1499,17 @@ function showOverlay(id) {
   const desktop = document.getElementById('desktop');
   if (desktop) desktop.style.visibility = 'hidden';
 
-  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById('overlay-backdrop').classList.add('active');
+  document.querySelectorAll('.overlay').forEach(o => {
+    o.classList.remove('active');
+    if (o.id !== id) o.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = '';
+    target.classList.add('active');
+  }
+  const bd = document.getElementById('overlay-backdrop');
+  if (bd) bd.classList.add('active');
 }
 
 function closeOverlay(id) {
@@ -2876,7 +2876,11 @@ function showComicStrip(chapter) {
   if (desktop) desktop.style.visibility = 'hidden';
 
   // Deactivate any other overlays cleanly
-  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+  document.querySelectorAll('.overlay').forEach(o => {
+    o.classList.remove('active');
+    if (o.id !== 'overlay-comic-strip') o.style.display = 'none';
+  });
+  overlay.style.display = 'flex';
   overlay.classList.add('active');
 
   // Clear any existing timer
@@ -3116,7 +3120,11 @@ function showComicStripCh2() {
   if (desktop) desktop.style.visibility = 'hidden';
 
   // Deactivate any other overlays cleanly
-  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
+  document.querySelectorAll('.overlay').forEach(o => {
+    o.classList.remove('active');
+    if (o.id !== 'overlay-comic-strip-ch2') o.style.display = 'none';
+  });
+  overlay.style.display = 'flex';
   overlay.classList.add('active');
 
   // Clear any existing timer
@@ -3916,7 +3924,12 @@ function startMission(openGmail = false) {
   // Immediately inject Wave 1 so the first email is ready in the inbox without requiring notes first
   ch1InjectWave(1);
 
-  hideAllOverlays();
+  hideAllOverlays(true);
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.visibility = 'visible';
+    desktop.style.opacity = '1';
+  }
   renderEmailList();
   updateHUD();
   updateFolderCounts();        // Will show (1) notification
@@ -4246,7 +4259,31 @@ function updateStickyNoteForPhase(phase) {
   const scrollEl = document.querySelector('#sticky-note .sticky-note-scroll');
   if (!scrollEl) return;
 
-  if (phase === 'malware') {
+  const currentCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
+
+  // In Chapter 1 (phishing), strictly show Detective's Notes (Red Flag Guidelines & Checklist)
+  if (currentCat === 'phishing' || phase === 'phishing') {
+    if (titleEl) titleEl.textContent = "📒 Detective's Notes";
+    scrollEl.innerHTML = `
+      <div id="sn-checklist-section"></div>
+      <div class="sn-rules-card">
+        <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
+        <ul class="sticky-note-list">
+          <li><span class="sn-icon sn-good">🌐</span><span>Verify the <strong>sender's email domain</strong> carefully</span></li>
+          <li><span class="sn-icon sn-good">⏳</span><span>Look for <strong>manufactured urgency</strong> or threats</span></li>
+          <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
+          <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
+        </ul>
+      </div>
+      <div class="sticky-note-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
+        💡 <strong>Mission Goal:</strong> Build Phishing Knowledge & Awareness. Submitting Phishing or Non-phishing verdicts updates your live checklist progress.
+      </div>`;
+    updateStickyChecklist();
+    return;
+  }
+
+  // Chapter 2 (malware) notes
+  if (phase === 'malware' || currentCat === 'malware') {
     if (titleEl) titleEl.textContent = "🛡️ Malware Hunter Notes";
     scrollEl.innerHTML = `
       <div class="sn-progress-card" style="border-color: rgba(168, 85, 247, 0.4);">
@@ -4269,23 +4306,6 @@ function updateStickyNoteForPhase(phase) {
         💡 <strong>Detective Tip:</strong> Check actual extension in Folder (e.g. <code>.pdf.exe</code>, <code>.vbs</code>) and run an Anti-Virus scan before clicking Quarantine!
       </div>`;
     showStickyNote();
-  } else {
-    if (titleEl) titleEl.textContent = "📒 Detective's Notes";
-    scrollEl.innerHTML = `
-      <div id="sn-checklist-section"></div>
-      <div class="sn-rules-card">
-        <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
-        <ul class="sticky-note-list">
-          <li><span class="sn-icon sn-good">🌐</span><span>Verify the <strong>sender's email domain</strong> carefully</span></li>
-          <li><span class="sn-icon sn-good">⏳</span><span>Look for <strong>manufactured urgency</strong> or threats</span></li>
-          <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
-          <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
-        </ul>
-      </div>
-      <div class="sticky-note-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
-        💡 <strong>Mission Goal:</strong> Build Phishing Knowledge & Awareness. Submitting Phishing or Non-phishing verdicts updates your live checklist progress.
-      </div>`;
-    updateStickyChecklist();
   }
 }
 
@@ -4915,25 +4935,42 @@ function renderEmailContent(email) {
 
       attachBox.innerHTML = `
         <div class="email-attachment-header">
-          <span class="email-attach-icon">📎</span>
-          <span class="email-attach-title">Attached File (1 item)</span>
+          <div class="email-attachment-header-left">
+            <span class="email-attach-icon">📎</span>
+            <span class="email-attach-title">1 Attachment</span>
+          </div>
         </div>
         <div class="email-attachment-body flaggable ${isFlagged ? 'flagged' : ''}"
              data-flag-id="${part.flagId || 'attach1'}"
              data-flag-type="${part.flagType || 'suspicious_link'}"
              data-flag-label="${part.label || 'MALICIOUS ATTACHMENT'}"
              data-flag-text="${part.filename}">
-          <div class="email-attach-file-icon">📄</div>
-          <div class="email-attach-file-info">
-            <div class="email-attach-filename">
-              <span>${part.filename}</span>
-              <span class="email-attach-warning-tag">⚠️ .exe</span>
+          <div class="email-attach-preview-thumb">
+            <div class="email-attach-thumb-paper">
+              <div class="thumb-paper-lines">
+                <div class="thumb-paper-line"></div>
+                <div class="thumb-paper-line"></div>
+                <div class="thumb-paper-line"></div>
+              </div>
+              <span class="thumb-ext-badge">PDF</span>
             </div>
-            <div class="email-attach-filesize">${part.size || '2.4 MB'} &bull; Executable Application</div>
           </div>
-          <button type="button" class="email-attach-inspect-btn" onclick="event.stopPropagation(); showToast('⚠️ Warning: File has dangerous double extension (.pdf.exe)! Do not execute.', 'error');">
-            🔍 Inspect
-          </button>
+          <div class="email-attach-file-info">
+            <div class="email-attach-filename-row">
+              <span class="email-attach-filename">${part.filename}</span>
+            </div>
+            <div class="email-attach-meta-row">
+              <span class="email-attach-filesize">${part.size || '2.4 MB'}</span>
+            </div>
+          </div>
+          <div class="email-attach-actions">
+            <button type="button" class="email-attach-download-btn" onclick="event.stopPropagation(); downloadEmailAttachment('${part.filename}', '${part.size || '2.4 MB'}');" title="Download ${part.filename}">
+              <svg class="dl-svg-icon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+              <span>Download</span>
+            </button>
+          </div>
         </div>
       `;
       const attachBody = attachBox.querySelector('.email-attachment-body');
@@ -8938,8 +8975,35 @@ const EXPLORER_ADDITIONAL_FILES = {
   ]
 };
 
+window.ch1DownloadsList = [];
+
+function getScholarshipGrantFileDef() {
+  return {
+    id: 'f_scholarship_grant',
+    name: 'Scholarship_Grant_Form.pdf.exe',
+    fakeExt: 'pdf',
+    realExt: 'exe',
+    type: 'Executable Application (.exe)',
+    size: '2.4 MB',
+    date: 'Today, 2:40 PM',
+    icon: '⚙️',
+    isMalware: true,
+    threatName: 'Trojan.Win32.DoubleExt.Dropper',
+    threatCategory: 'TROJAN DROPPER',
+    hash: 'e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7',
+    analysis: '⚠️ DOUBLE EXTENSION: Disguised as a PDF document, but the real file extension is .exe. Executing this will launch an unauthorized malware dropper.',
+    quarantined: false,
+    scanned: false,
+    isInstaller: true
+  };
+}
+
 function getExplorerCurrentFiles() {
   if (currentExplorerFolder === 'downloads') {
+    const isPhishingChapter = (window._currentChapterCategory || activeCategoryStory || 'phishing') === 'phishing';
+    if (isPhishingChapter) {
+      return window.ch1DownloadsList || [];
+    }
     return FOLDER_FILES;
   }
   // thispc_contents shows the actual C: folder list
@@ -8954,6 +9018,14 @@ function getExplorerCurrentFiles() {
 }
 
 function getExplorerFileById(fileId) {
+  if (fileId === 'f_scholarship_grant') {
+    if (window.ch1DownloadsList && window.ch1DownloadsList.length > 0) {
+      const f = window.ch1DownloadsList.find(x => x.id === 'f_scholarship_grant');
+      if (f) return f;
+    }
+    return getScholarshipGrantFileDef();
+  }
+
   // First check FOLDER_FILES
   let found = FOLDER_FILES.find(f => f.id === fileId);
   if (found) return found;
@@ -9343,10 +9415,18 @@ function explorerCut() { showToast('Selected file cut to clipboard', 'info'); }
 function explorerCopy() { showToast('Selected file copied to clipboard', 'info'); }
 function explorerRename() { showToast('Rename file: Access denied (File locked by system)', 'warning'); }
 function explorerDelete() {
-  if (gameState.selectedFolderFileId) {
+  if (!gameState.selectedFolderFileId) {
+    showToast('Please select a file first.', 'warning');
+    return;
+  }
+  if (gameState.selectedFolderFileId === 'f_scholarship_grant') {
+    quarantineFile('f_scholarship_grant');
+    return;
+  }
+  if (currentExplorerFolder === 'downloads') {
     quarantineFile(gameState.selectedFolderFileId);
   } else {
-    showToast('Please select a file first.', 'warning');
+    showToast('⚠️ Access Denied: Cannot delete protected system files. You can only delete downloaded files.', 'warning');
   }
 }
 
@@ -9553,7 +9633,7 @@ function openFileFromFolder(fileId) {
   const ext = file.realExt.toLowerCase();
 
   // 1. DANGEROUS MALWARE / EXECUTABLE / SCRIPT
-  if (file.isMalware || ext === 'exe' || ext === 'scr' || ext === 'vbs') {
+  if (file.isMalware || ext === 'exe' || ext === 'scr' || ext === 'vbs' || file.id === 'f_scholarship_grant') {
     showSmartScreenWarning(file);
     return;
   }
@@ -10073,15 +10153,22 @@ function showSmartScreenWarning(file) {
 
   const modal = document.getElementById('modal-smartscreen');
   const nameEl = document.getElementById('smartscreen-app-name');
-  const fmtEl = document.getElementById('smartscreen-app-format');
-  const sigEl = document.getElementById('smartscreen-app-sig');
+  const pubEl = document.getElementById('smartscreen-app-publisher');
+  const infoPanel = document.getElementById('smartscreen-more-info-panel');
 
-  if (nameEl) nameEl.textContent = file.name;
-  if (fmtEl) fmtEl.textContent = `${file.type} (.${file.realExt})`;
-  if (sigEl) sigEl.textContent = file.threatName || 'Unsigned Executable Binary';
+  if (nameEl && file) nameEl.textContent = file.name;
+  if (pubEl) pubEl.textContent = 'Unknown publisher';
+  if (infoPanel) infoPanel.classList.add('hidden');
 
   if (modal) modal.classList.remove('hidden');
   if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
+}
+
+function toggleSmartScreenMoreInfo() {
+  const panel = document.getElementById('smartscreen-more-info-panel');
+  if (panel) {
+    panel.classList.toggle('hidden');
+  }
 }
 
 function closeSmartScreenModal() {
@@ -10098,12 +10185,245 @@ function smartscreenScan() {
   }
 }
 
+function smartscreenDontRun() {
+  closeSmartScreenModal();
+  if (typeof AudioManager !== 'undefined' && AudioManager.playCorrect) {
+    AudioManager.playCorrect();
+  }
+  showToast('🛡️ Windows SmartScreen: Blocked unrecognized app from running.', 'info');
+  if (typeof RyanGuide !== 'undefined') {
+    RyanGuide.speak([
+      {
+        text: "🎯 <strong>Great decision!</strong> You clicked <strong>Don't run</strong>.",
+        state: 'success'
+      },
+      {
+        text: "Windows protected your PC! Never execute unrecognized .exe files downloaded from unverified emails. Now delete or quarantine the file to keep your system safe.",
+        state: 'speaking'
+      }
+    ]);
+  }
+}
+
 function smartscreenQuarantine() {
-  const file = smartscreenTargetFile;
+  const file = smartscreenTargetFile || getScholarshipGrantFileDef();
   closeSmartScreenModal();
   if (file) {
     quarantineFile(file.id);
   }
+  if (typeof AudioManager !== 'undefined' && AudioManager.playCorrect) {
+    AudioManager.playCorrect();
+  }
+  showToast(`🛡️ Threat neutralized: "${file ? file.name : 'Scholarship_Grant_Form.pdf.exe'}" deleted/quarantined.`, 'success');
+}
+
+// ─── 5. DOWNLOAD TRAY & SCHOLARSHIP THREAT SIMULATION ──────
+function downloadEmailAttachment(filename, size) {
+  if (window._isDownloadingAttachment) {
+    showToast('⏳ Download already in progress...', 'info');
+    return;
+  }
+  window._isDownloadingAttachment = true;
+
+  const tray = document.getElementById('browser-download-tray');
+  const nameEl = document.getElementById('bdt-file-name');
+  const metaEl = document.getElementById('bdt-file-meta');
+  const fillEl = document.getElementById('bdt-progress-fill');
+  const actionsEl = document.getElementById('bdt-actions');
+
+  const fname = filename || 'Scholarship_Grant_Form.pdf.exe';
+  const fsize = size || '2.4 MB';
+
+  if (nameEl) nameEl.textContent = fname;
+  if (metaEl) metaEl.textContent = 'Connecting to download server... 0%';
+  if (fillEl) fillEl.style.width = '0%';
+  if (actionsEl) actionsEl.classList.add('hidden');
+  if (tray) tray.classList.remove('hidden');
+
+  if (typeof AudioManager !== 'undefined' && AudioManager.playClick) {
+    AudioManager.playClick();
+  }
+
+  showToast(`⬇️ Starting download: "${fname}" (${fsize})...`, 'info');
+
+  let pct = 0;
+  const interval = setInterval(() => {
+    pct += Math.floor(Math.random() * 18) + 15;
+    if (pct > 100) pct = 100;
+
+    if (fillEl) fillEl.style.width = `${pct}%`;
+    if (metaEl) {
+      if (pct < 100) {
+        const mb = ((pct / 100) * 2.4).toFixed(1);
+        metaEl.textContent = `Downloading... ${pct}% (${mb} MB / ${fsize} • 3.4 MB/s)`;
+      } else {
+        metaEl.innerHTML = `<strong style="color:#ef4444">⚠️ Threat Flagged</strong> • ${fsize} • Saved to Downloads`;
+      }
+    }
+
+    if (pct >= 100) {
+      clearInterval(interval);
+      window._isDownloadingAttachment = false;
+
+      // Add to Chapter 1 downloads list if not already there
+      const fileObj = getScholarshipGrantFileDef();
+      if (!window.ch1DownloadsList || !window.ch1DownloadsList.some(f => f.id === fileObj.id)) {
+        window.ch1DownloadsList = [fileObj];
+      }
+
+      if (actionsEl) actionsEl.classList.remove('hidden');
+
+      // Update badge and file list if explorer is active
+      const dlBadge = document.getElementById('downloads-badge');
+      if (dlBadge) {
+        dlBadge.textContent = '1';
+        dlBadge.style.display = '';
+        dlBadge.classList.remove('hidden-init');
+      }
+
+      if (currentExplorerFolder === 'downloads') {
+        renderFolderFiles();
+      }
+
+      // Play threat alert sound
+      if (typeof AudioManager !== 'undefined' && AudioManager.playWrong) {
+        AudioManager.playWrong();
+      }
+
+      // Windows Defender Malicious Threat Notification
+      showToast('🛡️ Windows Security: Threat detected! "Trojan:Win32/DisguisedExecutable" in Downloads folder.', 'error');
+
+      // Ryan Mentor warning dialogue
+      if (typeof RyanGuide !== 'undefined') {
+        RyanGuide.speak([
+          {
+            text: "🛑 <strong>STOP! Do not open that file!</strong><br><code>Scholarship_Grant_Form.pdf.exe</code> ends in <strong>.exe</strong> — attackers disguised malware as a PDF!",
+            state: 'concerned'
+          },
+          {
+            text: "⚠️ <strong>Double Extension Trap:</strong> Delete this dangerous file immediately.<div style=\"margin-top:8px;\"><button type=\"button\" onclick=\"quarantineFile('f_scholarship_grant'); if (typeof RyanGuide !== 'undefined' &amp;&amp; RyanGuide.dismiss) RyanGuide.dismiss();\" style=\"background:linear-gradient(135deg,#ef4444,#dc2626);color:#ffffff;border:1px solid rgba(255,255,255,0.35);padding:5px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(220,38,38,0.4);\">🗑️ Delete Malicious File Now</button></div>",
+            state: 'concerned'
+          }
+        ]);
+      }
+    }
+  }, 160);
+}
+
+function closeDownloadTray() {
+  const tray = document.getElementById('browser-download-tray');
+  if (tray) tray.classList.add('hidden');
+}
+
+function openFolderFromTray() {
+  closeDownloadTray();
+  openApp('folder');
+  switchExplorerFolder('downloads');
+  showToast('📁 Opened Downloads folder: 1 file ready.', 'info');
+}
+
+function openDownloadedFileFromTray() {
+  closeDownloadTray();
+  const file = getScholarshipGrantFileDef();
+  showSmartScreenWarning(file);
+}
+
+function openScholarshipInstallerModal() {
+  const modal = document.getElementById('modal-scholarship-installer');
+  if (!modal) return;
+
+  // Reset to Step 1
+  document.getElementById('installer-step-1')?.classList.remove('hidden');
+  document.getElementById('installer-step-2')?.classList.add('hidden');
+  document.getElementById('installer-step-3')?.classList.add('hidden');
+
+  const fill = document.getElementById('inst-progress-fill');
+  if (fill) fill.style.width = '0%';
+  const label = document.getElementById('inst-status-label');
+  if (label) label.textContent = 'Connecting to server...';
+
+  modal.classList.remove('hidden');
+  if (typeof AudioManager !== 'undefined' && AudioManager.playClick) {
+    AudioManager.playClick();
+  }
+}
+
+function closeScholarshipInstallerModal() {
+  const modal = document.getElementById('modal-scholarship-installer');
+  if (modal) modal.classList.add('hidden');
+}
+
+function startScholarshipInstallation() {
+  const s1 = document.getElementById('installer-step-1');
+  const s2 = document.getElementById('installer-step-2');
+  const s3 = document.getElementById('installer-step-3');
+  const fill = document.getElementById('inst-progress-fill');
+  const label = document.getElementById('inst-status-label');
+  const logBox = document.getElementById('inst-log-box');
+
+  if (s1) s1.classList.add('hidden');
+  if (s2) s2.classList.remove('hidden');
+  if (s3) s3.classList.add('hidden');
+
+  if (logBox) {
+    logBox.innerHTML = `
+      <div class="log-line">[0.00s] Initializing setup extraction engine...</div>
+    `;
+  }
+
+  const logs = [
+    { p: 20, text: 'Connecting to remote host: northfield-scholarship.com...', log: '[0.35s] Established socket connection to 198.51.100.89:443' },
+    { p: 45, text: 'Extracting package: grant_agreement_v2.dll...', log: '[0.70s] Dropping payload to AppData\\Local\\Temp\\NorthfieldGrantSvc.exe' },
+    { p: 70, text: 'Creating autorun registry keys...', log: '[1.10s] Added HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run entry' },
+    { p: 90, text: 'Executing payload binary (Scholarship_Grant_Form.pdf.exe)...', log: '[1.45s] Process spawned with elevated system privileges PID: 4892' },
+    { p: 100, text: 'Installation complete. Launching payload...', log: '[1.70s] ⚠️ Trojan Dropper execution triggered!' }
+  ];
+
+  let stepIdx = 0;
+  const interval = setInterval(() => {
+    if (stepIdx < logs.length) {
+      const cur = logs[stepIdx];
+      if (fill) fill.style.width = `${cur.p}%`;
+      if (label) label.textContent = cur.text;
+      if (logBox) {
+        logBox.innerHTML += `<div class="log-line">${cur.log}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+      stepIdx++;
+    } else {
+      clearInterval(interval);
+      setTimeout(() => {
+        if (s2) s2.classList.add('hidden');
+        if (s3) s3.classList.remove('hidden');
+        if (typeof AudioManager !== 'undefined' && AudioManager.playWrong) {
+          AudioManager.playWrong();
+        }
+      }, 500);
+    }
+  }, 350);
+}
+
+function quarantineScholarshipMalware() {
+  const file = getScholarshipGrantFileDef();
+  file.quarantined = true;
+  if (window.ch1DownloadsList && window.ch1DownloadsList.length > 0) {
+    window.ch1DownloadsList[0].quarantined = true;
+  }
+  closeScholarshipInstallerModal();
+  updateAntiVirusProtectionUI();
+  if (currentExplorerFolder === 'downloads') {
+    renderFolderFiles();
+  }
+  if (typeof AudioManager !== 'undefined' && AudioManager.playCorrect) {
+    AudioManager.playCorrect();
+  }
+  showToast('🛡️ Threat Neutralized: "Scholarship_Grant_Form.pdf.exe" has been quarantined.', 'success');
+}
+
+function returnToZmailFromInstaller() {
+  closeScholarshipInstallerModal();
+  openApp('gmail');
+  showToast('📧 Returned to Zmail. Flag the suspicious attachment and fake sender to report the attack!', 'info');
 }
 
 
@@ -10392,6 +10712,39 @@ function displayScanResult(file) {
 }
 
 function quarantineFile(fileId) {
+  if (fileId === 'f_scholarship_grant') {
+    window.ch1DownloadsList = [];
+    gameState.selectedFolderFileId = null;
+    const dlBadge = document.getElementById('downloads-badge');
+    if (dlBadge) {
+      dlBadge.textContent = '0';
+      dlBadge.style.display = 'none';
+      dlBadge.classList.add('hidden-init');
+    }
+    renderFolderFiles(document.getElementById('folder-search-input')?.value || '');
+    const emptyEl = document.getElementById('fdp-empty');
+    const contentEl = document.getElementById('fdp-content');
+    if (emptyEl) emptyEl.classList.remove('hidden');
+    if (contentEl) contentEl.classList.add('hidden');
+    if (typeof AudioManager !== 'undefined' && AudioManager.playCorrect) {
+      AudioManager.playCorrect();
+    }
+    showToast('🛡️ Threat Neutralized: "Scholarship_Grant_Form.pdf.exe" deleted from Downloads folder.', 'success');
+    if (typeof RyanGuide !== 'undefined') {
+      RyanGuide.speak([
+        {
+          text: "🎯 <strong>Threat Neutralized!</strong> You safely deleted the malicious file from your Downloads folder.",
+          state: 'success'
+        },
+        {
+          text: "Great job keeping your workstation clean! Now head back to Zmail to report the phishing incident.",
+          state: 'speaking'
+        }
+      ]);
+    }
+    return;
+  }
+
   const file = FOLDER_FILES.find(f => f.id === fileId);
   if (!file) return;
 
@@ -12296,10 +12649,12 @@ function _goToStorySelect() {
     welcomeOv.style.display = 'none';
   }
 
-  // Hide all overlays cleanly
+  // Hide all other overlays cleanly
   document.querySelectorAll('.overlay').forEach(o => {
     o.classList.remove('active');
-    o.style.display = 'none';
+    if (o.id !== 'overlay-story-select') {
+      o.style.display = 'none';
+    }
   });
   const bd = document.getElementById('overlay-backdrop');
   if (bd) bd.classList.remove('active');
@@ -15234,7 +15589,10 @@ function storySelectPlay(categoryId) {
             showComicStrip();
           } else {
             const tm = document.getElementById('overlay-title-menu');
-            if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+            if (tm) {
+              tm.style.display = 'flex';
+              tm.classList.add('active');
+            }
             setTimeout(() => {
               const inp = document.getElementById('ls-name-input');
               if (inp) { inp.value = ''; inp.focus(); }
@@ -15250,7 +15608,10 @@ function storySelectPlay(categoryId) {
         showComicStrip();
       } else {
         const tm = document.getElementById('overlay-title-menu');
-        if (tm) { tm.style.display = ''; tm.classList.add('active'); }
+        if (tm) {
+          tm.style.display = 'flex';
+          tm.classList.add('active');
+        }
         setTimeout(() => {
           const inp = document.getElementById('ls-name-input');
           if (inp) { inp.value = ''; inp.focus(); }
@@ -15752,7 +16113,7 @@ const RyanGuide = (() => {
     if (!textEl) return;
     textEl.innerHTML = '';
 
-    if (fullText.length > MAX_CHARS) {
+    if (fullText.length > MAX_CHARS || fullText.includes('<')) {
       textEl.innerHTML = fullText;
       if (onComplete) onComplete();
       return;

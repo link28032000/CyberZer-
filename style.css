@@ -1169,86 +1169,722 @@ body.has-ryan-dialogue .app-window.maximized {
   border-radius: 4px;
 }
 
-/* Email Attachment Card */
+/* ── GMAIL-STYLE EMAIL ATTACHMENT CARD ── */
 .email-attachment-card {
-  margin: 16px 0;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  padding: 12px 14px;
+  margin: 16px 0 8px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 .email-attachment-header {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 11.5px;
+  font-weight: 600;
   color: #94a3b8;
   margin-bottom: 8px;
 }
-.email-attachment-body {
+.email-attachment-header-left {
   display: flex;
   align-items: center;
+  gap: 6px;
+}
+.email-attach-icon {
+  font-size: 13px;
+  color: #94a3b8;
+}
+.email-attachment-body {
+  display: inline-flex;
+  align-items: center;
   gap: 12px;
-  background: rgba(30, 41, 59, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  max-width: 360px;
+  width: 100%;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
   padding: 10px 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .email-attachment-body:hover {
   background: rgba(51, 65, 85, 0.85);
   border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
-.email-attach-file-icon {
-  font-size: 26px;
+.email-attachment-body.flagged {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35) !important;
+}
+.email-attach-preview-thumb {
+  position: relative;
+  width: 40px;
+  height: 46px;
+  flex-shrink: 0;
+}
+.email-attach-thumb-paper {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.email-attach-thumb-paper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 13px;
+  height: 13px;
+  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  border-bottom-left-radius: 3px;
+  box-shadow: -1px 1px 2px rgba(0, 0, 0, 0.15);
+}
+.thumb-paper-lines {
+  width: 75%;
+  height: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+  align-self: flex-start;
+  margin-left: 2px;
+}
+.thumb-paper-line {
+  height: 1.5px;
+  background: #cbd5e1;
+  border-radius: 1px;
+}
+.thumb-paper-line:nth-child(1) { width: 55%; }
+.thumb-paper-line:nth-child(2) { width: 90%; }
+.thumb-paper-line:nth-child(3) { width: 70%; }
+.thumb-ext-badge {
+  font-size: 9.5px;
+  font-weight: 900;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  padding: 1.5px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.6px;
+  line-height: 1.1;
+  box-shadow: 0 1px 4px rgba(220, 38, 38, 0.4);
+}
+
+/* Windows .EXE Application Thumbnail Icon */
+.email-attach-thumb-exe {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+}
+.exe-thumb-titlebar {
+  height: 11px;
+  background: linear-gradient(90deg, #0284c7, #0369a1);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding-left: 4px;
+}
+.exe-thumb-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+}
+.exe-thumb-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 2px 0;
+}
+.exe-icon-symbol {
+  font-size: 13px;
+  line-height: 1;
+}
+.thumb-ext-badge-exe {
+  font-size: 8px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 1px 3px;
+  border-radius: 2px;
+  letter-spacing: 0.4px;
   line-height: 1;
 }
 .email-attach-file-info {
   flex: 1;
   min-width: 0;
 }
-.email-attach-filename {
-  font-size: 13px;
-  font-weight: 600;
-  color: #f1f5f9;
+.email-attach-filename-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  word-break: break-all;
 }
-.email-attach-warning-tag {
-  font-size: 10px;
+.email-attach-filename {
+  font-size: 14px;
   font-weight: 700;
-  color: #f87171;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  border-radius: 4px;
-  padding: 1px 6px;
-  letter-spacing: 0.3px;
+  color: #f8fafc;
+  word-break: break-all;
+  letter-spacing: -0.2px;
 }
-.email-attach-filesize {
+.email-attach-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   color: #94a3b8;
-  margin-top: 2px;
+  margin-top: 3px;
 }
-.email-attach-inspect-btn {
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: #38bdf8;
-  padding: 6px 12px;
+.email-attach-dot {
+  color: #64748b;
+}
+.email-attach-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.email-attach-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 14px;
   border-radius: 6px;
   font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35);
+}
+.email-attach-download-btn:hover {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.5);
+}
+.email-attach-download-btn:active {
+  transform: translateY(1px);
+}
+.email-attach-download-btn .dl-icon {
+  font-size: 13px;
+  animation: dlBounce 1.5s infinite;
+}
+@keyframes dlBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* ── BROWSER DOWNLOAD TRAY WIDGET ── */
+.browser-download-tray {
+  position: fixed;
+  top: 60px;
+  right: 24px;
+  width: 340px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+  backdrop-filter: blur(12px);
+  z-index: 10000;
+  animation: slideDownTray 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+@keyframes slideDownTray {
+  from { opacity: 0; transform: translateY(-16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.bdt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(30, 41, 59, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.bdt-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bdt-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.3px;
+}
+.bdt-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.bdt-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.bdt-body {
+  padding: 12px 14px;
+}
+.bdt-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bdt-file-thumb {
+  width: 36px;
+  height: 40px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bdt-ext-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffaa00;
+  background: rgba(255, 170, 0, 0.15);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.bdt-file-info {
+  flex: 1;
+  min-width: 0;
+}
+.bdt-file-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bdt-progress-wrap {
+  margin: 6px 0 4px;
+}
+.bdt-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(51, 65, 85, 0.8);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bdt-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #38bdf8);
+  border-radius: 3px;
+  transition: width 0.15s ease-out;
+}
+.bdt-file-meta {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.bdt-actions {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 8px;
+}
+.bdt-action-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+.bdt-open-btn {
+  background: #0284c7;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.bdt-open-btn:hover {
+  background: #0ea5e9;
+}
+.bdt-folder-btn {
+  background: rgba(51, 65, 85, 0.8);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.bdt-folder-btn:hover {
+  background: rgba(71, 85, 105, 0.9);
+  color: #fff;
+}
+
+/* ── WINDOWS SETUP WIZARD (Scholarship Grant Installer Modal) ── */
+.installer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 10500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInModal 0.25s ease;
+}
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.installer-wizard-window {
+  width: 580px;
+  max-width: 95vw;
+  background: #0f172a;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 240, 255, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.installer-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: linear-gradient(90deg, #1e293b, #0f172a);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-size: 12px;
   font-weight: 600;
+  user-select: none;
+}
+.installer-titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.installer-win-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.installer-win-btn:hover {
+  background: #ef4444;
+  color: #fff;
+}
+.installer-frame-body {
+  display: flex;
+  min-height: 380px;
+}
+.installer-sidebar {
+  width: 170px;
+  background: linear-gradient(180deg, #0369a1 0%, #0f172a 100%);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+.installer-brand-badge {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+.installer-brand-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+.installer-brand-sub {
+  font-size: 10px;
+  color: #bae6fd;
+  margin-top: 2px;
+}
+.installer-brand-art {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+.installer-shield-art {
+  font-size: 44px;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+}
+.installer-brand-footer {
+  font-size: 9px;
+  color: #64748b;
+}
+.installer-main-pane {
+  flex: 1;
+  background: #111827;
+  display: flex;
+  flex-direction: column;
+}
+.installer-step {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.installer-step.hidden {
+  display: none !important;
+}
+.installer-step-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 6px;
+}
+.installer-step-header p {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+.installer-step-body {
+  flex: 1;
+}
+.installer-info-box {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.installer-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.installer-info-row:last-child {
+  border-bottom: none;
+}
+.inst-label {
+  color: #94a3b8;
+}
+.inst-val {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+.inst-val.highlight-grant {
+  color: #4ade80;
+  font-weight: 700;
+}
+.inst-val.mono {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+}
+.installer-checkbox-row {
+  margin: 10px 0;
+}
+.installer-check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.installer-notice-text {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 10px 0 0;
+}
+.installer-step-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.inst-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.email-attach-inspect-btn:hover {
-  background: rgba(56, 189, 248, 0.3);
+.inst-btn-primary {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.inst-btn-primary:hover {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+}
+.inst-btn-cancel {
+  background: rgba(51, 65, 85, 0.6);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.inst-btn-cancel:hover:not(:disabled) {
+  background: rgba(71, 85, 105, 0.8);
   color: #fff;
+}
+.inst-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Installer Step 2 Progress */
+.installer-progress-container {
+  margin: 12px 0;
+}
+.installer-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #1e293b;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.installer-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7, #38bdf8, #4ade80);
+  background-size: 200% 100%;
+  animation: progressShimmer 2s linear infinite;
+  transition: width 0.25s ease-out;
+}
+@keyframes progressShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.installer-status-label {
+  font-size: 11px;
+  color: #38bdf8;
+  margin-top: 6px;
+  font-family: var(--font-mono, monospace);
+}
+.installer-log-box {
+  background: #090d16;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+  height: 110px;
+  overflow-y: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+.installer-log-box .log-line {
+  margin-bottom: 2px;
+}
+
+/* Installer Step 3 Malware Alert */
+.installer-malware-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.malware-banner-icon {
+  font-size: 28px;
+  animation: blinkAlert 1s infinite alternate;
+}
+@keyframes blinkAlert {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+.malware-banner-text h4 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ef4444;
+  margin: 0 0 2px;
+  letter-spacing: 0.5px;
+}
+.malware-banner-text p {
+  font-size: 11px;
+  color: #fca5a5;
+  margin: 0;
+}
+.installer-alert-card {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.iac-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 6px;
+}
+.iac-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.iac-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.iac-item {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.iac-bullet {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.installer-step-footer.alert-footer {
+  justify-content: space-between;
+}
+.inst-btn-quarantine {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.inst-btn-quarantine:hover {
+  background: linear-gradient(135deg, #f87171, #ef4444);
 }
 
 /* Verdict Banner Missed Evidence Box */
@@ -7770,77 +8406,149 @@ body.has-ryan-dialogue .app-window.maximized {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 20px 20px 100px 20px;
+  box-sizing: border-box;
 }
 .smartscreen-overlay.hidden { display: none !important; }
-.smartscreen-card {
-  width: 100%;
-  max-width: 540px;
-  background: #091328;
-  border: 1px solid rgba(0, 120, 212, 0.5);
-  border-radius: 12px;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(0, 120, 212, 0.25);
-  overflow: hidden;
-  animation: pop-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+.smartscreen-real-card {
+  width: 500px;
+  min-height: 440px;
+  max-width: 95vw;
+  max-height: calc(100vh - 160px);
+  background: #005da6;
+  border-radius: 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 34px 36px 30px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  animation: pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 20px;
+  overflow-y: auto;
 }
-.smartscreen-topbar {
+
+.smartscreen-real-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 32px;
+  background: #ffffff;
+  border: none;
+  color: #000000;
+  font-size: 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  background: #005a9e;
-  color: #fff;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.3px;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
-.smartscreen-shield { font-size: 20px; }
-.smartscreen-body {
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.smartscreen-real-close:hover {
+  background: #e81123;
+  color: #ffffff;
 }
-.smartscreen-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.4;
-  margin: 0;
+
+.smartscreen-real-body {
+  flex: 1;
 }
-.smartscreen-desc {
-  font-size: 12.5px;
-  color: #94a3b8;
+
+.smartscreen-real-title {
+  font-size: 24px;
+  font-weight: 400;
+  color: #ffffff;
+  margin: 0 0 16px;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+}
+
+.smartscreen-real-desc {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #ffffff;
   line-height: 1.5;
-  margin: 0;
+  margin: 0 0 14px;
 }
-.smartscreen-details-box {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 12px;
+
+.smartscreen-real-link {
+  display: inline-block;
+  color: #ffffff;
+  font-size: 13.5px;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+.smartscreen-real-link:hover {
+  color: #e0f2fe;
+}
+
+.smartscreen-more-info-panel {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ffffff;
+  line-height: 1.6;
+}
+.smartscreen-more-info-panel.hidden {
+  display: none !important;
+}
+.ss-info-line {
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+.ss-info-label {
+  color: rgba(255, 255, 255, 0.7);
+  display: inline-block;
+  width: 75px;
+}
+.ss-more-actions {
+  margin-top: 10px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+}
+.ss-more-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  padding: 6px 14px;
   font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
 }
-.ss-detail-row {
-  display: flex;
-  gap: 8px;
+.ss-more-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
-.ss-label { width: 90px; color: #64748b; font-size: 11px; flex-shrink: 0; }
-.ss-val { color: #e2e8f0; font-weight: 600; word-break: break-all; }
-.ss-val.alert-danger { color: #ff5252; }
-.smartscreen-actions {
+
+.smartscreen-real-footer {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.smartscreen-real-btn {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 8px 30px;
+  cursor: pointer;
+  border-radius: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.15s ease;
+}
+.smartscreen-real-btn:hover {
+  background: #f1f5f9;
 }
 
 /* ═══════════════════════════════════════════════
@@ -16007,7 +16715,7 @@ body.g4-infected {
   left: 50%;
   right: auto;
   transform: translateX(-50%);
-  z-index: 9000;
+  z-index: 100010;
   display: flex;
   align-items: center;
   flex-direction: row; /* portrait on the left, bubble on the right */

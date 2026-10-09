@@ -631,40 +631,188 @@
     </div>
   </div>
 
-  <!-- ── WINDOWS DEFENDER SMARTSCREEN MODAL (Malware Blocked) ── -->
+  <!-- ── WINDOWS DEFENDER SMARTSCREEN MODAL (Authentic Windows 10/11 UI) ── -->
   <div id="modal-smartscreen" class="smartscreen-overlay hidden">
-    <div class="smartscreen-card">
-      <div class="smartscreen-topbar">
-        <span class="smartscreen-shield">🛡️</span>
-        <span class="smartscreen-banner-title">Windows Defender SmartScreen</span>
-      </div>
-      <div class="smartscreen-body">
-        <h2 class="smartscreen-title">Windows Defender SmartScreen prevented an unrecognized app from starting</h2>
-        <p class="smartscreen-desc">Running this unrecognized app might put your PC at risk. Attackers frequently camouflage executables with innocent names or deceptive double extensions.</p>
+    <div class="smartscreen-real-card">
+      <button type="button" class="smartscreen-real-close" onclick="smartscreenDontRun()" title="Close">&times;</button>
+      <div class="smartscreen-real-body">
+        <h2 class="smartscreen-real-title">Windows protected your PC</h2>
+        <p class="smartscreen-real-desc">Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk.</p>
+        <a href="javascript:void(0)" class="smartscreen-real-link" onclick="toggleSmartScreenMoreInfo()">More info</a>
 
-        <div class="smartscreen-details-box">
-          <div class="ss-detail-row">
-            <span class="ss-label">App:</span>
-            <span class="ss-val" id="smartscreen-app-name">salary_bonus_september.pdf.exe</span>
-          </div>
-          <div class="ss-detail-row">
-            <span class="ss-label">Actual Format:</span>
-            <span class="ss-val alert-danger" id="smartscreen-app-format">Executable Binary (.exe)</span>
-          </div>
-          <div class="ss-detail-row">
-            <span class="ss-label">Publisher:</span>
-            <span class="ss-val">Unknown / Untrusted Publisher</span>
-          </div>
-          <div class="ss-detail-row">
-            <span class="ss-label">Signature:</span>
-            <span class="ss-val" id="smartscreen-app-sig">Unsigned • Suspicious Binary</span>
+        <!-- Expandable Details -->
+        <div id="smartscreen-more-info-panel" class="smartscreen-more-info-panel hidden">
+          <div class="ss-info-line"><span class="ss-info-label">App:</span> <strong id="smartscreen-app-name">Scholarship_Grant_Form.pdf.exe</strong></div>
+          <div class="ss-info-line"><span class="ss-info-label">Publisher:</span> <span id="smartscreen-app-publisher">Unknown publisher</span></div>
+          <div class="ss-more-actions">
+            <button type="button" class="ss-more-btn" onclick="smartscreenQuarantine()">Quarantine Threat</button>
           </div>
         </div>
+      </div>
+      <div class="smartscreen-real-footer">
+        <button type="button" class="smartscreen-real-btn" id="smartscreen-btn-dontrun" onclick="smartscreenDontRun()">Don’t run</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="smartscreen-actions">
-          <button type="button" class="btn-danger" id="smartscreen-btn-quarantine" onclick="smartscreenQuarantine()">🛡️ Quarantine Immediately</button>
-          <button type="button" class="btn-primary" id="smartscreen-btn-scan" onclick="smartscreenScan()">⚡ Deep Scan with ShieldAV</button>
-          <button type="button" class="btn-ghost" onclick="closeSmartScreenModal()">Don't Run (Safe)</button>
+
+  <!-- ── REALISTIC DOWNLOAD NOTIFICATION & TRAY ANIMATION ── -->
+  <div id="browser-download-tray" class="browser-download-tray hidden" role="status" aria-live="polite">
+    <div class="bdt-header">
+      <div class="bdt-header-left">
+        <span class="bdt-icon">📥</span>
+        <span class="bdt-title">Downloads</span>
+      </div>
+      <button type="button" class="bdt-close-btn" onclick="closeDownloadTray()" title="Close">&times;</button>
+    </div>
+    <div class="bdt-body">
+      <div class="bdt-file-row">
+        <div class="bdt-file-thumb">
+          <div class="bdt-mini-doc">
+            <span class="bdt-ext-badge">EXE</span>
+          </div>
+        </div>
+        <div class="bdt-file-info">
+          <div class="bdt-file-name" id="bdt-file-name">Scholarship_Grant_Form.pdf.exe</div>
+          <div class="bdt-progress-wrap">
+            <div class="bdt-progress-bar">
+              <div class="bdt-progress-fill" id="bdt-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="bdt-file-meta" id="bdt-file-meta">Connecting... 0%</div>
+        </div>
+      </div>
+      <div class="bdt-actions hidden" id="bdt-actions">
+        <button type="button" class="bdt-action-btn bdt-open-btn" onclick="openDownloadedFileFromTray()">
+          <span>▶ Run / Open</span>
+        </button>
+        <button type="button" class="bdt-action-btn bdt-folder-btn" onclick="openFolderFromTray()">
+          <span>📁 Show in folder</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REALISTIC WINDOWS SETUP WIZARD (Scholarship Grant Installer) ── -->
+  <div id="modal-scholarship-installer" class="installer-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="installer-wizard-title">
+    <div class="installer-wizard-window">
+      <!-- Titlebar -->
+      <div class="installer-titlebar">
+        <div class="installer-titlebar-left">
+          <span class="installer-icon">📦</span>
+          <span id="installer-wizard-title">Northfield Scholarship Grant Approval &amp; Verification — Setup Wizard</span>
+        </div>
+        <div class="installer-titlebar-controls">
+          <button type="button" class="installer-win-btn" onclick="closeScholarshipInstallerModal()" title="Close">✕</button>
+        </div>
+      </div>
+
+      <!-- Installer Frame Content -->
+      <div class="installer-frame-body">
+        <!-- Sidebar Branding -->
+        <div class="installer-sidebar">
+          <div class="installer-brand-badge">🎓</div>
+          <div class="installer-brand-title">Northfield Grants</div>
+          <div class="installer-brand-sub">Academic Financial Aid</div>
+          <div class="installer-brand-art">
+            <div class="installer-shield-art">🛡️</div>
+          </div>
+          <div class="installer-brand-footer">v2.4.1 Official Release</div>
+        </div>
+
+        <!-- Main Wizard Pane -->
+        <div class="installer-main-pane">
+          <!-- STEP 1: Welcome & License -->
+          <div class="installer-step" id="installer-step-1">
+            <div class="installer-step-header">
+              <h3>Welcome to the Student Grant Approval Verification Setup</h3>
+              <p>This setup program installs the automated Grant Verification Agent and Student Payment Authorization records onto your computer.</p>
+            </div>
+            <div class="installer-step-body">
+              <div class="installer-info-box">
+                <div class="installer-info-row">
+                  <span class="inst-label">Package Name:</span>
+                  <span class="inst-val">Scholarship_Grant_Form.pdf.exe</span>
+                </div>
+                <div class="installer-info-row">
+                  <span class="inst-label">Target Award:</span>
+                  <span class="inst-val highlight-grant">₱50,000 Disbursement Grant</span>
+                </div>
+                <div class="installer-info-row">
+                  <span class="inst-label">Destination Folder:</span>
+                  <span class="inst-val mono">C:\Program Files (x86)\Northfield\GrantApproval\</span>
+                </div>
+              </div>
+
+              <div class="installer-checkbox-row">
+                <label class="installer-check-label">
+                  <input type="checkbox" id="inst-chk-agree" checked disabled>
+                  <span>Authorize immediate student grant verification and execute installer package</span>
+                </label>
+              </div>
+
+              <p class="installer-notice-text">Click <strong>Install</strong> to proceed with verification package deployment.</p>
+            </div>
+            <div class="installer-step-footer">
+              <button type="button" class="inst-btn inst-btn-cancel" onclick="closeScholarshipInstallerModal()">Cancel</button>
+              <button type="button" class="inst-btn inst-btn-primary" onclick="startScholarshipInstallation()">Install &gt;</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Installing Progress Animation -->
+          <div class="installer-step hidden" id="installer-step-2">
+            <div class="installer-step-header">
+              <h3>Installing Verification Package...</h3>
+              <p>Please wait while Setup copies files and registers runtime components on your computer.</p>
+            </div>
+            <div class="installer-step-body">
+              <div class="installer-progress-container">
+                <div class="installer-progress-bar">
+                  <div class="installer-progress-fill" id="inst-progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="installer-status-label" id="inst-status-label">Connecting to server...</div>
+              </div>
+              <div class="installer-log-box" id="inst-log-box">
+                <div class="log-line">[0.00s] Initializing setup extraction engine...</div>
+              </div>
+            </div>
+            <div class="installer-step-footer">
+              <button type="button" class="inst-btn inst-btn-cancel" disabled>Please wait...</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Trojan Dropper Interception / Educational Alert -->
+          <div class="installer-step hidden" id="installer-step-3">
+            <div class="installer-malware-banner">
+              <span class="malware-banner-icon">🚨</span>
+              <div class="malware-banner-text">
+                <h4>MALICIOUS PAYLOAD EXECUTED</h4>
+                <p>Double Extension Trojan Dropper Attack Intercepted</p>
+              </div>
+            </div>
+            <div class="installer-step-body">
+              <div class="installer-alert-card">
+                <div class="iac-title">⚠️ What just happened?</div>
+                <p class="iac-desc">
+                  You opened <code>Scholarship_Grant_Form.pdf.exe</code>. Although it showed a document name and claimed to be a PDF grant form, its true file type is a <strong>Windows Executable Application (.exe)</strong>.
+                </p>
+                <div class="iac-breakdown">
+                  <div class="iac-item">
+                    <span class="iac-bullet">🚩</span>
+                    <div><strong>Deceptive Double Extension:</strong> Attackers name files <code>.pdf.exe</code> knowing many systems hide known extensions or victims only read the first extension.</div>
+                  </div>
+                  <div class="iac-item">
+                    <span class="iac-bullet">⚠️</span>
+                    <div><strong>Simulated Danger:</strong> In an actual attack, running this installer drops keyloggers, steals credentials, or deploys ransomware across the network.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="installer-step-footer alert-footer">
+              <button type="button" class="inst-btn inst-btn-quarantine" onclick="quarantineScholarshipMalware()">🛡️ Quarantine Threat</button>
+              <button type="button" class="inst-btn inst-btn-primary" onclick="returnToZmailFromInstaller()">📧 Back to Zmail (Flag Evidence)</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
