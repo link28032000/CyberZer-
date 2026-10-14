@@ -361,12 +361,13 @@ p { line-height: 1.6; }
   position: absolute;
   bottom: 64px;
   right: 24px;
-  width: 320px;
+  width: 330px;
   max-width: calc(100vw - 32px);
-  max-height: min(580px, calc(100vh - 80px));
+  height: 480px;
+  max-height: min(560px, calc(100vh - 80px));
   display: flex;
   flex-direction: column;
-  z-index: 60;
+  z-index: 4500;
   background: linear-gradient(175deg, #fffbc8 0%, #fff176 28%, #ffee55 70%, #fcd34d 100%);
   color: #1e293b;
   border: 1px solid rgba(234, 179, 8, 0.45);
@@ -391,7 +392,8 @@ p { line-height: 1.6; }
 }
 
 .sticky-note.collapsed {
-  max-height: fit-content;
+  height: auto !important;
+  max-height: fit-content !important;
   padding-bottom: 8px;
 }
 .sticky-note.collapsed .sticky-note-scroll {
@@ -507,6 +509,67 @@ p { line-height: 1.6; }
   background: rgba(180, 83, 9, 0.38);
 }
 
+/* Locked State — Fills the sticky note keeping its full dimensions */
+.sn-locked-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 18px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(4px);
+  border: 1.5px dashed rgba(202, 138, 4, 0.45);
+  border-radius: 10px;
+  box-sizing: border-box;
+  margin: auto 0;
+  min-height: 380px;
+}
+
+.sn-locked-icon-bubble {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(254, 240, 138, 0.95);
+  border: 2px solid rgba(234, 179, 8, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(161, 98, 7, 0.16);
+}
+
+.sn-locked-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #713f12;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.sn-locked-desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #854d0e;
+  max-width: 250px;
+  margin-bottom: 18px;
+}
+
+.sn-locked-hint {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #a16207;
+  background: rgba(254, 243, 199, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Rules Card */
 .sn-rules-card {
   background: rgba(255, 255, 255, 0.75);
@@ -602,7 +665,7 @@ p { line-height: 1.6; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  z-index: 100;
+  z-index: 200;
   transition: top 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow var(--transition);
   resize: both;
 }
@@ -611,13 +674,11 @@ p { line-height: 1.6; }
   transition: none !important;
 }
 
+/* When the Ryan dialogue is visible, clamp window height to the safe area
+   above it so windows fit neatly. Users can still drag windows freely
+   (including behind the dialogue) — the dialogue stays on top via z-index. */
 body.has-ryan-dialogue .app-window:not(.maximized) {
-  max-height: calc(100vh - 200px) !important;
-}
-
-body.has-ryan-dialogue .app-window.maximized {
-  inset: 0 0 195px 0 !important;
-  transition: inset 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+  max-height: calc(100vh - 245px) !important;
 }
 
 #win-gmail {
@@ -1782,6 +1843,7 @@ body.has-ryan-dialogue .app-window.maximized {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .installer-progress-fill {
+  width: 0%;
   height: 100%;
   background: linear-gradient(90deg, #0284c7, #38bdf8, #4ade80);
   background-size: 200% 100%;
@@ -13719,8 +13781,10 @@ body.has-ryan-dialogue .app-window.maximized {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #0b111e;
+  background: radial-gradient(circle at 50% 25%, #192642 0%, #090e18 100%);
   overflow: hidden;
+  position: relative;
+  user-select: none;
 }
 
 .pl-phone-status-bar {
@@ -13731,24 +13795,245 @@ body.has-ryan-dialogue .app-window.maximized {
   font-size: 10px;
   font-weight: 600;
   color: #cbd5e1;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   font-family: 'JetBrains Mono', monospace;
+  z-index: 2;
+  flex-shrink: 0;
 }
 .pl-phone-icons {
   display: flex;
   gap: 4px;
 }
-.pl-phone-app-bar {
-  padding: 7px 12px;
-  background: #151e2f;
-  font-size: 12px;
-  font-weight: 700;
-  color: #38bdf8;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
 .pl-phone-content {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Phone Screen: Home Screen Layout */
+.pl-phone-home-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 14px 10px 8px;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.pl-phone-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pl-phone-widget-time {
+  font-size: 30px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.pl-phone-widget-date {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-top: 5px;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.pl-phone-apps-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.pl-phone-apps-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.pl-phone-app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.pl-phone-app-item:hover {
+  transform: translateY(-3px) scale(1.06);
+}
+
+.pl-phone-app-item:active {
+  transform: scale(0.92);
+}
+
+.pl-phone-app-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  position: relative;
+  transition: box-shadow 0.2s ease;
+}
+
+.pl-phone-app-item:hover .pl-phone-app-icon {
+  box-shadow: 0 8px 22px rgba(56, 189, 248, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.pl-app-icon-messages {
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+}
+
+.pl-app-icon-calls {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.pl-phone-app-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #f1f5f9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  letter-spacing: 0.2px;
+}
+
+/* Phone Screen: In-App View (Empty state for Messages & Calls) */
+.pl-phone-inapp-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pl-phone-inapp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: #111a2c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.pl-phone-screen-back {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #38bdf8;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 3px 7px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.pl-phone-screen-back:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: #ffffff;
+}
+
+.pl-phone-screen-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.pl-phone-inapp-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 10px;
+  text-align: center;
+  gap: 8px;
+}
+
+.pl-phone-screen-empty-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  opacity: 0.85;
+}
+
+.pl-phone-screen-empty-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 0.2px;
+}
+
+.pl-phone-screen-empty-desc {
+  font-size: 9.5px;
+  color: #94a3b8;
+  max-width: 130px;
+  line-height: 1.4;
+}
+
+.pl-phone-screen-home-btn {
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pl-phone-screen-home-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* Bottom Gesture Bar */
+.pl-phone-bottom-bar {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+  flex-shrink: 0;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.pl-phone-bottom-bar:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pl-phone-home-pill {
+  width: 44px;
+  height: 3.5px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.pl-phone-bottom-bar:hover .pl-phone-home-pill {
+  background: rgba(255, 255, 255, 0.85);
+  width: 52px;
 }
 
 .pl-notif-badge {
@@ -17530,33 +17815,33 @@ body.g4-infected {
 
 /* ── Dismiss transition ────────────────────── */
 .desktop-icon#icon-notes.icon-attention {
-  border-color: rgba(245, 158, 11, 0.9) !important;
-  background: rgba(245, 158, 11, 0.16) !important;
+  border-color: rgba(251, 146, 60, 0.9) !important;
+  background: rgba(251, 146, 60, 0.14) !important;
   animation: icon-notes-attention-glow 1.4s ease-in-out infinite !important;
 }
 
 @keyframes icon-notes-attention-glow {
   0%, 100% {
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.7), 0 0 16px 4px rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.6), 0 0 14px 3px rgba(251, 146, 60, 0.3);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 1), 0 0 26px 8px rgba(245, 158, 11, 0.65);
+    box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.85), 0 0 22px 7px rgba(251, 146, 60, 0.5);
     transform: scale(1.05);
   }
 }
 
 .sticky-note.highlight-attention {
-  box-shadow: 0 0 0 3px #f59e0b, 0 12px 32px rgba(245, 158, 11, 0.5) !important;
-  animation: sticky-note-attention-pulse 1.4s ease-in-out infinite !important;
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.85), 0 12px 32px rgba(251, 146, 60, 0.3) !important;
+  animation: sticky-note-attention-pulse 1.3s ease-in-out 3 !important;
 }
 
 @keyframes sticky-note-attention-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 3px #f59e0b, 0 10px 25px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.6), 0 10px 24px rgba(251, 146, 60, 0.25);
   }
   50% {
-    box-shadow: 0 0 0 5px #fbbf24, 0 16px 38px rgba(245, 158, 11, 0.7);
+    box-shadow: 0 0 0 5px rgba(251, 146, 60, 0.9), 0 16px 36px rgba(251, 146, 60, 0.5);
   }
 }
 
@@ -17932,30 +18217,30 @@ body.g4-infected {
   animation: none !important;
 }
 
-/* ── Flag Mode button pulse highlight (fires when email is opened) ── */
+/* ── Classification button glow highlight — infinite loop until verdict ── */
 @keyframes btn-flag-pulse {
   0%   {
-    box-shadow: 0 0 0 0   rgba(255,138,101,0.8);
-    background: rgba(239,83,80,0.22);
-    border-color: rgba(239,83,80,0.8);
-    color: #fff;
+    box-shadow: 0 0 0   0   rgba(255,138,101,0.85),
+                0 0 14px 2px rgba(255,138,101,0.35);
+    border-color: rgba(255,138,101,0.7);
   }
   50%  {
-    box-shadow: 0 0 0 8px rgba(255,138,101,0);
-    background: rgba(239,83,80,0.35);
-    border-color: #ef5350;
-    color: #fff;
+    box-shadow: 0 0 0  10px rgba(255,138,101,0),
+                0 0 22px 6px rgba(255,138,101,0.55);
+    border-color: #ff8a65;
   }
   100% {
-    box-shadow: 0 0 0 0   rgba(255,138,101,0);
-    background: rgba(239,83,80,0.15);
-    border-color: rgba(239,83,80,0.5);
+    box-shadow: 0 0 0   0   rgba(255,138,101,0.85),
+                0 0 14px 2px rgba(255,138,101,0.35);
+    border-color: rgba(255,138,101,0.7);
   }
 }
 .btn-pulse-highlight {
-  animation: btn-flag-pulse 1.0s ease-out 3 !important;
-  border: 1.5px solid rgba(239,83,80,0.7) !important;
+  animation: btn-flag-pulse 1.4s ease-in-out infinite !important;
+  border: 2px solid rgba(255,138,101,0.85) !important;
   border-radius: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 

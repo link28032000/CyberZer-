@@ -62,25 +62,22 @@
   <div id="sticky-note" class="sticky-note hidden">
     <div class="sticky-note-tape" id="sticky-note-drag-handle" title="Drag to move note"></div>
     <div class="sticky-note-header" id="sticky-note-drag-handle-2" title="Drag to move note">
-      <span id="sticky-note-title" class="sticky-note-title-text">📒 Detective's Notes</span>
+      <span id="sticky-note-title" class="sticky-note-title-text">📒 Phishing Investigation Tasks</span>
       <div class="sticky-note-actions">
         <button type="button" class="sticky-note-btn" onclick="toggleStickyNoteCollapse()" title="Minimize / Expand note">─</button>
         <button type="button" class="sticky-note-btn sticky-note-btn-close" onclick="closeStickyNote()" title="Close note">✕</button>
       </div>
     </div>
     <div class="sticky-note-scroll">
-      <div id="sn-checklist-section"></div>
-      <div class="sn-rules-card">
-        <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
-        <ul class="sticky-note-list">
-          <li><span class="sn-icon sn-good">🌐</span><span>Verify the <strong>sender's email domain</strong> carefully</span></li>
-          <li><span class="sn-icon sn-good">⏳</span><span>Look for <strong>manufactured urgency</strong> or threats</span></li>
-          <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
-          <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
-        </ul>
-      </div>
-      <div class="sticky-note-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
-        💡 <strong>Mission Goal:</strong> Build Phishing Knowledge & Awareness. Submitting Phishing or Non-phishing verdicts updates your live checklist progress.
+      <div class="sn-locked-container">
+        <div class="sn-locked-icon-bubble">🔒</div>
+        <div class="sn-locked-title">Tasks Locked</div>
+        <div class="sn-locked-desc">
+          Complete your first email investigation in Zmail to unlock your live <strong>Mission Task List</strong>.
+        </div>
+        <div class="sn-locked-hint">
+          👉 <span>Inspect email #1 to unlock tracking</span>
+        </div>
       </div>
     </div>
   </div>
@@ -768,7 +765,7 @@
             <div class="installer-step-body">
               <div class="installer-progress-container">
                 <div class="installer-progress-bar">
-                  <div class="installer-progress-fill" id="inst-progress-fill" style="width: 0%;"></div>
+                  <div class="installer-progress-fill" id="inst-progress-fill"></div>
                 </div>
                 <div class="installer-status-label" id="inst-status-label">Connecting to server...</div>
               </div>
@@ -952,11 +949,11 @@
                 <span>🔋</span>
               </div>
             </div>
-            <div class="pl-phone-app-bar">
-              <span id="pl-phone-app-name">Messages</span>
-            </div>
             <div class="pl-phone-content" id="pl-phone-content">
-              <!-- Rendered by JS -->
+              <!-- Rendered by JS: Home Screen with 2 apps or In-App empty view -->
+            </div>
+            <div class="pl-phone-bottom-bar" id="pl-phone-bottom-bar" onclick="returnPhoneHome()" title="Home Screen">
+              <div class="pl-phone-home-pill"></div>
             </div>
           </div>
           <!-- Notification badge -->
@@ -974,13 +971,10 @@
         <div class="pl-nav-tabs">
           <button type="button" class="pl-tab active" id="pl-tab-messages" onclick="switchPhoneTab('messages')">
             <span>💬</span> Messages
-            <span class="pl-tab-badge" id="pl-msg-badge">2</span>
+            <span class="pl-tab-badge hidden" id="pl-msg-badge"></span>
           </button>
           <button type="button" class="pl-tab" id="pl-tab-calls" onclick="switchPhoneTab('calls')">
             <span>📞</span> Calls
-          </button>
-          <button type="button" class="pl-tab" id="pl-tab-contacts" onclick="switchPhoneTab('contacts')">
-            <span>👥</span> Contacts
           </button>
         </div>
 
@@ -3521,17 +3515,6 @@
       <span class="results-score-max">correct out of <span id="res-max-score">9</span> emails</span>
     </div>
 
-    <!-- Evidence Breakdown per Email -->
-    <div class="res-evidence-breakdown" id="res-evidence-breakdown">
-      <div class="res-evb-header">
-        <span class="res-evb-title">🔍 Investigation Evidence Breakdown</span>
-        <span class="res-evb-sub">Flags you found vs. flags you missed per email</span>
-      </div>
-      <div class="res-evb-list" id="res-evb-list">
-        <!-- Populated by JS finishMission() -->
-      </div>
-    </div>
-
     <!-- Ryan Mentor Final Debrief -->
     <div class="ryan-results-card">
       <div class="ryan-results-portrait-wrap">
@@ -3553,9 +3536,8 @@
     </div>
 
     <div class="results-action-row">
-      <button type="button" class="btn-primary" id="btn-next-malware" onclick="proceedToNextCategory('malware')">CONTINUE TO NEXT MISSION (MALWARE) →</button>
-      <button type="button" class="btn-ghost" onclick="openCategoryHub()">📖 Story Selection</button>
-      <button type="button" class="btn-ghost" onclick="playAgain()">🔄 Replay Phishing</button>
+      <button type="button" class="btn-primary" onclick="openCategoryHub()">📖 Story Selection</button>
+      <button type="button" class="btn-ghost" onclick="toggleResultsOverlay()">🖥️ Desktop &amp; Sticky Note</button>
     </div>
   </div>
 </div>

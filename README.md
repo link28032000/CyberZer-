@@ -2,7 +2,7 @@
 
 # 🕵️‍♂️ CYBERZERØ (CyberZero)
 
-### _A Web based Simulation Game for Enchancing Cyber Threat Awareness and Knowledge_
+### _An Immersive Web-Based Simulation Game for Enhancing Cyber Threat Awareness & Defensive Skills_
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
@@ -17,10 +17,11 @@
 
 <p align="center">
   <a href="#-overview">Overview</a> •
-  <a href="#-the-story--defenders">Story & Defenders</a> •
+  <a href="#-game-concept--story">Story & Characters</a> •
+  <a href="#-complete-gameflow">Gameflow</a> •
   <a href="#-the-four-chapters">Chapters</a> •
-  <a href="#-simulated-desktop-environment">Desktop OS</a> •
-  <a href="#-scoring--ranking-system">Scoring System</a> •
+  <a href="#-simulated-desktop-os-environment">Desktop OS</a> •
+  <a href="#-scoring--ranking-system">Scoring & Ranks</a> •
   <a href="#-getting-started">Getting Started</a> •
   <a href="#-project-structure">Project Structure</a>
 </p>
@@ -31,44 +32,104 @@
 
 ## 📖 Overview
 
-**CYBERZERØ** is an immersive, story-driven cybersecurity training game built entirely in **pure Vanilla HTML5, CSS3, and modern JavaScript**. Running directly in any web browser without frameworks, build tools, or backend servers, the game drops players into a fully functional **simulated cyber workstation OS**.
+**CYBERZERØ** is an interactive, story-driven cybersecurity training game built entirely in **pure Vanilla HTML5, CSS3, and modern JavaScript**. Requiring no external frameworks, dependencies, or backend servers, the game runs directly in any modern web browser and immerses players in a realistic **simulated desktop operating system**.
 
-Rather than memorizing abstract rules or clicking through traditional multiple-choice quizzes, players step into the shoes of high school cyber defenders guided by **AI Mentor ZERO**. Players must actively investigate suspicious emails, inspect malicious file extensions, quarantine malware payloads, foil social engineering attacks, and execute incident response procedures during a live ransomware extortion crisis.
+Instead of passive slide presentations or generic multiple-choice quizzes, players step into the shoes of student cyber defenders guided by **Ryan (IT Support Mentor)**. Players inspect suspicious emails, spot disguised malware payloads, analyze dangerous links, foil impersonation scams, configure public Wi-Fi security, and respond to emergency ransomware incidents.
 
 ### 🎯 Key Highlights
 
-- 🖥️ **Simulated Desktop Environment**: Window multitasking (drag, minimize, maximize, snap), live taskbar, notification center, system tray, real-time clock, and sound effects.
-- 🔍 **Evidence-Based Investigation Engine**: Click and place flags directly on suspicious email elements, inspect hidden links, verify domain certificates, and inspect binary file extensions.
-- 🤖 **Dynamic AI Mentor Feedback**: Detective ZERO analyzes every action, breaking down correct discoveries, explaining missed clues, and penalizing wild guesses.
-- 📱 **Multi-Vector Threat Defense**: Covers the four primary pillars of modern cybersecurity: **Phishing**, **Malware**, **Social Engineering (Vishing/Smishing)**, and **Ransomware Incident Response**.
-- ⚡ **Zero Installation & Setup**: 100% client-side. Double-click `index.html` or host effortlessly on GitHub Pages.
+- 🖥️ **Simulated Desktop Environment**: Window multitasking (drag, minimize, maximize, snap), taskbar, start menu, system tray, real-time clock, network flyouts, and realistic sound effects.
+- 🔍 **Interactive Evidence-Flagging Engine**: Toggle **Flag Mode** to inspect and pinpoint specific phishing indicators (spoofed domains, false urgency, mismatched hyperlinks, malicious attachments).
+- 🧑‍🏫 **Dynamic AI Mentor Guidance**: **Ryan (IT Support Mentor)** monitors decisions, provides real-time coaching, explains missed indicators, and penalizes careless guesses.
+- 📱 **Interactive Phone Link App**: A dual-panel smartphone companion featuring a live mobile home screen with **Messages** and **Calls** apps, status bar, and conversation forensics.
+- 🛡️ **Multi-Threat Investigation Suite**: Covers the critical pillars of cyber defense: **Phishing**, **Malware & Trojans**, **Social Engineering & Wi-Fi Security**, and **Ransomware Incident Response**.
+- ⚡ **Zero Installation & Setup**: 100% client-side. Double-click `index.html` or host directly on GitHub Pages.
 
 ---
 
-## 👥 The Story & Defenders
+## 👥 Game Concept & Story
 
-Four senior high school students collaborate on an important multimedia graduation project. As real-world threat actors target their accounts, devices, and shared network drives, they partner with **CyberZerØ**, an advanced cybersecurity AI agent, to defend their systems.
+When an academic cohort collaborates on a critical multimedia graduation capstone project, real-world cyber adversaries launch targeted attacks against their accounts, personal devices, and shared drives. Guided by their dedicated IT Support Mentor, the team must analyze digital clues, isolate infected nodes, and safeguard their work.
 
 ```
        ┌────────────────────────────────────────────────────────┐
-       │                 🤖 CYBERZERØ (ZERO)                    │
-       │           AI Cyber Guide & Detective Mentor            │
+       │                👨‍💼 RYAN (IT Support Mentor)             │
+       │       Senior Mentor, Security Guide & Forensic Analyst │
        └──────────────────────────┬─────────────────────────────┘
                                   │
-    ┌──────────────┬──────────────┴──────────────┬──────────────┐
-    ▼              ▼                             ▼              ▼
-  📧 ACE        📁 NISHREN                   📱 PHILLIP     🚨 JONALD
-Chapter 1:     Chapter 2:                   Chapter 3:     Chapter 4:
-Phishing       Malware & Trojans            Social Eng.    Ransomware
-Defender       Hunter                       Defender       Responder
+     ┌──────────────┬─────────────┴─────────────┬──────────────┐
+     ▼              ▼                           ▼              ▼
+  💻 ALEX        👧 PIA                      👦 ETHAN       👦 CARLO
+Lead Detective  Targeted Account            Team Member    Classmate /
+Player Hero     & Verification              Collaborator   Source of Links
 ```
 
-| Defender    | Focus Area            | Mission Threat                                                                            |
-| ----------- | --------------------- | ----------------------------------------------------------------------------------------- |
-| **Ace**     | 📧 Phishing Detection | Defend school & banking accounts against urgent credential harvesting attacks.            |
-| **Nishren** | 📁 Malware Analysis   | Neutralize disguised software payloads and Trojan droppers hiding in downloads.           |
-| **Phillip** | 📱 Social Engineering | Expose impersonators, fraudulent SMS alerts (smishing), and urgent voice calls (vishing). |
-| **Jonald**  | 🚨 Incident Response  | Respond to a `.locky` ransomware outbreak, isolate drives, and restore cloud backups.     |
+### The Characters
+
+| Character | Role in Narrative | Mission Significance |
+| :--- | :--- | :--- |
+| **Ryan** | 👨‍💼 **IT Support Mentor** | Guides the player through tutorials, reviews investigation evidence, and delivers forensic debriefs. |
+| **Alex** | 💻 **Lead Detective (Player)** | The protagonist operating the cyber workstation, inspecting digital artifacts, and neutralizing threats. |
+| **Pia** | 👧 **Project Collaborator** | A classmate whose identity is spoofed by social engineering attackers attempting credential theft. |
+| **Ethan** | 👦 **Technical Teammate** | Assists with team communications and shares files on project network shares. |
+| **Carlo** | 👦 **Classmate** | Sends external design tool links that must be scrutinized for disguised executable malware. |
+
+---
+
+## 🔄 Complete Gameflow
+
+CYBERZERØ follows a continuous, narrative-driven gameplay loop where knowledge gained in each stage prepares the player for more sophisticated cyber threats:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                            1. TITLE & COVER SCREEN                           │
+│     Main Menu: Start Game • Story Selection • Audio Settings • Instructions  │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         2. CHAPTER STORY SELECTION                           │
+│   Chapter 1 (The First Day) ➔ Chapter 2 ➔ Chapter 3 ➔ Chapter 4 Progression  │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    3. CINEMATIC MANGA / COMIC INTRO                          │
+│     Panel-by-panel comic strip detailing the emerging threat & story context │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                   4. SIMULATED DESKTOP OS ENVIRONMENT                        │
+│      Lockscreen / Login ➔ Windows Desktop ➔ Ryan Mentor Briefing Dialogue    │
+│      Draggable Task List Sticky Note provides real-time mission objectives   │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                      5. ACTIVE FORENSIC INVESTIGATION                        │
+│                                                                              │
+│   📧 Zmail Inbox: Flag fake sender, urgent text, mismatched links, attachments│
+│   🌐 Cyber-Net Browser: Inspect target URLs, domain security & threat intel  │
+│   📁 File Explorer: Audit double extensions (.pdf.exe), hashes, file types   │
+│   🛡️ Anti-Virus: Run heuristic signature scans & quarantine malicious files   │
+│   📱 Phone Link: Review mobile messages, calls, and impersonation attempts    │
+│   📶 Network Settings: Disable public sharing & isolate network adapters     │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                       6. VERDICT & INCIDENT ACTION                           │
+│      Submit Classification (Phishing vs. Legit / Quarantine / Isolate)       │
+│      Ryan Mentor provides instant analysis of evidence found vs. missed      │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       │
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                      7. MISSION RESULTS & ADVANCEMENT                        │
+│      Score Calculation • Accuracy Rating (S/A/B/C/D) • Chapter Next Unlock   │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -76,153 +137,155 @@ Defender       Hunter                       Defender       Responder
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│ CHAPTER 1: PHISHING INVESTIGATION (ACE)                                         │
-│ Investigate 5 realistic emails. Flag fake sender domains, false urgency, and    │
-│ mismatched hyperlinks. Conclude with Capybara/Zero's line-by-line verdict.     │
+│ CHAPTER 1: THE FIRST DAY — PHISHING INVESTIGATION                               │
+│ Examine dynamic incoming email waves in Zmail. Flag deceptive domains, false    │
+│ urgency, and spoofed links. Review decisions with Ryan's forensic breakdown.    │
 ├─────────────────────────────────────────────────────────────────────────────────┤
-│ CHAPTER 2: MALWARE HUNTING & EXTENSION DEFENSE (NISHREN)                        │
-│ Open File Explorer & ShieldAV Anti-Virus. Spot double extensions (.pdf.exe),    │
+│ CHAPTER 2: THE DIGITAL TRAP — MALWARE HUNTING & EXTENSIONS                      │
+│ Unlocks File Explorer & Anti-Virus. Unmask disguised executables (.pdf.exe),    │
 │ analyze SHA-256 hashes, scan suspicious binaries, and quarantine threats.      │
 ├─────────────────────────────────────────────────────────────────────────────────┤
-│ CHAPTER 3: SOCIAL ENGINEERING LAB (PHILLIP)                                     │
-│ Access Phone Link. Filter out SMS smishing scams, identify urgent IT support    │
-│ vishing calls, and protect one-time PINs (OTPs) and account credentials.       │
+│ CHAPTER 3: THE SYSTEM COLLAPSE — SOCIAL ENGINEERING & WI-FI                     │
+│ Secure public Wi-Fi settings, investigate communications in Phone Link, and     │
+│ stop impersonators attempting to harvest student credentials and passwords.     │
 ├─────────────────────────────────────────────────────────────────────────────────┤
-│ CHAPTER 4: RANSOMWARE INCIDENT CONSOLE (JONALD)                                 │
-│ A high-stakes emergency! Isolate infected storage nodes, terminate malicious   │
-│ processes in Task Manager, and restore encrypted files from clean backups.     │
+│ CHAPTER 4: THE LAST LOGIN — RANSOMWARE EMERGENCY RESPONSE                       │
+│ High-stakes containment! Cut network isolation switches, terminate malicious   │
+│ dropper processes in Task Manager, and restore files from clean backups.        │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1️⃣ Chapter 1: Phishing Investigation
+### 1️⃣ Chapter 1: The First Day (Phishing Defense)
 
-- **Mission**: Examine 5 workplace and personal emails.
-- **Mechanic**: Toggle **🚩 Flag Evidence** mode. Click directly on:
-  - 📛 **Fake Sender Addresses** (e.g., `bpi.security.verification@gmail.com` using a free email provider instead of the bank's official domain).
-  - ⏳ **False Urgency** (e.g., threatening permanent suspension within 30 minutes).
-  - 🔗 **Mismatched Links** (e.g., button label says "Verify Account", but leads to an external spoofed domain).
-- **Verification**: Switch to the **Browser** app to inspect suspicious landing pages without resetting your email progress.
-- **Reporting**: Choose **Report as Phishing** or **Mark as Legitimate**.
+- **Scenario**: Alex's first day in the team workstation begins with an influx of academic and workplace emails.
+- **Investigation Mechanics**:
+  - Open **Zmail** to inspect dynamic inbox waves.
+  - Activate **🚩 Flag Mode** to click directly on suspicious elements:
+    - 📛 **Sender Address Spoofing**: e.g., `payroll-notice@secure-portal.com.co` instead of the official institution domain.
+    - ⏳ **Coercive Urgency**: Arbitrary deadlines ("Your account will be deleted in 15 minutes!").
+    - 🔗 **Mismatched Link Targets**: Anchor text says one domain, but hover destination points elsewhere.
+    - 📎 **Suspicious Attachments**: Unrequested `.zip`, `.exe`, or macro-enabled documents.
+  - Use the **Browser** to safely cross-check domain authenticity.
+  - Choose **Phishing** or **Non-phishing** to submit verdicts.
 
-### 2️⃣ Chapter 2: Malware Hunting
+### 2️⃣ Chapter 2: The Digital Trap (Malware Forensics)
 
-- **Mission**: Audit downloaded files in the **Folder** (File Explorer) app.
-- **Mechanic**:
-  - Expose double extensions (e.g., `bonus_payroll_sept.pdf.exe`).
-  - Identify script droppers (`.vbs`) and rogue screensavers (`.scr`).
-  - Send suspicious files to **ShieldAV Anti-Virus** for automated signature and heuristic scanning.
-  - Quarantine verified malware threats while avoiding false positives on clean files.
+- **Scenario**: Downloaded assets and design templates arrive from external forums and classmate shares.
+- **Investigation Mechanics**:
+  - Open **Folder (File Explorer)** with detailed file properties, sizes, and file type associations.
+  - Unmask **double-extension deception** (e.g., `scholarship_form.pdf.exe`).
+  - Cross-check file cryptographic SHA-256 hashes against known threat signatures.
+  - Launch **Anti-Virus (Security Scanner)** to scan suspect files.
+  - Quarantine verified malware payloads while avoiding false positives on clean project assets.
 
-### 3️⃣ Chapter 3: Social Engineering & Smishing
+### 3️⃣ Chapter 3: The System Collapse (Social Engineering & Public Wi-Fi)
 
-- **Mission**: Investigate mobile communications in the **Phone Link** app.
-- **Mechanic**:
-  - Analyze SMS messages (smishing) offering fake deliveries, prizes, or urgent security alerts.
-  - Identify phone impersonation attempts (vishing) targeting student credentials.
-  - Apply the **Zero-Trust Rule**: Never transmit OTPs or sensitive info over unverified channels.
+- **Scenario**: The team works remotely from a public network while receiving urgent text messages and direct messages.
+- **Investigation Mechanics**:
+  - Open **Settings > Network & Internet > Wi-Fi** to disable dangerous public network exposures (file sharing, device discovery).
+  - Open **Phone Link** to inspect mobile communications.
+  - Access the phone launcher featuring **Messages** and **Calls** apps.
+  - Investigate impersonation attempts (e.g., "Pia — New Account") soliciting student IDs and birthdays.
+  - Enforce the **Zero-Trust Rule**: Never share credentials or OTPs via direct messages.
 
-### 4️⃣ Chapter 4: Ransomware Incident Response
+### 4️⃣ Chapter 4: The Last Login (Ransomware Incident Response)
 
-- **Mission**: Combat a live crypto-ransomware outbreak threatening the team's project database.
-- **Mechanic**:
-  - **Network Isolation**: Cut infected storage volumes off from the local network to stop lateral spread.
-  - **Process Neutralization**: Use the system console and Task Manager to locate and kill malicious dropper processes.
-  - **Vault Restoration**: Verify SHA-256 backup integrity and restore encrypted volumes to 100% operational health without paying the extortion fee.
+- **Scenario**: A malicious executable attempts to encrypt shared project drives, threatening total loss of the team's work.
+- **Investigation Mechanics**:
+  - **Immediate Network Severance**: Disconnect network adapters to stop lateral infection spread.
+  - **Process Neutralization**: Use Task Manager to locate high-CPU malicious dropper processes and terminate them.
+  - **Backup Verification & Restore**: Inspect clean vault backups, verify file hashes, and restore unencrypted files.
 
 ---
 
-## 🖥️ Simulated Desktop Environment
+## 🖥️ Simulated Desktop OS Environment
 
-CYBERZERØ features a comprehensive operating system interface built from scratch in CSS and JavaScript:
+CYBERZERØ provides a complete cyber workstation OS built from scratch:
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│ [📁 Folder]   [📧 Email]   [🌐 Browser]   [🛡️ ShieldAV]   [📱 Phone Link]│
-│                                                                        │
-│   ┌───────────────────────────┐     ┌────────────────────────────┐    │
-│   │ 📧 Email (Gmail)    ─ □ ✕ │     │ 🛡️ ShieldAV Scanner  ─ □ ✕ │    │
-│   ├───────────────────────────┤     ├────────────────────────────┤    │
-│   │ Inbox (5)                 │     │ Real-Time Shield: ACTIVE   │    │
-│   │ 🚩 Flags Placed: 3        │     │ Threat: Trojan.Dropper.EXE │    │
-│   │ [ REPORT SUSPICIOUS ]     │     │ [ 🛡️ QUARANTINE PAYLOAD ]   │    │
-│   └───────────────────────────┘     └────────────────────────────┘    │
-│                                                                        │
-├────────────────────────────────────────────────────────────────────────┤
-│ 🪟 Start  |  📧 Email   🌐 Browser   📁 Files   🛡️ AV   |  🔊 🌐  10:24 AM │
-└────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ [📁 Folder]   [📧 Zmail]   [🌐 Browser]   [🛡️ Anti-Virus]   [📱 Phone Link]    │
+│                                                                                │
+│   ┌───────────────────────────┐     ┌────────────────────────────────────┐     │
+│   │ 📧 Zmail (Inbox)    ─ □ ✕ │     │ 📱 Phone Link                ─ □ ✕ │     │
+│   ├───────────────────────────┤     ├────────────────────────────────────┤     │
+│   │ 📥 Inbox (Wave 1)         │     │ [📱 Phone Screen]  │ [💬 Messages] │     │
+│   │ 🚩 Flags Placed: 2        │     │  10:42 PM          │  No messages  │     │
+│   │ [ REPORT AS PHISHING ]    │     │  [💬] [📞]         │  No direct msgs│    │
+│   └───────────────────────────┘     └────────────────────────────────────┘     │
+│                                                                                │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ 🪟 Start  |  📧 Zmail   🌐 Browser   📁 Files   🛡️ AV   📱 Phone  | 🔊 📶 10:42│
+└────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Desktop Applications Suite
+### Applications Suite
 
-| App Icon | Application             | Role in Investigation                                                           |
-| :------: | ----------------------- | ------------------------------------------------------------------------------- |
-|    📧    | **Email Client**        | Inspect headers, read messages, flag suspicious evidence, and report phishing.  |
-|    🌐    | **Cyber-Net Browser**   | Inspect destination URLs, search web intelligence, and check website security.  |
-|    📁    | **File Explorer**       | Browse file paths, inspect actual file extensions, and check file properties.   |
-|    🛡️    | **ShieldAV Anti-Virus** | Run on-demand file scans, review threat detections, and isolate infected files. |
-|    📱    | **Phone Link**          | Review mobile SMS messages, incoming voice alerts, and smishing attacks.        |
-|    📄    | **Document Viewer**     | Inspect internal company memos, syllabi, and text documentation.                |
-|    🖼️    | **Image Viewer**        | Examine visual assets and screenshots for digital evidence.                     |
-|    🎬    | **Video Player**        | Play in-game briefing videos and multimedia team updates.                       |
-|    ⚙️    | **Wi-Fi & Network**     | Toggle network adapters to isolate endpoints during active network threats.     |
-|    📒    | **Sticky Notes**        | Draggable, real-time cheat sheet explaining scoring mechanics and tips.         |
+| App Icon | Application | Role in Investigation |
+| :---: | :--- | :--- |
+| 📧 | **Zmail (Email Client)** | Inspect headers, read message bodies, place evidence flags, and submit phishing reports. |
+| 🌐 | **Cyber-Net Browser** | Inspect destination URLs, search threat intelligence databases, and check SSL certificates. |
+| 📁 | **File Explorer (Folder)** | Inspect file properties, reveal true file extensions, and check file sizes and dates. |
+| 🛡️ | **Anti-Virus (Scanner)** | Run heuristic malware scans, view threat diagnosis, and quarantine dangerous payloads. |
+| 📱 | **Phone Link** | Connected smartphone companion with a 2-app mobile launcher (**Messages** & **Calls**) and forensics view. |
+| ⚙️ | **Wi-Fi & Network Settings** | Configure network profiles, disable public file sharing, and isolate adapters during attacks. |
+| 📊 | **Task Manager** | Identify rogue processes, monitor resource usage, and terminate malicious executables. |
+| 📒 | **Sticky Notes** | Draggable, real-time checklist tracking current mission objectives and investigative scoring rules. |
 
 ---
 
 ## 🏆 Scoring & Ranking System
 
-CYBERZERØ utilizes a dual-source scoring calculation: points are awarded for **accurate verdicts** AND **evidence discovery**.
+CYBERZERØ uses a rigorous evidence-based scoring algorithm: points are awarded for **correct verdicts backed by valid digital evidence**, while wild guesses and false alarms incur penalties.
 
 ```
-TOTAL EMAIL SCORE = Decision Points + Correct Evidence Points - Penalties
+TOTAL SCORE = Decision Points + Valid Evidence Points - Penalties
 ```
 
 ### Scoring Matrix
 
-| Action                                 |  Points   | Description                                                       |
-| -------------------------------------- | :-------: | ----------------------------------------------------------------- |
-| **Phishing Verdict (Backed by Clues)** |  `+100`   | Correctly identified phishing with at least 1 valid flag placed.  |
-| **Phishing Verdict (Blind Guess)**     |   `+0`    | Called phishing correctly, but found 0 actual evidence flags.     |
-| **Legitimate Verdict**                 |   `+50`   | Correctly verified clean email (no flags required).               |
-| **Correct Evidence Flag**              |   `+25`   | Pinned an actual phishing indicator (fake sender, urgency, etc.). |
-| **Incorrect Verdict**                  |   `-50`   | Called a legitimate email phishing, or fell for a phishing scam.  |
-| **Incorrect Evidence Flag**            |   `-10`   | Flagged safe or normal email text as suspicious.                  |
-| **Missed Clue Penalty**                |   `-25`   | Overlooked a real phishing indicator present in the email.        |
-| **Malware Neutralized**                |  `+100`   | Successfully identified and quarantined a malicious binary.       |
-| **False Positive Quarantine**          |   `-25`   | Quarantined a safe, legitimate user file.                         |
-| **Contradiction Rule**                 | `0 total` | Placing flags but submitting as "Legitimate" voids the report.    |
+| Action | Points | Description |
+| :--- | :---: | :--- |
+| **Phishing Verdict (Evidence Backed)** | `+100` | Correctly identified phishing with at least 1 verified evidence flag placed. |
+| **Phishing Verdict (Blind Guess)** | `+0` | Called phishing correctly, but found 0 evidence flags (discourages guessing). |
+| **Legitimate Verdict** | `+50` | Correctly verified clean email without false alarms. |
+| **Correct Evidence Flag** | `+25` | Pinned an actual phishing indicator (spoofed domain, false urgency, mismatched link). |
+| **Incorrect Verdict** | `-50` | Marked a legitimate email as phishing, or fell for an attack. |
+| **Incorrect Evidence Flag** | `-10` | Flagged safe or standard text as suspicious. |
+| **Missed Clue Penalty** | `-25` | Overlooked an obvious threat indicator present in the communication. |
+| **Malware Neutralized** | `+100` | Quarantined a verified malicious binary or script dropper. |
+| **False Positive Quarantine** | `-25` | Quarantined a safe, legitimate project document or image. |
+| **Contradiction Penalty** | `0 Total` | Submitting flags while choosing "Legitimate" voids the investigation report. |
 
 ### Detective Ranks
 
-| Rank Badge | Rank Title                        | Score Bracket | Rating Description                                                |
-| :--------: | --------------------------------- | :-----------: | ----------------------------------------------------------------- |
-|   **S**    | 🏅 **Master Cyber Detective**     | `95% – 100%`  | Flawless investigation. All clues spotted with zero false alarms. |
-|   **A**    | ⭐ **Senior Cyber Investigator**  |  `85% – 94%`  | High-accuracy detection with minimal oversights.                  |
-|   **B**    | 👍 **Cyber Defense Agent**        |  `70% – 84%`  | Solid performance; caught major threats but missed subtle signs.  |
-|   **C**    | 📚 **Junior Analyst in Training** |  `50% – 69%`  | Inconsistent evidence gathering; needs additional review.         |
-|   **D**    | ⚠️ **Investigation Compromised**  |    `< 50%`    | Critical threats missed or false alarms triggered.                |
+| Rank Badge | Rank Title | Score Bracket | Rating Description |
+| :---: | :--- | :---: | :--- |
+| 🏅 **S** | **Master Cyber Detective** | `95% – 100%` | Flawless investigation. Every clue spotted with zero false alarms. |
+| ⭐ **A** | **Senior Cyber Investigator** | `85% – 94%` | High-accuracy detection with minimal oversights. |
+| 👍 **B** | **Cyber Defense Agent** | `70% – 84%` | Solid performance; caught major threats but missed subtle cues. |
+| 📚 **C** | **Junior Analyst in Training** | `50% – 69%` | Inconsistent evidence gathering; needs additional defensive review. |
+| ⚠️ **D** | **Investigation Compromised** | `< 50%` | Critical threats missed or multiple false alarms triggered. |
 
 ---
 
 ## 🚀 Getting Started
 
-Because CYBERZERØ is built entirely with standard web technologies, there are **no build steps, Node packages, or servers required**.
+Because CYBERZERØ is built entirely with standard web standards, there are **no build steps, Node packages, or backend servers required**.
 
 ### Option A: Run Locally (Instant)
 
 1. **Clone the repository**:
-
    ```bash
    git clone https://github.com/your-username/CyberZero-Phishing.git
    cd CyberZero-Phishing
    ```
 
 2. **Open the game**:
-   - Simply double-click `index.html` in your file explorer, **OR**
+   - Double-click `index.html` in your file explorer, **OR**
    - Right-click `index.html` and choose **Open with > Chrome / Firefox / Edge / Safari**.
 
-3. _(Optional)_ **Run via local development server**:
-
+3. *(Optional)* **Run via local development server**:
    ```bash
    # Using Python 3:
    python -m http.server 8080
@@ -230,7 +293,6 @@ Because CYBERZERØ is built entirely with standard web technologies, there are *
    # Or using Node npx:
    npx serve .
    ```
-
    Navigate to `http://localhost:8080` in your web browser.
 
 ---
@@ -253,26 +315,32 @@ Because CYBERZERØ is built entirely with standard web technologies, there are *
 ```
 CyberZero-Phishing/
 │
-├── index.html               # Main entry point & desktop OS DOM hierarchy
-├── style.css                # Desktop OS styling, windows, animations & themes
-├── script.js                # Core game engine, data models, state & chapter logic
-├── LICENSE                  # Unlicense (Public Domain dedication)
-├── README.md                # Project documentation & GitHub overview
+├── index.html               # Main desktop OS DOM structure, window templates & overlays
+├── style.css                # Complete design system, cyberpunk dark theme, window styling
+├── script.js                # Core game engine: state machine, email waves, forensics & mentor logic
+├── implementation_plan.md   # Architectural design specifications & enhancement roadmaps
+├── LICENSE                  # The Unlicense (Public Domain dedication)
+├── README.md                # Comprehensive project documentation & gameplay guide
 │
-└── assets/                  # Visual and audio assets
-    ├── Cover.png            # Main menu & introduction background
-    ├── 01Cover.png          # Story transition wallpaper
-    ├── win10_wallpaper.jpg  # Desktop OS high-resolution wallpaper
-    ├── CyberZerØ.png        # AI Mentor ZERO avatar
-    ├── Ace.png / Ace1.png   # Ace character illustrations
-    ├── Nishren.png          # Nishren character illustrations
-    ├── Phillip.png          # Phillip character illustrations
-    ├── Jonald.png           # Jonald character illustrations
-    ├── icons/
-    │   ├── apps/            # SVG icons for Mail, Browser, Folder, Anti-Virus, etc.
-    │   └── folder icons/    # System explorer file type icons
-    ├── sounds/              # Audio effects (clicks, alerts, success, victory cues)
-    └── video/               # Cutscenes and interactive media briefings
+└── assets/                  # Complete visual, audio, and cinematic asset library
+    ├── Achievements/        # Badge artwork and award icons
+    ├── background/          # Wallpaper variants and UI backgrounds
+    ├── Chapter1/            # Chapter 1 comic panels and cutscenes
+    ├── Chapter2/            # Chapter 2 comic panels and cutscenes
+    ├── Chapter3/            # Chapter 3 comic panels and cutscenes
+    ├── Chapter4/            # Chapter 4 comic panels and cutscenes
+    ├── Character/           # Character sprites (Alex, Ryan, Pia, Ethan)
+    ├── Desktop/             # Lockscreen, Login, and high-res OS wallpapers
+    ├── fonts/               # Offline webfonts (QB-One, Orbitron, JetBrains Mono)
+    ├── icons/               # SVG & PNG icon pack for apps, networks, and files
+    │   ├── apps/            # Application icons (mail, browser, folder, etc.)
+    │   ├── email/           # Classification verdict icons (Phishing, Legit)
+    │   ├── folder icons/    # Explorer file type icons (pdf, exe, vbs, docx)
+    │   └── networks/        # Network tray & settings icons (Wi-Fi, Bluetooth)
+    ├── logo/                # CyberZero branding and shield emblems
+    ├── sounds/              # Audio effects (clicks, alerts, window sounds, success chimes)
+    ├── Story Selection/     # Chapter thumbnail cards and preview banners
+    └── video/               # Story cutscenes and introductory media
 ```
 
 ---
@@ -281,21 +349,9 @@ CyberZero-Phishing/
 
 CYBERZERØ was developed to reinforce practical digital literacy and defensive cybersecurity habits:
 
-- 🔒 **100% Safe & Offline-Ready**: All email addresses use RFC 2606 reserved domains (`.example`, `.test`, or simulated domains). No real banking portals or credentials are ever accessed.
-- 🎯 **Critical Thinking Over Rote Memorization**: Teaches users _how_ attackers engineer urgency, spoof headers, and hide executable extensions inside routine office files.
-- 🏢 **Applicable to Security Awareness Programs**: Ideal for high school classrooms, university labs, corporate phishing awareness training, and cybersecurity bootcamps.
-
----
-
-## 🤝 Contributing
-
-Contributions, feedback, and new chapter ideas are warmly welcome!
-
-1. Fork the Project (`https://github.com/your-username/CyberZero-Phishing/fork`)
-2. Create your Feature Branch (`git checkout -b feature/NewChapter`)
-3. Commit your Changes (`git commit -m 'Add new social engineering scenario'`)
-4. Push to the Branch (`git push origin feature/NewChapter`)
-5. Open a Pull Request
+- 🔒 **100% Safe Simulation**: All email addresses, URLs, and phone numbers use RFC 2606 reserved domains (`.example`, `.test`, or simulated mock endpoints). No live external systems or actual malware are ever used.
+- 🎯 **Critical Thinking Over Memorization**: Teaches users _how_ attackers engineer urgency, spoof headers, and hide executable extensions inside routine office files.
+- 🏢 **Applicable Across Educational Levels**: Ideal for high school classrooms, university computing labs, corporate security awareness training, and cybersecurity bootcamps.
 
 ---
 

@@ -472,6 +472,7 @@ let ch1Stage                     = 0;     // 0=start,1=wave1,2=wave2,3=wave3,4=w
 let ch1MistakeCount              = 0;     // adaptive mentor coaching tracker
 let ch1InvestigationTutorialDone = false; // true after first-email investigation lesson is shown
 let ch1FlaggedLegitWarnedOnce    = false; // tracks if user has been cautioned once about legit email flags
+let ch1CloserLookWarnedOnce      = false; // tracks if "Take a closer look before deciding" was shown once on email 1
 let ch1SecondEmailNotesHintDone  = false; // tracks if second email sticky notes dialogue was shown
 
 // Wave definitions: which email IDs are injected at each stage
@@ -1220,12 +1221,19 @@ function openApp(appName) {
     if (typeof syncMediaPlayerVolume === 'function') syncMediaPlayerVolume();
   }
 
+  if (appName === 'comms') {
+    if (typeof renderPhoneLinkApp === 'function') renderPhoneLinkApp();
+  }
+
   // Always center window on screen when opened
   centerWindow(appName);
   state.hasBeenPositioned = true;
 }
 
-// Centers a window on the desktop
+// Centers a window on the desktop.
+// When the Ryan dialogue is visible, the window is initially placed in the
+// safe area above it so it doesn't open on top of the dialogue.
+// After opening the user can drag it anywhere — including behind the dialogue.
 function centerWindow(appName) {
   const win = document.getElementById(`win-${appName}`);
   const desktop = document.getElementById('desktop');
@@ -1241,43 +1249,50 @@ function centerWindow(appName) {
   const hasDialogue = document.body.classList.contains('has-ryan-dialogue') ||
     (ryanOverlay && !ryanOverlay.classList.contains('hidden') && !ryanOverlay.classList.contains('ryan-animate-out'));
 
-  const bottomClearance = hasDialogue ? 195 : taskbarH;
-  const viewportH = (desktop.clientHeight || window.innerHeight) - bottomClearance;
+  // Safe vertical space: full desktop height minus taskbar, and minus the
+  // dialogue strip (≈195px) when it is visible, so the window opens clear of it.
+  const dialogueClearance = hasDialogue ? 195 : 0;
+  const viewportH = (desktop.clientHeight || window.innerHeight) - taskbarH - dialogueClearance;
 
   const left = Math.max(0, Math.round((viewportW - w) / 2));
-  const top = Math.max(hasDialogue ? 10 : 0, Math.round((viewportH - h) / 2));
+  const top  = Math.max(0, Math.round((viewportH - h) / 2));
 
   win.style.left = left + 'px';
-  win.style.top = top + 'px';
+  win.style.top  = top  + 'px';
 }
 
-// Adjusts open app windows when dialogue appears or disappears so they never cover each other
+// When the Ryan dialogue appears/disappears, nudge already-open windows so
+// they sit neatly in the safe area above it. Users can still drag them freely
+// afterward — including behind the dialogue — as the drag handler has no limits.
 function adjustAppsForDialogue(hasDialogue) {
   const desktop = document.getElementById('desktop');
   const viewportH = desktop ? desktop.clientHeight : window.innerHeight;
-  const maxSafeBottom = viewportH - 195;
+  const taskbar   = document.getElementById('taskbar');
+  const taskbarH  = taskbar ? taskbar.offsetHeight : 48;
+  // Safe bottom edge: viewport minus taskbar minus dialogue strip
+  const safeBottom = viewportH - taskbarH - 195;
 
   const openWins = document.querySelectorAll('.app-window:not(.hidden):not(.minimized)');
   openWins.forEach(win => {
     if (win.classList.contains('maximized')) return;
-    const appName = win.dataset.app;
 
     if (hasDialogue) {
+      // Save original top so we can restore it later
       if (win.dataset.preDialogueTop === undefined) {
         win.dataset.preDialogueTop = win.style.top || `${win.offsetTop}px`;
       }
-      const winHeight = win.offsetHeight || 520;
+      // If the window's bottom edge overlaps the dialogue, slide it up
+      const winH      = win.offsetHeight || 520;
       const currentTop = parseInt(win.style.top, 10) || win.offsetTop;
-      if (currentTop + winHeight > maxSafeBottom) {
-        const newTop = Math.max(10, maxSafeBottom - winHeight);
+      if (currentTop + winH > safeBottom) {
+        const newTop = Math.max(0, safeBottom - winH);
         win.style.top = newTop + 'px';
       }
     } else {
+      // Restore pre-dialogue position when Ryan leaves
       if (win.dataset.preDialogueTop !== undefined) {
         win.style.top = win.dataset.preDialogueTop;
         delete win.dataset.preDialogueTop;
-      } else if (appName) {
-        centerWindow(appName);
       }
     }
   });
@@ -1352,7 +1367,7 @@ function toggleMaximize(appName) {
   focusWindow(appName);
 }
 
-let highestWindowZIndex = 120;
+let highestWindowZIndex = 220;
 
 function focusWindow(appName) {
   if (!appName) return;
@@ -1361,17 +1376,27 @@ function focusWindow(appName) {
   if (win) {
     win.classList.add('focused');
     highestWindowZIndex += 2;
-    if (highestWindowZIndex > 450) {
+    if (highestWindowZIndex > 4000) {
       const allWins = Array.from(document.querySelectorAll('.app-window'))
-        .sort((a, b) => (parseInt(a.style.zIndex || 100, 10)) - (parseInt(b.style.zIndex || 100, 10)));
+        .sort((a, b) => (parseInt(a.style.zIndex || 200, 10)) - (parseInt(b.style.zIndex || 200, 10)));
       allWins.forEach((w, idx) => {
-        w.style.zIndex = 110 + idx * 2;
+        w.style.zIndex = 210 + idx * 2;
       });
-      highestWindowZIndex = 110 + allWins.length * 2;
+      highestWindowZIndex = 210 + allWins.length * 2;
     }
     win.style.zIndex = highestWindowZIndex;
   }
   updateTaskbar();
+}
+
+// Bring sticky note above all current app windows (but below modals/ryan)
+function focusStickyNote() {
+  const note = document.getElementById('sticky-note');
+  if (!note || note.classList.contains('hidden')) return;
+  // Always stay in 4500 tier — safely above app windows (200-4000)
+  // and below modals (10500) and ryan (100010)
+  const stickyZ = Math.max(4500, highestWindowZIndex + 100);
+  note.style.zIndex = Math.min(stickyZ, 4999).toString();
 }
 
 function taskbarClick(appName) {
@@ -1467,12 +1492,8 @@ function updateTaskbar() {
     const desktopW = desktop ? desktop.clientWidth : window.innerWidth;
     const taskbarH = taskbar ? taskbar.offsetHeight : 48;
 
-    const ryanOverlay = document.getElementById('ryan-guide-overlay');
-    const hasDialogue = document.body.classList.contains('has-ryan-dialogue') ||
-      (ryanOverlay && !ryanOverlay.classList.contains('hidden') && !ryanOverlay.classList.contains('ryan-animate-out'));
-
-    const bottomClearance = hasDialogue ? 195 : taskbarH;
-    const desktopH = (desktop ? desktop.clientHeight : window.innerHeight) - bottomClearance;
+    // Allow dragging freely into dialogue area — windows sit behind it (lower z-index)
+    const desktopH = (desktop ? desktop.clientHeight : window.innerHeight) - taskbarH;
 
     const maxLeft = Math.max(0, desktopW - target.offsetWidth);
     const maxTop = Math.max(0, desktopH - target.offsetHeight);
@@ -3971,6 +3992,11 @@ function startMission(openGmail = false) {
   ch1PendingNotification       = false; 
   ch1MistakeCount              = 0;
   ch1InvestigationTutorialDone = false; // Reset investigation tutorial flag
+  ch1CloserLookWarnedOnce      = false; // Reset closer look warning tracker
+  const tbNotesInit = document.getElementById('taskbar-notes');
+  if (tbNotesInit) {
+    tbNotesInit.classList.remove('btn-pulse-highlight');
+  }
   window._ryanFirstEmailSpoken = false;
 
   // Immediately inject Wave 1 so the first email is ready in the inbox without requiring notes first
@@ -4057,7 +4083,7 @@ function startMission(openGmail = false) {
   if (openGmail) {
     openApp('gmail');
     updateStickyNoteForPhase('phishing');
-    setTimeout(showStickyNote, 700);
+    // Sticky note opens manually — do NOT auto-open here
   }
 }
 
@@ -4122,12 +4148,65 @@ function showStickyNote() {
   const icon = document.getElementById('icon-notes');
   if (!note) return;
 
-  note.classList.remove('hidden', 'sticky-note-pop', 'sticky-note-highlight', 'sticky-note-pulse-once', 'highlight-attention');
+  note.classList.remove('hidden', 'collapsed', 'sticky-note-pop', 'sticky-note-highlight', 'sticky-note-pulse-once');
+  note.style.zIndex = '4500';
+
+  // Apply the attention ring on open only if the hint was already triggered
+  if (typeof _stickyHintShownOnce !== 'undefined' && _stickyHintShownOnce) {
+    note.classList.add('highlight-attention');
+    // Remove the ring after 4 seconds so it doesn't stay forever
+    setTimeout(() => note.classList.remove('highlight-attention'), 4000);
+  } else {
+    note.classList.remove('highlight-attention');
+  }
 
   if (icon) icon.classList.remove('hidden');
 
   // Dismiss the icon attention glow when player opens the note
   if (typeof IconAttention !== 'undefined') IconAttention.hide('notes');
+
+  const titleEl = document.getElementById('sticky-note-title');
+  if (titleEl) titleEl.textContent = '📒 Phishing Investigation Tasks';
+
+  const scrollEl = document.querySelector('#sticky-note .sticky-note-scroll');
+  if (!scrollEl) return;
+
+  // ── If all emails are completed, display the final results & achievements in Sticky Note ──
+  if (gameState.emailResults && gameState.emailResults.length >= EMAILS.length) {
+    const total = EMAILS.length;
+    const correct = gameState.correctDecisions;
+    const pct = correct / total;
+    let rank, rankClass, rankLabel;
+    if (pct >= 1.0)       { rank = 'S'; rankClass = 'rank-s'; rankLabel = 'CYBER DETECTIVE'; }
+    else if (pct >= 0.85) { rank = 'A'; rankClass = '';       rankLabel = 'EXCELLENT DETECTIVE'; }
+    else if (pct >= 0.70) { rank = 'B'; rankClass = 'rank-b'; rankLabel = 'GOOD DETECTIVE'; }
+    else if (pct >= 0.50) { rank = 'C'; rankClass = 'rank-c'; rankLabel = 'KEEP PRACTICING'; }
+    else                  { rank = 'D'; rankClass = 'rank-d'; rankLabel = 'NEEDS MORE TRAINING'; }
+
+    renderStickyNoteResults(rank, rankLabel, rankClass, pct, correct, total);
+    return;
+  }
+
+  // ── Hide the task list when user has not completed the first email ──
+  const isFirstEmailCompleted = Boolean(gameState.emailResults && gameState.emailResults.length >= 1);
+  if (!isFirstEmailCompleted && gameState.phase === 'mission') {
+    scrollEl.innerHTML = `
+      <div class="sn-locked-container">
+        <div class="sn-locked-icon-bubble">🔒</div>
+        <div class="sn-locked-title">Tasks Locked</div>
+        <div class="sn-locked-desc">
+          Complete your first email investigation in Zmail to unlock your live <strong>Mission Task List</strong>.
+        </div>
+        <div class="sn-locked-hint">
+          👉 <span>Inspect email #1 to unlock tracking</span>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (!document.getElementById('sn-checklist-section')) {
+    scrollEl.innerHTML = '<div id="sn-checklist-section"></div>';
+  }
 
   updateStickyChecklist();
 
@@ -4138,6 +4217,7 @@ function showStickyNote() {
   }
 }
 
+
 function closeStickyNote() {
   const note = document.getElementById('sticky-note');
   if (note) {
@@ -4147,13 +4227,34 @@ function closeStickyNote() {
   if (typeof IconAttention !== 'undefined') IconAttention.hide('notes');
 }
 
+// Guard: only show the sticky note highlight hint ONCE per session
+let _stickyHintShownOnce = false;
+
 function highlightStickyNotesHint() {
-  if (typeof IconAttention !== 'undefined') {
-    IconAttention.show('notes');
-  }
+  if (_stickyHintShownOnce) return;
+  _stickyHintShownOnce = true;
+
   const note = document.getElementById('sticky-note');
-  if (note && !note.classList.contains('hidden')) {
+  const isNoteOpen = note && !note.classList.contains('hidden');
+
+  if (isNoteOpen) {
+    // If sticky note was already opened and is staying open:
+    // No need to show highlights in app icons.
+    if (typeof IconAttention !== 'undefined') {
+      IconAttention.hide('notes');
+    }
+    // Briefly highlight the already open sticky note itself so player notices unlocked tasks
+    note.classList.remove('highlight-attention');
+    void note.offsetWidth;
     note.classList.add('highlight-attention');
+    setTimeout(() => {
+      if (note) note.classList.remove('highlight-attention');
+    }, 4000);
+  } else {
+    // Show highlights on app icons ONLY if sticky note is not open
+    if (typeof IconAttention !== 'undefined') {
+      IconAttention.show('notes');
+    }
   }
 }
 
@@ -4287,7 +4388,7 @@ function isPhishingTrophyUnlocked() {
 }
 
 function updateStickyChecklist() {
-  if (gameState.phase !== 'mission') return;
+  if (gameState.phase !== 'mission' && gameState.phase !== 'results') return;
   const section = document.getElementById('sn-checklist-section');
   if (!section) return;
 
@@ -4468,6 +4569,96 @@ function toggleStickyNote() {
   }
 }
 
+// ─── Render Investigation Results and Tasks inside Sticky Note ────────────────
+function renderStickyNoteResults(rank, rankLabel, rankClass, pct, correct, total) {
+  const note = document.getElementById('sticky-note');
+  const titleEl = document.getElementById('sticky-note-title');
+  const scrollEl = document.querySelector('#sticky-note .sticky-note-scroll');
+  if (!note || !scrollEl) return;
+
+  if (titleEl) {
+    titleEl.innerHTML = '🏆 <span>Investigation Complete — Results</span>';
+  }
+
+  // Ensure note is visible, not collapsed
+  note.classList.remove('hidden', 'collapsed');
+  note.style.zIndex = '4600';
+
+  const totalGoals = SN_ACHIEVEMENTS.length;
+  const totalEvidence = EMAILS.reduce((sum, e) => sum + e.evidence.length, 0);
+
+  let html = `
+    <!-- Task Progress Bar Card -->
+    <div class="sn-progress-card" style="border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.08); margin-bottom: 10px;">
+      <div class="sn-progress-header">
+        <span class="sn-progress-title" style="color: #15803d; font-weight: 800;">✅ Investigation Tasks Complete</span>
+        <span class="sn-progress-count" style="color: #15803d; font-weight: 800;">${totalGoals}/${totalGoals} (100%)</span>
+      </div>
+      <div class="sn-progress-bar-track" style="background: rgba(34, 197, 94, 0.2);">
+        <div class="sn-progress-bar-fill" style="width: 100%; background: linear-gradient(90deg, #22c55e, #10b981);"></div>
+      </div>
+    </div>
+
+    <!-- Final Results Summary Card -->
+    <div style="background: #ffffff; border: 1.5px solid rgba(234, 179, 8, 0.5); border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.06);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px; border-bottom: 1px dashed rgba(234, 179, 8, 0.6); padding-bottom: 8px;">
+        <div class="results-rank-circle ${rankClass}" style="width: 48px; height: 48px; font-size: 24px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">${rank}</div>
+        <div>
+          <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.8px; color: #b45309; text-transform: uppercase;">Final Mission Rank</div>
+          <div style="font-size: 14px; font-weight: 900; color: #1e293b;">${rankLabel}</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+        <div style="background: #f8fafc; padding: 6px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <div style="color: #64748b; font-size: 9px; font-weight: 700; text-transform: uppercase;">Accuracy</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${Math.round(pct * 100)}%</div>
+        </div>
+        <div style="background: #f8fafc; padding: 6px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <div style="color: #64748b; font-size: 9px; font-weight: 700; text-transform: uppercase;">Decisions</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${correct} / ${total}</div>
+        </div>
+        <div style="background: #f8fafc; padding: 6px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <div style="color: #64748b; font-size: 9px; font-weight: 700; text-transform: uppercase;">Evidence Found</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${gameState.evidenceFoundTotal || 0} / ${totalEvidence}</div>
+        </div>
+        <div style="background: #f8fafc; padding: 6px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <div style="color: #64748b; font-size: 9px; font-weight: 700; text-transform: uppercase;">Phish / Clean</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${gameState.phishingDetected || 0} / ${gameState.legitimateDetected || 0}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievement Trophy Banner -->
+    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1.5px solid #f59e0b; border-radius: 8px; padding: 10px; margin-bottom: 10px; text-align: center;">
+      <div style="font-size: 22px; margin-bottom: 2px;">🏆</div>
+      <div style="font-size: 10px; font-weight: 800; color: #92400e; letter-spacing: 0.5px;">ACHIEVEMENT UNLOCKED</div>
+      <div style="font-size: 13px; font-weight: 900; color: #78350f; margin-bottom: 6px;">Phishing Investigator</div>
+      <button type="button" onclick="showPhishingInvestigatorTrophy()" style="width: 100%; background: #f59e0b; color: #000; font-size: 11px; font-weight: 800; border: none; border-radius: 6px; padding: 7px 10px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        🏆 Open Trophy &amp; Badge
+      </button>
+    </div>
+  `;
+
+  scrollEl.innerHTML = html;
+}
+
+// ─── Toggle Results Full Overlay from Taskbar or Sticky Note ─────────────────
+function toggleResultsOverlay() {
+  const resultsOv = document.getElementById('overlay-results');
+  if (!resultsOv) return;
+  if (resultsOv.classList.contains('active')) {
+    closeOverlay('overlay-results');
+    const desktop = document.getElementById('desktop');
+    if (desktop) {
+      desktop.style.visibility = 'visible';
+      desktop.style.opacity = '1';
+    }
+  } else {
+    showOverlay('overlay-results');
+  }
+}
+
 function updateStickyNoteForPhase(phase) {
   const titleEl = document.getElementById('sticky-note-title');
   const scrollEl = document.querySelector('#sticky-note .sticky-note-scroll');
@@ -4475,36 +4666,40 @@ function updateStickyNoteForPhase(phase) {
 
   const currentCat = window._currentChapterCategory || activeCategoryStory || 'phishing';
 
-  // In Chapter 1 (phishing), strictly show Detective's Notes (Red Flag Guidelines & Checklist)
+  // In Chapter 1 (phishing), show locked card until first email is completed
   if (currentCat === 'phishing' || phase === 'phishing') {
-    if (titleEl) titleEl.textContent = "📒 Phishing Investigation Tasks";
-    const tutDone = typeof PhishTutorial !== 'undefined' && PhishTutorial.isDone();
-    const lockedBanner = !tutDone
-      ? `<div class="sn-locked-banner">🔒 Complete the first email guided tutorial to unlock Task progress tracking</div>`
-      : '';
-    const isUnlocked = isPhishingTrophyUnlocked();
-    const trophyBanner = isUnlocked
-      ? `<div class="sticky-note-tip" id="sn-trophy-tip" style="border-left: 3px solid #16a34a; background: rgba(34, 197, 94, 0.12); color: #14532d; font-size: 11px; padding: 7px 10px; border-radius: 6px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
-          <span>🏆 <strong>Phishing Investigator Trophy:</strong> <span style="color:#16a34a; font-weight:800;">UNLOCKED</span></span>
-          <button type="button" class="sn-trophy-btn" onclick="showPhishingInvestigatorTrophy()" style="background:#f59e0b; color:#000; border:none; border-radius:4px; padding:3px 8px; font-size:10px; font-weight:800; cursor:pointer;">VIEW 🏆</button>
-        </div>`
-      : `<div class="sticky-note-tip" id="sn-trophy-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
-          🏆 <strong>Goal:</strong> Complete all 5 Investigation Tasks to unlock the <em>Phishing Investigator</em> trophy!
-        </div>`;
+    // If all emails completed, show the results
+    if (gameState.emailResults && gameState.emailResults.length >= EMAILS.length) {
+      const total = EMAILS.length;
+      const correct = gameState.correctDecisions;
+      const pct = correct / total;
+      let rank, rankClass, rankLabel;
+      if (pct >= 1.0)       { rank = 'S'; rankClass = 'rank-s'; rankLabel = 'CYBER DETECTIVE'; }
+      else if (pct >= 0.85) { rank = 'A'; rankClass = '';       rankLabel = 'EXCELLENT DETECTIVE'; }
+      else if (pct >= 0.70) { rank = 'B'; rankClass = 'rank-b'; rankLabel = 'GOOD DETECTIVE'; }
+      else if (pct >= 0.50) { rank = 'C'; rankClass = 'rank-c'; rankLabel = 'KEEP PRACTICING'; }
+      else                  { rank = 'D'; rankClass = 'rank-d'; rankLabel = 'NEEDS MORE TRAINING'; }
+      renderStickyNoteResults(rank, rankLabel, rankClass, pct, correct, total);
+      return;
+    }
 
-    scrollEl.innerHTML = `
-      ${lockedBanner}
-      <div id="sn-checklist-section"></div>
-      <div class="sn-rules-card">
-        <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
-        <ul class="sticky-note-list">
-          <li><span class="sn-icon sn-good">🌐</span><span>Verify the <strong>sender's email domain</strong> carefully</span></li>
-          <li><span class="sn-icon sn-good">⏳</span><span>Look for <strong>manufactured urgency</strong> or threats</span></li>
-          <li><span class="sn-icon sn-good">🔗</span><span>Hover over links — inspect where they <strong>really</strong> go</span></li>
-          <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
-        </ul>
-      </div>
-      ${trophyBanner}`;
+    if (titleEl) titleEl.textContent = "📒 Phishing Investigation Tasks";
+    const isFirstEmailCompleted = Boolean(gameState.emailResults && gameState.emailResults.length >= 1);
+    if (!isFirstEmailCompleted && gameState.phase === 'mission') {
+      scrollEl.innerHTML = `
+        <div class="sn-locked-container">
+          <div class="sn-locked-icon-bubble">🔒</div>
+          <div class="sn-locked-title">Tasks Locked</div>
+          <div class="sn-locked-desc">
+            Complete your first email investigation in Zmail to unlock your live <strong>Mission Task List</strong>.
+          </div>
+          <div class="sn-locked-hint">
+            👉 <span>Inspect email #1 to unlock tracking</span>
+          </div>
+        </div>`;
+      return;
+    }
+    scrollEl.innerHTML = `<div id="sn-checklist-section"></div>`;
     updateStickyChecklist();
     return;
   }
@@ -4532,7 +4727,7 @@ function updateStickyNoteForPhase(phase) {
       <div class="sticky-note-tip" style="border-left: 3px solid #9333ea; background: rgba(147, 51, 234, 0.08); color: #581c87;">
         💡 <strong>Detective Tip:</strong> Check actual extension in Folder (e.g. <code>.pdf.exe</code>, <code>.vbs</code>) and run an Anti-Virus scan before clicking Quarantine!
       </div>`;
-    showStickyNote();
+    // Sticky note opens manually — do NOT auto-open
   }
 }
 
@@ -4571,6 +4766,8 @@ function initStickyNote() {
     offsetX = e.clientX - noteRect.left;
     offsetY = e.clientY - noteRect.top;
     note.classList.add('dragging');
+    // Bring sticky note to front of all app windows on drag start
+    focusStickyNote();
     e.preventDefault();
   }
 
@@ -4597,6 +4794,8 @@ function initStickyNote() {
   }
 
   handles.forEach(h => h.addEventListener('pointerdown', startDrag));
+  // Bring to front whenever the sticky note itself is clicked/touched
+  note.addEventListener('pointerdown', () => focusStickyNote());
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
@@ -4921,16 +5120,27 @@ function openEmail(idx) {
     if (typeof RyanGuide !== 'undefined') {
       setTimeout(function() {
         highlightStickyNotesHint();
-        RyanGuide.speak([
-          {
-            text: "Welcome to your second email case! 📒 Notice your Sticky Notes app on the desktop — I've highlighted it for you.",
-            state: 'speaking'
-          },
-          {
-            text: "Open your Sticky Notes to check your live Mission Checklist progress and consult your Red Flag Guidelines as you inspect this message!",
-            state: 'success'
-          }
-        ]);
+        const note = document.getElementById('sticky-note');
+        const isNoteOpen = note && !note.classList.contains('hidden');
+        if (isNoteOpen) {
+          RyanGuide.speak([
+            {
+              text: "Welcome to your second email case! 📒 Check your live Mission Checklist in Sticky Notes to track your tasks as you inspect this message!",
+              state: 'speaking'
+            }
+          ]);
+        } else {
+          RyanGuide.speak([
+            {
+              text: "Welcome to your second email case! 📒 Notice your Sticky Notes app on the desktop — I've highlighted it for you.",
+              state: 'speaking'
+            },
+            {
+              text: "Open your Sticky Notes to check your live Mission Checklist progress as you inspect this message!",
+              state: 'success'
+            }
+          ]);
+        }
       }, 400);
     }
   }
@@ -4950,7 +5160,9 @@ function openEmail(idx) {
   const reportBtn   = document.getElementById('report-btn');
   const legitBtn    = document.getElementById('legit-btn');
 
-  flagModeBtn.classList.remove('active');
+  flagModeBtn.classList.remove('active', 'btn-pulse-highlight', 'tutorial-flag-blink');
+  if (reportBtn) reportBtn.classList.remove('verdict-btn-highlight', 'btn-pulse-highlight');
+  if (legitBtn) legitBtn.classList.remove('verdict-btn-highlight', 'btn-pulse-highlight');
   document.querySelector('.gmail-body').classList.remove('flag-mode-active');
 
   if (existingResult) {
@@ -5027,10 +5239,11 @@ function openEmail(idx) {
     }
   }
 
-  // ── Highlight Flag Mode btn + sticky note when opening a fresh email ──────
-  if (!existingResult && gameState.phase === 'mission') {
+  // ── Highlight Flag Mode btn ONLY on first email ──────
+  const isFirstEmail = (email.id === 1 && gameState.currentEmail === 0 && (!gameState.emailResults || gameState.emailResults.length === 0));
+  if (isFirstEmail && !existingResult && gameState.phase === 'mission') {
     setTimeout(function() {
-      // Pulse the Flag Mode button to guide the player
+      // Pulse the Flag Mode button to guide the player on first email
       const flagBtn = document.getElementById('flag-mode-btn');
       if (flagBtn) {
         flagBtn.classList.remove('btn-pulse-highlight');
@@ -5039,6 +5252,9 @@ function openEmail(idx) {
         setTimeout(function() { flagBtn.classList.remove('btn-pulse-highlight'); }, 3200);
       }
     }, 350);
+  } else {
+    const flagBtn = document.getElementById('flag-mode-btn');
+    if (flagBtn) flagBtn.classList.remove('btn-pulse-highlight', 'tutorial-flag-blink');
   }
 }
 
@@ -5118,8 +5334,7 @@ function renderEmailContent(email) {
       const actionsRow = document.createElement('div');
       actionsRow.className = 'email-link-actions-row';
 
-      // Flaggable link — single-click flags (in flag mode) or shows inspect popup;
-      // double-click opens the phishing site in the simulated browser.
+      // Flaggable link — single-click flags (when flag mode is ON) or opens safe browser directly (when flag mode is OFF).
       const link = document.createElement('a');
       const isFlagged = gameState.currentEmailFlags.some(f => f.type === part.flagType);
       link.className = 'email-link flaggable' + (isFlagged ? ' flagged' : '');
@@ -5130,7 +5345,7 @@ function renderEmailContent(email) {
       link.dataset.flagText = part.destination;
       link.dataset.destination = part.destination;
       link.textContent = part.text;
-      link.title = 'Double-click to investigate this website in the safe browser';
+      link.title = 'Click to open in safe browser (or turn on Flag Evidence to flag)';
       link.setAttribute('onclick', 'handleEmailLinkClick(event, this)');
       link.setAttribute('ondblclick', 'handleEmailLinkDblClick(event, this)');
       link.setAttribute('oncontextmenu', 'handleEmailLinkRightClick(event, this)');
@@ -5139,7 +5354,7 @@ function renderEmailContent(email) {
       // Hint label below the link
       const hint = document.createElement('div');
       hint.className = 'email-link-dblclick-hint';
-      hint.textContent = '🖱️ Double-click to open in safe browser';
+      hint.textContent = '🌐 Click to open in browser';
       actionsRow.appendChild(hint);
 
       wrap.appendChild(actionsRow);
@@ -5234,10 +5449,11 @@ function handleEmailLinkClick(event, el) {
     placeFlag(el);
     return;
   }
-  // Single-click (outside flag mode): show the inspect/link popup
+  // Outside flag mode: direct user straight to browser to see the website (no preview popup)
   const destination = el.dataset.destination;
   if (destination) {
-    showLinkPopup(el, destination);
+    closeLinkPopup();
+    openSuspiciousSite(destination);
   }
 }
 
@@ -5300,6 +5516,7 @@ function openInBrowser() {
 }
 
 function openSuspiciousSite(url) {
+  closeLinkPopup();
   // Notify tutorial that the website was opened
   if (typeof PhishTutorial !== 'undefined' && PhishTutorial.isActive()) {
     PhishTutorial.notify('websiteOpened');
@@ -5377,6 +5594,7 @@ function toggleFlagMode() {
   } else {
     btn.classList.remove('active');
     body.classList.remove('flag-mode-active');
+    closeLinkPopup();
     showToast('Flag Mode OFF', '');
   }
 }
@@ -5425,6 +5643,11 @@ function placeFlag(el) {
     if (flagType === 'fake_sender')     PhishTutorial.notify('senderFlagged');
     if (flagType === 'false_urgency')   PhishTutorial.notify('urgencyFlagged');
     if (flagType === 'suspicious_link') PhishTutorial.notify('linkFlagged');
+  }
+
+  // ── Update verdict button highlight based on flagged evidence count ───────
+  if (typeof PhishTutorial !== 'undefined') {
+    PhishTutorial.updateVerdictBtnHighlight();
   }
 
   // ── Ryan explains the flag — only when tutorial is not actively guiding ─
@@ -5501,6 +5724,11 @@ function removeFlag(flagType) {
     }
   }
   showToast(`🗑 Unflagged: ${removed.label}`, '');
+
+  // ── Update verdict button highlight (may need to remove glow if flags cleared) ─
+  if (typeof PhishTutorial !== 'undefined') {
+    PhishTutorial.updateVerdictBtnHighlight();
+  }
 }
 
 function getEmailMissedFlagInfo(email, evType) {
@@ -5560,9 +5788,10 @@ function renderEvidencePanel() {
   const badge = document.getElementById('evidence-count-badge');
   if (!list || !badge) return;
 
-  const flags = gameState.currentEmailFlags || [];
   const currentEmailObj = (ch1InboxEmails && ch1InboxEmails[gameState.currentEmail]) || (EMAILS && EMAILS[gameState.currentEmail]);
-  const isClosed = currentEmailObj && gameState.emailResults && gameState.emailResults.some(r => r.emailId === currentEmailObj.id);
+  const res = currentEmailObj && gameState.emailResults && gameState.emailResults.find(r => r.emailId === currentEmailObj.id);
+  const isClosed = !!res;
+  const flags = (isClosed && res && res.savedFlags) ? res.savedFlags : (gameState.currentEmailFlags || []);
 
   // Reset classes on badge
   badge.className = 'evidence-count-badge';
@@ -5690,18 +5919,36 @@ function updateVerdictButtonsHighlight() {
   const currentEmailObj = (ch1InboxEmails && ch1InboxEmails[gameState.currentEmail]) || (EMAILS && EMAILS[gameState.currentEmail]);
   const isFirstEmail = (gameState.currentEmail === 0 || (currentEmailObj && currentEmailObj.id === 1));
   const isClosed = currentEmailObj && gameState.emailResults && gameState.emailResults.some(r => r.emailId === currentEmailObj.id);
+  const flagCount = (gameState.currentEmailFlags && gameState.currentEmailFlags.length) || 0;
 
-  // Highlight both report and legit button on first email once the player flags at least one evidence
-  if (isFirstEmail && !isClosed && currentEmailObj && currentEmailObj.evidence && currentEmailObj.evidence.length > 0) {
-    if (gameState.currentEmailFlags && gameState.currentEmailFlags.length >= 1) {
-      reportBtn.classList.add('verdict-btn-highlight');
-      legitBtn.classList.add('verdict-btn-highlight');
-      return;
+  // Tutorial active on email 1: require ALL 3 evidence flags before highlighting
+  const tutorialActive = (typeof PhishTutorial !== 'undefined' && PhishTutorial.isActive());
+  const FIRST_EMAIL_REQUIRED = 3;
+
+  // Email 1 (tutorial): glow only after ALL 3 flags.
+  // After the first email is completed: glow as soon as 1 flag is placed.
+  const firstEmailCompleted = Boolean(gameState.emailResults && gameState.emailResults.length >= 1);
+  let shouldHighlight = false;
+
+  if (!isClosed && currentEmailObj) {
+    if (isFirstEmail && !firstEmailCompleted) {
+      // Email 1 strict tutorial mode — need all 3 flags
+      if (currentEmailObj.evidence && currentEmailObj.evidence.length > 0) {
+        shouldHighlight = (flagCount >= FIRST_EMAIL_REQUIRED);
+      }
+    } else {
+      // Email 2+ (or email 1 revisited after first submit): 1 flag is enough to glow
+      shouldHighlight = (flagCount >= 1);
     }
   }
 
-  reportBtn.classList.remove('verdict-btn-highlight');
-  legitBtn.classList.remove('verdict-btn-highlight');
+  if (shouldHighlight) {
+    reportBtn.classList.add('verdict-btn-highlight');
+    legitBtn.classList.add('verdict-btn-highlight');
+  } else {
+    reportBtn.classList.remove('verdict-btn-highlight', 'btn-pulse-highlight');
+    legitBtn.classList.remove('verdict-btn-highlight', 'btn-pulse-highlight');
+  }
 }
 
 function toggleEvidencePanel(forceOpen) {
@@ -5793,9 +6040,8 @@ function submitReportPhishing() {
     return;
   }
 
-  // ── Require at least one flag to report as phishing ────────
+  // ── Require at least one flag to report as phishing (only phishing button requires flag) ──
   if (!gameState.currentEmailFlags || gameState.currentEmailFlags.length === 0) {
-    // Pulse Flag Mode button to guide the player
     const flagBtn = document.getElementById('flag-mode-btn');
     if (flagBtn) {
       flagBtn.classList.remove('btn-pulse-highlight');
@@ -5810,7 +6056,7 @@ function submitReportPhishing() {
 
       RyanGuide.speak([
         { text: "Hold on, Detective! 🛑 You need to add a flag before reporting an email as phishing.", state: 'concerned' },
-        { text: "Always think before you report or mark as legitimate! In a real investigation, you cannot submit a report without evidence.", state: 'thinking' },
+        { text: "Always think before you report or mark as legitimate! In a real investigation, you cannot submit a phishing report without evidence.", state: 'thinking' },
         { text: "Tag what made you suspicious first — check the sender's domain, false urgency, or deceptive links!", state: 'speaking' }
       ]);
     } else {
@@ -5843,24 +6089,7 @@ function submitMarkLegitimate() {
     return;
   }
 
-  // ── Contradiction caution: flagged evidence exists, but marking as legitimate ──
-  // Show Ryan's warning ONLY ONCE across the playthrough; user can submit non-phishing with flags!
-  if (gameState.currentEmailFlags && gameState.currentEmailFlags.length > 0 && !ch1FlaggedLegitWarnedOnce) {
-    ch1FlaggedLegitWarnedOnce = true;
-    if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
-      const toast = document.getElementById('toast');
-      if (toast) toast.classList.add('hidden');
-
-      RyanGuide.speak([
-        { text: "Wait a second, Detective! 🤔 You currently have suspicious evidence flagged on this email, but you're trying to mark it as legitimate.", state: 'concerned' },
-        { text: "Always think before you report or mark as legitimate! If you verified this email is safe, click Non-phishing again to confirm submission with flags.", state: 'thinking' }
-      ]);
-    } else {
-      showToast('⚠️ Note: You have flagged evidence. Click Non-phishing again to confirm.', 'warning');
-    }
-    return;
-  }
-
+  // After completing the first email, user can flag and submit to non-phishing button freely
   submitReport(false);
 }
 
@@ -5899,22 +6128,13 @@ function submitReport(isPhishing) {
   try {
     const correctDecision = (isPhishing === email.phishing);
 
-    // ── WHEN DECISION IS INCORRECT: Allow retry, explain evidence, do NOT record as success ──
-    if (!correctDecision) {
+    // ── First Email Tutorial: show "Take a closer look before deciding" ONLY ONCE ──
+    const isFirstEmail = (email.id === 1 || gameState.emailResults.length === 0);
+    if (!correctDecision && isFirstEmail && !ch1CloserLookWarnedOnce) {
+      ch1CloserLookWarnedOnce = true;
       if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
 
-      let explainText = '';
-      if (email.phishing) {
-        if (email.id === 1) {
-          explainText = "Take a closer look before deciding! The sender address 'rewards-claim@paypa1.com' uses typosquatting ('1' instead of 'l'), creates extreme urgency with a 30-minute deadline, and the link leads to an unverified domain. Review the email and simulated URL, then try again!";
-        } else {
-          const addr = email.sender ? email.sender.address : 'the sender';
-          explainText = `Take a closer look before deciding! "${addr}" has clear phishing indicators: notice the suspicious sender address, manufactured urgency, or deceptive links. Review the email and simulated URL, then try again!`;
-        }
-      } else {
-        const addr = email.sender ? email.sender.address : 'the sender';
-        explainText = `Take a closer look — this email is actually legitimate! The sender "${addr}" is official and verified, with no manufactured urgency or deceptive links. Review the details and try again!`;
-      }
+      const explainText = "Take a closer look before deciding! The sender address 'rewards-claim@paypa1.com' uses typosquatting ('1' instead of 'l'), creates extreme urgency with a 30-minute deadline, and the link leads to an unverified domain. Review the email and simulated URL, then try again!";
 
       if (typeof RyanGuide !== 'undefined') {
         RyanGuide.speak([{ text: explainText, state: 'concerned' }]);
@@ -5922,15 +6142,20 @@ function submitReport(isPhishing) {
         showToast(explainText, 'warning');
       }
 
-      // Do NOT save result, do NOT lock buttons, do NOT close email view
+      // Do NOT save result, allow one retry on the first email only
       return;
     }
 
-    // ── WHEN DECISION IS CORRECT ──
-    if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
-    gameState.correctDecisions++;
-    if (isPhishing) gameState.phishingDetected++;
-    else gameState.legitimateDetected++;
+    // ── WHEN DECISION IS RECORDED (Correct or Incorrect) ──
+    if (correctDecision) {
+      if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
+      gameState.correctDecisions++;
+      if (isPhishing) gameState.phishingDetected++;
+      else gameState.legitimateDetected++;
+    } else {
+      if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
+      ch1MistakeCount++;
+    }
 
     // Store verified result
     const result = {
@@ -5938,7 +6163,7 @@ function submitReport(isPhishing) {
       emailIdx: gameState.currentEmail,
       isPhishing: email.phishing,
       playerDecision: isPhishing,
-      correctDecision: true,
+      correctDecision: correctDecision,
       playerFlags: gameState.currentEmailFlags.map(f => f.type),
       savedFlags: [...gameState.currentEmailFlags]
     };
@@ -5982,11 +6207,18 @@ function submitReport(isPhishing) {
       const old = emailContent.querySelector('.verdict-banner');
       if (old) old.remove();
       const banner = document.createElement('div');
-      banner.className = 'verdict-banner verdict-banner-correct';
-      let bannerTitle = isPhishing ? 'CORRECT — PHISHING' : 'CORRECT — NON-PHISHING';
-      let bannerMsg = isPhishing ? 'Good catch! You correctly identified this as a phishing email.' : 'Correct! This email is safe and legitimate.';
+      banner.className = `verdict-banner ${correctDecision ? 'verdict-banner-correct' : 'verdict-banner-wrong'}`;
+      let bannerTitle = '';
+      let bannerMsg = '';
+      if (correctDecision) {
+        bannerTitle = isPhishing ? 'CORRECT — PHISHING' : 'CORRECT — NON-PHISHING';
+        bannerMsg = isPhishing ? 'Good catch! You correctly identified this as a phishing email.' : 'Correct! This email is safe and legitimate.';
+      } else {
+        bannerTitle = isPhishing ? 'INCORRECT — NOT PHISHING' : 'INCORRECT — THIS WAS PHISHING';
+        bannerMsg = isPhishing ? 'This email was actually legitimate, not phishing.' : 'This was actually a phishing attempt that went undetected.';
+      }
       banner.innerHTML = `
-        <span class="vb-icon">✅</span>
+        <span class="vb-icon">${correctDecision ? '✅' : '❌'}</span>
         <div style="flex:1;">
           <strong>${bannerTitle}</strong> — ${bannerMsg}
         </div>
@@ -6001,10 +6233,10 @@ function submitReport(isPhishing) {
       addSimulationNotification({
         id: 'notif-verdict-' + email.id,
         source: 'Investigation Log',
-        icon: '✅',
+        icon: correctDecision ? '✅' : '❌',
         iconType: 'shield',
-        title: '✅ Correct: ' + (email.phishing ? 'Phishing' : 'Non-phishing') + ' — ' + subjShort,
-        body: 'Decision recorded successfully.',
+        title: (correctDecision ? '✅ Correct: ' : '❌ Incorrect: ') + (email.phishing ? 'Phishing' : 'Non-phishing') + ' — ' + subjShort,
+        body: correctDecision ? 'Decision recorded successfully.' : 'Decision recorded as incorrect.',
         time: 'Just now',
         app: 'gmail',
         emailId: email.id
@@ -6013,6 +6245,9 @@ function submitReport(isPhishing) {
 
     updateHUD();
     updateFolderCounts();
+    if (gameState.emailResults.length >= 1) {
+      updateStickyNoteForPhase('phishing');
+    }
     updateStickyChecklist();
     savePhishingProgress();
 
@@ -6081,19 +6316,35 @@ function submitReport(isPhishing) {
         }
       }
 
-      // If this was the first email submitted, guide player to open Sticky Notes and highlight it
+      // If this was the first email submitted, guide player to Sticky Notes
       if (gameState.emailResults.length === 1) {
-        messages = [
-          ...messages,
-          {
-            text: "Great work submitting your first email! 📒 Now that the next incoming emails have arrived, notice your Sticky Notes on the desktop — I've highlighted it for you.",
-            state: 'speaking'
-          },
-          {
-            text: "Open your Sticky Notes to check your live Mission Checklist progress before opening the next email!",
-            state: 'success'
-          }
-        ];
+        const sNote = document.getElementById('sticky-note');
+        const isNoteOpen = sNote && !sNote.classList.contains('hidden');
+        if (isNoteOpen) {
+          messages = [
+            ...messages,
+            {
+              text: "Great work submitting your first email! 📒 Your live Mission Checklist in Sticky Notes is now active with your investigation tasks.",
+              state: 'speaking'
+            },
+            {
+              text: "Keep an eye on your Sticky Notes checklist as you investigate the incoming emails!",
+              state: 'success'
+            }
+          ];
+        } else {
+          messages = [
+            ...messages,
+            {
+              text: "Great work submitting your first email! 📒 Now that the next incoming emails have arrived, notice your Sticky Notes on the desktop — I've highlighted it for you.",
+              state: 'speaking'
+            },
+            {
+              text: "Open your Sticky Notes to check your live Mission Checklist progress before opening the next email!",
+              state: 'success'
+            }
+          ];
+        }
 
         setTimeout(() => {
           highlightStickyNotesHint();
@@ -6444,91 +6695,16 @@ function finishMission() {
 
   const totalEvidence = EMAILS.reduce((sum, e) => sum + e.evidence.length, 0);
 
-  // ── Populate Investigation Evidence Breakdown (Found & Missed flags per email) ──
-  const evbList = document.getElementById('res-evb-list');
+  // ── Calculate total evidence found ──
   let totalFoundAcrossAll = 0;
-  if (evbList) {
-    evbList.innerHTML = '';
-    EMAILS.forEach((email, idx) => {
-      const res = gameState.emailResults.find(r => r.emailId === email.id);
-      const isReviewed = !!res;
-      const playerFlags = (res && res.savedFlags) ? res.savedFlags : [];
-      const flaggedTypes = playerFlags.map(f => f.type);
-      const expected = email.evidence || [];
-      const foundTypes = expected.filter(t => flaggedTypes.includes(t));
-      totalFoundAcrossAll += foundTypes.length;
-      const missedTypes = expected.filter(t => !flaggedTypes.includes(t));
-
-      const card = document.createElement('div');
-      card.className = 'res-evb-card';
-
-      let statusBadge = '';
-      if (!isReviewed) {
-        statusBadge = '<span class="res-evb-badge res-evb-unreviewed">UNREVIEWED</span>';
-      } else if (res.correctDecision) {
-        statusBadge = `<span class="res-evb-badge res-evb-correct">✅ CORRECT (${email.phishing ? 'Phishing' : 'Non-phishing'})</span>`;
-      } else {
-        statusBadge = `<span class="res-evb-badge res-evb-wrong">❌ WRONG (${email.phishing ? 'Phishing' : 'Non-phishing'})</span>`;
-      }
-
-      let evidenceSummary = '';
-      if (email.phishing) {
-        if (missedTypes.length === 0) {
-          evidenceSummary = `<span class="res-evb-stat res-evb-stat-perfect">All ${expected.length} flags found</span>`;
-        } else {
-          evidenceSummary = `<span class="res-evb-stat res-evb-stat-missed">${foundTypes.length}/${expected.length} flags found • ${missedTypes.length} missed</span>`;
-        }
-      } else {
-        evidenceSummary = `<span class="res-evb-stat res-evb-stat-clean">Clean email • 0 flags</span>`;
-      }
-
-      let flagsListHtml = '';
-      if (email.phishing) {
-        flagsListHtml += '<div class="res-evb-items">';
-        foundTypes.forEach(t => {
-          const mInfo = getEmailMissedFlagInfo(email, t);
-          flagsListHtml += `
-            <div class="res-evb-item res-evb-item-found">
-              <span class="res-evb-item-icon">✅</span>
-              <div class="res-evb-item-info">
-                <span class="res-evb-item-type">FLAGGED: ${mInfo.label}</span>
-                <span class="res-evb-item-snippet">${mInfo.text}</span>
-              </div>
-            </div>`;
-        });
-        missedTypes.forEach(t => {
-          const mInfo = getEmailMissedFlagInfo(email, t);
-          flagsListHtml += `
-            <div class="res-evb-item res-evb-item-missed">
-              <span class="res-evb-item-icon">⚠️</span>
-              <div class="res-evb-item-info">
-                <span class="res-evb-item-type">MISSED: ${mInfo.label}</span>
-                <span class="res-evb-item-snippet">${mInfo.text}</span>
-                <span class="res-evb-item-reason">${mInfo.reason}</span>
-              </div>
-            </div>`;
-        });
-        flagsListHtml += '</div>';
-      } else {
-        flagsListHtml = `<div class="res-evb-clean-note">🛡️ Legitimate communication — verified sender and safe message content.</div>`;
-      }
-
-      card.innerHTML = `
-        <div class="res-evb-card-header">
-          <div class="res-evb-card-title-group">
-            <span class="res-evb-email-num">Email #${idx + 1}</span>
-            <span class="res-evb-subject">${email.subject}</span>
-          </div>
-          <div class="res-evb-card-meta">
-            ${statusBadge}
-            ${evidenceSummary}
-          </div>
-        </div>
-        ${flagsListHtml}`;
-
-      evbList.appendChild(card);
-    });
-  }
+  EMAILS.forEach(email => {
+    const res = gameState.emailResults.find(r => r.emailId === email.id);
+    const playerFlags = (res && res.savedFlags) ? res.savedFlags : [];
+    const flaggedTypes = playerFlags.map(f => f.type);
+    const expected = email.evidence || [];
+    const foundTypes = expected.filter(t => flaggedTypes.includes(t));
+    totalFoundAcrossAll += foundTypes.length;
+  });
 
   gameState.evidenceFoundTotal = totalFoundAcrossAll;
 
@@ -6551,7 +6727,37 @@ function finishMission() {
 
   completeCategory('phishing', correct * 100, rank);
   updateAppLockStates();
-  updateStickyNoteForPhase('malware');
+
+  // ── Show Sticky Note with the full Task Bar Results & Progress ──
+  renderStickyNoteResults(rank, rankLabel, rankClass, pct, correct, total);
+  showStickyNote();
+
+  // ── Taskbar updates: highlight Sticky Note & show Results button ──
+  const tbNotes = document.getElementById('taskbar-notes');
+  if (tbNotes) {
+    tbNotes.classList.remove('hidden');
+    tbNotes.classList.add('open', 'active', 'btn-pulse-highlight');
+  }
+
+  // ── Unlock & Award Phishing Investigator Achievement ──
+  _achievementUnlocked.add('task_report_phishing');
+  _achievementUnlocked.add('task_collect_evidence');
+  _achievementUnlocked.add('task_fake_sender');
+  _achievementUnlocked.add('task_phish_indicators');
+  _achievementUnlocked.add('task_all_complete');
+  _trophyUnlockedDate = new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+  savePhishingProgress();
+
+  showAchievementToast({
+    id: 'task_all_complete',
+    label: 'Task 5: Phishing Investigator',
+    icon: '🏆',
+    progress: () => `All ${EMAILS.length} investigations completed!`
+  });
+
+  setTimeout(() => {
+    showPhishingInvestigatorTrophy();
+  }, 1000);
 
   if (typeof addSimulationNotification === 'function') {
     addSimulationNotification({
@@ -6560,20 +6766,12 @@ function finishMission() {
       icon: '🏆',
       iconType: 'shield',
       title: 'Chapter 1 Completed — Rank ' + rank,
-      body: `All ${EMAILS.length} emails analyzed with ${Math.round(pct * 100)}% accuracy. Phishing attack neutralized!`,
+      body: `All ${EMAILS.length} emails analyzed with ${Math.round(pct * 100)}% accuracy. Phishing Investigator Trophy unlocked!`,
       time: 'Just now'
     });
   }
 
-  // Remove overlay mission complete: ensure overlay-results is never shown
-  closeOverlay('overlay-results');
-  const resultsOv = document.getElementById('overlay-results');
-  if (resultsOv) {
-    resultsOv.classList.remove('active');
-    resultsOv.style.display = 'none';
-  }
-
-  // Close Zmail window so Ryan mentor is cleanly and prominently visible
+  // Close Zmail window so Ryan mentor and Sticky Note are prominently visible
   const gmailWin = document.getElementById('win-gmail');
   if (gmailWin) {
     gmailWin.classList.add('hidden');
@@ -6587,28 +6785,18 @@ function finishMission() {
   if (typeof RyanGuide !== 'undefined') {
     RyanGuide.speak([
       {
-        text: `🎉 Outstanding job! Congratulations on completing your mission task for Chapter 1! You've successfully finished your Phishing Knowledge and Awareness training with Rank ${rank}!`,
+        text: `🎉 Outstanding job! Congratulations on completing all email investigations for Chapter 1 with Rank ${rank}!`,
         state: 'success'
       },
       {
-        text: `You investigated all ${EMAILS.length} emails with ${Math.round(pct * 100)}% accuracy, uncovering digital evidence and neutralizing every phishing threat.`,
+        text: `You investigated all ${EMAILS.length} emails with ${Math.round(pct * 100)}% accuracy and earned the Phishing Investigator Achievement Trophy!`,
         state: 'speaking'
       },
       {
-        text: "You've mastered the essential defense habits: stopping before reacting, verifying sender domains, spotting false urgency deadlines, and inspecting suspicious links and file attachments.",
+        text: "Your final Mission Results, task progress, and achievements are displayed right here on your Sticky Note and taskbar.",
         state: 'success'
-      },
-      {
-        text: "Thanks to your keen eye and security awareness, the entire organization is safe. Let's proceed to Story Selection!",
-        state: 'speaking'
       }
-    ], {
-      onDone: function() {
-        openCategoryHub();
-      }
-    });
-  } else {
-    openCategoryHub();
+    ]);
   }
 }
 
@@ -6617,6 +6805,16 @@ function finishMission() {
 // ═══════════════════════════════════════════════════════════
 
 function playAgain(showVN = false) {
+  const tbNotes = document.getElementById('taskbar-notes');
+  if (tbNotes) {
+    tbNotes.classList.remove('btn-pulse-highlight');
+  }
+  closeOverlay('overlay-results');
+  const desktop = document.getElementById('desktop');
+  if (desktop) {
+    desktop.style.visibility = 'visible';
+    desktop.style.opacity = '1';
+  }
   // Reset state
   updateStickyNoteForPhase('phishing');
   gameState.phase = 'welcome';
@@ -6648,6 +6846,7 @@ function playAgain(showVN = false) {
   ch1MistakeCount              = 0;
   ch1InvestigationTutorialDone = false;
   ch1FlaggedLegitWarnedOnce    = false;
+  ch1CloserLookWarnedOnce      = false;
   ch1SecondEmailNotesHintDone  = false;
   if (typeof FOLDER_FILES !== 'undefined') {
     FOLDER_FILES.forEach(f => { f.quarantined = false; f.scanned = false; });
@@ -11704,7 +11903,6 @@ function g4ProceedToStage3() {
 const G4_CONTACTS = [
   { id: 'pia_fake', name: 'Pia — New Account', avatar: '👤', joined: 'Today', type: 'suspicious', isGroup4: true },
   { id: 'carlo', name: 'Carlo', avatar: '👦', joined: '2 years ago', type: 'known', isGroup4: true },
-  { id: 'group4', name: 'Group 4 Chat', avatar: '👥', joined: '1 year ago', type: 'group', isGroup4: true },
   { id: 'real_pia', name: 'Pia (Verified)', avatar: '👧', joined: '1 year ago', type: 'known', isGroup4: true }
 ];
 
@@ -11715,10 +11913,6 @@ const G4_MESSAGES = {
   carlo: [
     { from: 'them', text: 'I found a free premium design tool. Download this so we can finish the presentation faster.', time: '3:05 PM', link: 'canva-premium-free.example' }
   ],
-  group4: [
-    { from: 'them', sender: 'Pia', text: "That's not me. Don't send anything.", time: '2:49 PM', verified: true },
-    { from: 'them', sender: 'Carlo', text: 'What happened? Is everything ok?', time: '2:50 PM' }
-  ],
   real_pia: [
     { from: 'them', text: "Hey! Did someone contact you pretending to be me? That account isn't mine.", time: '2:48 PM', verified: true }
   ]
@@ -11727,18 +11921,101 @@ const G4_MESSAGES = {
 let g4ActiveConvo = null;
 let g4PiaInspected = false;
 let g4GroupChecked = false;
+let g4PhoneScreenView = 'home'; // 'home' | 'messages' | 'calls'
 
 function renderPhoneLinkApp() {
   renderPhoneFrame();
+  showPhoneHomeScreen();
   switchPhoneTab('messages');
 }
 
 function renderPhoneFrame() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+
   const timeEl = document.getElementById('pl-phone-time');
-  if (timeEl) {
-    const now = new Date();
-    timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
+  if (timeEl) timeEl.textContent = timeStr;
+
+  const widgetTime = document.getElementById('pl-phone-widget-time');
+  if (widgetTime) widgetTime.textContent = timeStr;
+
+  const widgetDate = document.getElementById('pl-phone-widget-date');
+  if (widgetDate) widgetDate.textContent = dateStr;
+}
+
+function showPhoneHomeScreen() {
+  g4PhoneScreenView = 'home';
+  const phoneContent = document.getElementById('pl-phone-content');
+  if (!phoneContent) return;
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+
+  phoneContent.innerHTML = `
+    <div class="pl-phone-home-view">
+      <div class="pl-phone-widget">
+        <div class="pl-phone-widget-time" id="pl-phone-widget-time">${timeStr}</div>
+        <div class="pl-phone-widget-date" id="pl-phone-widget-date">${dateStr}</div>
+      </div>
+      <div class="pl-phone-apps-container">
+        <div class="pl-phone-apps-grid">
+          <div class="pl-phone-app-item" id="pl-phone-app-messages" onclick="clickPhoneScreenApp('messages')" title="Messages">
+            <div class="pl-phone-app-icon pl-app-icon-messages">
+              <span>💬</span>
+            </div>
+            <span class="pl-phone-app-label">Messages</span>
+          </div>
+          <div class="pl-phone-app-item" id="pl-phone-app-calls" onclick="clickPhoneScreenApp('calls')" title="Calls">
+            <div class="pl-phone-app-icon pl-app-icon-calls">
+              <span>📞</span>
+            </div>
+            <span class="pl-phone-app-label">Calls</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showPhoneInAppScreen(app) {
+  g4PhoneScreenView = app;
+  const phoneContent = document.getElementById('pl-phone-content');
+  if (!phoneContent) return;
+
+  const isMsg = app === 'messages';
+  const title = isMsg ? 'Messages' : 'Calls';
+  const icon = isMsg ? '💬' : '📞';
+  const emptyTitle = isMsg ? 'No Messages' : 'No Recent Calls';
+  const emptyDesc = isMsg ? 'Your inbox is empty' : 'Call history is empty';
+
+  phoneContent.innerHTML = `
+    <div class="pl-phone-inapp-view">
+      <div class="pl-phone-inapp-header">
+        <button type="button" class="pl-phone-screen-back" onclick="returnPhoneHome()" title="Home Screen">‹ Home</button>
+        <span class="pl-phone-screen-title">${title}</span>
+        <span style="width:36px"></span>
+      </div>
+      <div class="pl-phone-inapp-body">
+        <div class="pl-phone-screen-empty-icon">${icon}</div>
+        <div class="pl-phone-screen-empty-title">${emptyTitle}</div>
+        <div class="pl-phone-screen-empty-desc">${emptyDesc}</div>
+        <button type="button" class="pl-phone-screen-home-btn" onclick="returnPhoneHome()">Home Screen</button>
+      </div>
+    </div>
+  `;
+}
+
+function clickPhoneScreenApp(app) {
+  if (typeof AudioManager !== 'undefined' && typeof AudioManager.playClick === 'function') AudioManager.playClick();
+  showPhoneInAppScreen(app);
+  switchPhoneTab(app);
+}
+
+function returnPhoneHome() {
+  if (typeof AudioManager !== 'undefined' && typeof AudioManager.playClick === 'function') AudioManager.playClick();
+  showPhoneHomeScreen();
 }
 
 function switchPhoneTab(tab) {
@@ -11754,6 +12031,9 @@ function switchPhoneTab(tab) {
 
   if (tab === 'messages') {
     renderPhoneMessages(content);
+    if (g4PhoneScreenView !== 'home') {
+      showPhoneInAppScreen('messages');
+    }
   } else if (tab === 'calls') {
     content.innerHTML = `
       <div class="pl-empty-state">
@@ -11762,73 +12042,24 @@ function switchPhoneTab(tab) {
         <div class="pl-empty-state-sub">Recent phone and audio calls will appear here.</div>
       </div>
     `;
-  } else if (tab === 'contacts') {
-    renderPhoneContacts(content);
+    if (g4PhoneScreenView !== 'home') {
+      showPhoneInAppScreen('calls');
+    }
   }
 }
 
 function renderPhoneMessages(container) {
-  const unreadCount = g4State.stage >= 3 ? (g4State.miaAction ? 0 : 2) : 0;
   const badge = document.getElementById('pl-msg-badge');
-  if (badge) badge.textContent = unreadCount > 0 ? unreadCount : '';
-
-  const convos = [
-    { id: 'pia_fake', name: 'Pia — New Account', preview: 'Hey, can you send me your student...', time: '2:47 PM', unread: g4State.stage >= 3 && !g4State.miaAction, suspicious: true, showIf: g4State.stage >= 3 },
-    { id: 'carlo', name: 'Carlo', preview: 'I found a free premium design tool...', time: '3:05 PM', unread: g4State.stage >= 4 && !g4State.fileDecision, showIf: g4State.stage >= 4 },
-    { id: 'group4', name: 'Group 4 Chat', preview: 'Pia: That\'s not me. Don\'t send...', time: '2:49 PM', showIf: true },
-    { id: 'real_pia', name: 'Pia (Verified)', preview: 'Did someone contact you pretending...', time: '2:48 PM', showIf: g4State.stage >= 3 }
-  ].filter(c => c.showIf);
-
-  container.innerHTML = `
-    <div class="pl-msg-list">
-      ${convos.map(c => `
-        <div class="pl-msg-row ${c.unread ? 'unread' : ''} ${c.suspicious ? 'suspicious' : ''} ${g4ActiveConvo === c.id ? 'active' : ''}" onclick="openPhoneConversation('${c.id}')">
-          <div class="pl-msg-avatar">${c.suspicious ? '⚠️' : G4_CONTACTS.find(x => x.id === c.id)?.avatar || '👤'}</div>
-          <div class="pl-msg-info">
-            <div class="pl-msg-name">${c.name}${c.suspicious ? ' <span class="pl-suspicious-tag">New Account</span>' : ''}</div>
-            <div class="pl-msg-preview">${c.preview}</div>
-          </div>
-          <div class="pl-msg-meta">
-            <div class="pl-msg-time">${c.time}</div>
-            ${c.unread ? '<div class="pl-unread-dot"></div>' : ''}
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-
-  // Also update phone screen preview
-  const phoneContent = document.getElementById('pl-phone-content');
-  if (phoneContent) {
-    phoneContent.innerHTML = `
-      <div style="padding:8px;display:flex;flex-direction:column;gap:6px;">
-        ${convos.slice(0, 3).map(c => `
-          <div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:7px 9px;font-size:10px;display:flex;align-items:center;gap:6px;border:1px solid ${c.suspicious ? 'rgba(251,191,36,0.6)' : 'rgba(255,255,255,0.1)'};">
-            <span style="font-size:14px">${c.suspicious ? '⚠️' : '💬'}</span>
-            <div style="min-width:0;flex:1;">
-              <div style="font-weight:800;color:${c.suspicious ? '#fbbf24' : '#f8fafc'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.name.slice(0, 16))}</div>
-              <div style="color:#cbd5e1;font-size:9.5px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.preview.slice(0, 22))}...</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+  if (badge) {
+    badge.textContent = '';
+    badge.classList.add('hidden');
   }
-}
 
-function renderPhoneContacts(container) {
   container.innerHTML = `
-    <div class="pl-contacts-list">
-      ${G4_CONTACTS.map(c => `
-        <div class="pl-contact-row" onclick="openPhoneConversation('${c.id}')">
-          <div class="pl-contact-avatar ${c.type === 'suspicious' ? 'avatar-suspicious' : ''}">${c.avatar}</div>
-          <div class="pl-contact-info">
-            <div class="pl-contact-name">${c.name}</div>
-            <div class="pl-contact-meta">Member since: ${c.joined} ${c.type === 'suspicious' ? '• <span style="color:var(--accent-orange)">⚠️ New Account</span>' : ''}</div>
-          </div>
-          ${c.type === 'suspicious' ? '<span style="font-size:10px;color:var(--accent-orange);font-weight:700;padding:3px 6px;border:1px solid currentColor;border-radius:4px">INSPECT</span>' : ''}
-        </div>
-      `).join('')}
+    <div class="pl-empty-state">
+      <div class="pl-empty-state-icon">💬</div>
+      <div class="pl-empty-state-title">No messages</div>
+      <div class="pl-empty-state-sub">No direct messages yet. New conversations will appear here.</div>
     </div>
   `;
 }
@@ -11840,35 +12071,19 @@ function openPhoneConversation(contactId) {
   const content = document.getElementById('pl-tab-content');
   if (!content) return;
 
-  const msgs = G4_MESSAGES[contactId] || [];
   const contact = G4_CONTACTS.find(c => c.id === contactId);
-
-  // Track investigation
-  if (contactId === 'pia_fake') g4PiaInspected = true;
-  if (contactId === 'group4' || contactId === 'real_pia') g4GroupChecked = true;
-
-  const actionHtml = buildPhoneActionHtml(contactId);
 
   content.innerHTML = `
     <div class="pl-convo-view">
       <div class="pl-convo-header">
         <button class="pl-back-btn" onclick="switchPhoneTab('messages')">← Back</button>
         <div class="pl-convo-name">${contact?.name || contactId}</div>
-        <button class="pl-inspect-btn" onclick="g4InspectProfile('${contactId}')">🔍 Inspect Profile</button>
       </div>
-      <div class="pl-convo-messages">
-        ${msgs.map(m => `
-          <div class="pl-msg-bubble ${m.from === 'me' ? 'mine' : 'theirs'}">
-            ${m.sender ? `<div class="pl-msg-sender">${m.sender}</div>` : ''}
-            <div class="pl-msg-text ${m.urgent ? 'urgent-msg' : ''} ${m.verified ? 'verified-msg' : ''}">
-              ${m.text}
-              ${m.link ? `<div class="pl-msg-link" onclick="g4OpenCarloLink()">🔗 ${m.link} <span style="color:var(--accent-cyan);font-size:10px">→ Open</span></div>` : ''}
-            </div>
-            <div class="pl-msg-time">${m.time} ${m.verified ? '✓ Verified' : ''}</div>
-          </div>
-        `).join('')}
+      <div class="pl-empty-state" style="flex:1;">
+        <div class="pl-empty-state-icon">💬</div>
+        <div class="pl-empty-state-title">No messages</div>
+        <div class="pl-empty-state-sub">This conversation is currently empty.</div>
       </div>
-      ${actionHtml}
     </div>
   `;
 }
@@ -16349,23 +16564,7 @@ const PhishTutorial = (() => {
       requireAction: 'linkFlagged',
       state: 'speaking'
     },
-    // 5. Ryan: "Click Investigate Website to inspect the destination safely."
-    {
-      id: 'open_website',
-      targetSelector: '.email-view-website-btn',
-      text: 'Click Investigate Website to inspect the destination safely.',
-      requireAction: 'websiteOpened',
-      state: 'speaking'
-    },
-    // 6. Ryan: "Inspect the URL carefully. Does the domain match the legitimate organization?"
-    {
-      id: 'browser_url_inspect',
-      targetSelector: '.browser-omnibox-wrap',
-      text: 'Inspect the URL carefully. Does the domain match the legitimate organization?',
-      requireAction: 'urlInspected',
-      state: 'thinking'
-    },
-    // 7. Decision — all 6 evidence steps done; highlight classification buttons and show final message.
+    // 5. Decision — all 3 evidence flags done; highlight classification buttons and show final message.
     {
       id: 'decision',
       text: "Great job investigating the evidence! Now decide whether this email is phishing or legitimate. Choose one of the highlighted buttons.",
@@ -16500,8 +16699,8 @@ const PhishTutorial = (() => {
 
     const rBtn = document.getElementById('report-btn');
     const lBtn = document.getElementById('legit-btn');
-    if (rBtn) rBtn.classList.remove('btn-pulse-highlight');
-    if (lBtn) lBtn.classList.remove('btn-pulse-highlight');
+    if (rBtn) rBtn.classList.remove('btn-pulse-highlight', 'verdict-btn-highlight');
+    if (lBtn) lBtn.classList.remove('btn-pulse-highlight', 'verdict-btn-highlight');
 
     // Clean up any remaining legacy elements if present
     const oldOverlay = document.getElementById('phish-tutorial-overlay');
@@ -16515,10 +16714,15 @@ const PhishTutorial = (() => {
     const oldWidget = document.getElementById('url-investigation-widget');
     if (oldWidget) oldWidget.remove();
 
-    // Unlock sticky notes checklist and update UI
+    // Unlock sticky notes checklist — update content but do NOT auto-open.
+    // Highlight the desktop icon so the player knows to open it manually.
     setTimeout(() => {
       updateStickyNoteForPhase('phishing');
-      if (typeof showStickyNote === 'function') showStickyNote();
+      // Only update the open note's content if it's already visible
+      const sNote = document.getElementById('sticky-note');
+      if (sNote && !sNote.classList.contains('hidden')) {
+        if (typeof updateStickyChecklist === 'function') updateStickyChecklist();
+      }
       if (typeof highlightStickyNotesHint === 'function') highlightStickyNotesHint();
 
       openApp('gmail');
@@ -16543,12 +16747,51 @@ const PhishTutorial = (() => {
   function isDone() { return _done; }
   function isActive() { return _active; }
 
+  /**
+   * updateVerdictBtnHighlight — called by placeFlag / removeFlag.
+   * Email 1 (tutorial): buttons glow only after ALL 3 evidence flags.
+   * All other emails:   buttons glow as soon as ANY flag exists,
+   *                     and dim again if all flags are removed.
+   */
+  function updateVerdictBtnHighlight() {
+    const rBtn = document.getElementById('report-btn');
+    const lBtn = document.getElementById('legit-btn');
+    if (!rBtn || !lBtn) return;
+
+    const currentEmailObj = (ch1InboxEmails && ch1InboxEmails[gameState.currentEmail]) || (EMAILS && EMAILS[gameState.currentEmail]);
+    const isEmail1 = (gameState.currentEmail === 0 || (currentEmailObj && currentEmailObj.id === 1));
+    const flags = gameState.currentEmailFlags || [];
+    const flagCount = flags.length;
+    const EMAIL1_REQUIRED = 3; // all 3 evidence must be flagged on email 1
+
+    // Email 1 tutorial: glow only after ALL 3 flags.
+    // Email 2+: glow as soon as 1 flag is placed (first email already completed).
+    const firstEmailCompleted = Boolean(gameState.emailResults && gameState.emailResults.length >= 1);
+    let shouldGlow = false;
+    if (isEmail1 && !firstEmailCompleted) {
+      // Strict tutorial mode on email 1: need all 3 evidence flags
+      shouldGlow = (flagCount >= EMAIL1_REQUIRED);
+    } else {
+      // After first email done: 1 flag is enough to enable phishing verdict glow
+      shouldGlow = (flagCount >= 1);
+    }
+
+    if (shouldGlow) {
+      rBtn.classList.add('btn-pulse-highlight');
+      lBtn.classList.add('btn-pulse-highlight');
+    } else {
+      rBtn.classList.remove('btn-pulse-highlight', 'verdict-btn-highlight');
+      lBtn.classList.remove('btn-pulse-highlight', 'verdict-btn-highlight');
+    }
+  }
+
   return {
     start,
     notify,
     isDone,
     isActive,
-    finishTutorial
+    finishTutorial,
+    updateVerdictBtnHighlight
   };
 })();
 
