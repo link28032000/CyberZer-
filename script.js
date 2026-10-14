@@ -21,58 +21,58 @@ const EMAILS = [
   // === EMAIL 1: First phishing — loads on first Zmail open ===
   {
     id: 1,
-    sender: { name: 'Business Support', address: 'support@business-secure-alert.com' },
-    subject: 'URGENT: Your Account Requires Immediate Verification',
+    sender: { name: 'PayPal Rewards Claim', address: 'rewards-claim@paypa1.com' },
+    subject: 'CONGRATULATIONS: You Won ₱1,000,000 Pesos! Claim Your Prize Now',
     time: '8:14 AM',
-    preview: 'We have detected suspicious activity on your account. Immediate action is required within 30 minutes...',
+    preview: 'Congratulations! You have been selected as the grand winner of 1,000,000 Pesos (PHP 1,000,000.00). Click Claim Now within 30 minutes to transfer...',
     phishing: true,
     evidence: ['fake_sender', 'false_urgency', 'suspicious_link'],
     body: [
-      { type: 'p', text: 'Dear Account Holder,' },
-      { type: 'p', text: 'We have detected suspicious activity on your account. As a precautionary measure, your access has been temporarily restricted pending verification.' },
+      { type: 'p', text: 'Dear Valued Winner,' },
+      { type: 'p', text: 'Congratulations! Your account has been randomly chosen as the GRAND PRIZE WINNER of ₱1,000,000 Pesos (PHP 1,000,000.00) in the Annual International E-Wallet Promo Raffle!' },
       {
         type: 'p-flag',
         flagId: 'urgency',
         flagType: 'false_urgency',
-        text: 'WARNING: Your account will be permanently suspended within 30 minutes if you do not verify your identity immediately.',
+        text: 'URGENT: You must claim your ₱1,000,000 pesos prize within 30 minutes, or your winnings will be permanently forfeited and transferred to an alternate winner!',
         label: 'FALSE URGENCY'
       },
-      { type: 'p', text: 'To restore your account access and avoid permanent suspension, you must verify your identity using the secure link below.' },
+      { type: 'p', text: 'To deposit your ₱1,000,000 cash prize directly into your PayPal account, click the official disbursement button below and log in to verify your identity:' },
       {
         type: 'link',
         flagId: 'link1',
         flagType: 'suspicious_link',
-        text: 'Verify My Account Now',
-        destination: 'https://business-account-verify.net/login',
+        text: 'Claim Now — Transfer ₱1,000,000 to PayPal',
+        destination: 'https://paypa1.com/claim-reward',
         label: 'SUSPICIOUS LINK'
       },
-      { type: 'p', text: 'Do not share this link. It is tied exclusively to your account.' },
-      { type: 'p', text: 'Regards,\nBusiness Support Team\nSecurity Division' }
+      { type: 'p', text: 'Do not share this link. It is tied exclusively to your winning claim ticket.' },
+      { type: 'p', text: 'Best regards,\nPayPal International Rewards Team\nPrize Disbursement Division' }
     ],
     capybaraAnalysis: {
       fake_sender: {
-        correct: '\ud83d\udea9 SENDER \u2014 CORRECT\nThe domain <code>business-secure-alert.com</code> is not the company\'s official domain. Attackers register convincing-sounding domains to impersonate organizations. Always verify the sender\'s exact domain.',
-        missed: '\ud83d\udea9 MISSED \u2014 FAKE SENDER\nThe sender <code>support@business-secure-alert.com</code> uses a fake domain. The real organization sends from its verified official domain, not <code>business-secure-alert.com</code>.'
+        correct: '🚩 SENDER — CORRECT\nThe domain <code>paypa1.com</code> uses the digit \'1\' instead of the letter \'l\' in \'paypal\' — a classic typosquatting attack! Authentic PayPal emails only originate from <code>@paypal.com</code>.',
+        missed: '🚩 MISSED — FAKE SENDER\nThe sender <code>rewards-claim@paypa1.com</code> uses a fake typosquatted domain with the digit \'1\' instead of \'l\'. Real PayPal emails come from <code>@paypal.com</code>.'
       },
       false_urgency: {
-        correct: '\ud83d\udea9 URGENCY \u2014 CORRECT\nA 30-minute suspension deadline is a manufactured pressure tactic designed to prevent critical thinking. Real organizations never use 30-minute ultimatums in security alerts.',
-        missed: '\ud83d\udea9 MISSED \u2014 FALSE URGENCY\nThe 30-minute deadline and \'permanent suspension\' threat are social engineering pressure. Real security alerts give reasonable timeframes and do not use extreme time pressure.'
+        correct: '🚩 URGENCY — CORRECT\nThe 30-minute forfeiture threat and sudden ₱1,000,000 reward are classic social engineering tactics. Scammers manufacture extreme urgency so victims rush to click without verifying.',
+        missed: '🚩 MISSED — FALSE URGENCY\nThe 30-minute deadline claiming you will lose your ₱1,000,000 prize is manufactured pressure designed to stop you from thinking critically.'
       },
       suspicious_link: {
-        correct: '\ud83d\udea9 LINK \u2014 CORRECT\nThe verification link leads to <code>business-account-verify.net</code> \u2014 an unrelated fake domain used to harvest credentials. The real company domain is different.',
-        missed: '\ud83d\udea9 MISSED \u2014 SUSPICIOUS LINK\nThe \'Verify My Account Now\' button leads to <code>https://business-account-verify.net/login</code> \u2014 not the company\'s actual domain. Always verify the destination URL before clicking.'
+        correct: '🚩 LINK — CORRECT\nThe \'Claim Now\' button leads to <code>https://paypa1.com/claim-reward</code> — a counterfeit typosquatted website (paypa1 with the digit \'1\') built to harvest your PayPal credentials.',
+        missed: '🚩 MISSED — SUSPICIOUS LINK\nThe \'Claim Now\' button directs to <code>https://paypa1.com/claim-reward</code> instead of the authentic <code>paypal.com</code> domain. Always inspect link destination URLs before clicking.'
       }
     },
     ryanTutor: {
       correct: [
-        { text: '\u2705 Great catch! This was a phishing email. The sender used \"support@business-secure-alert.com\" \u2014 that domain is NOT the company\'s official domain. Attackers register convincing look-alike domains to impersonate real organizations.', state: 'success' },
-        { text: 'The \"30-minute suspension\" threat was a false urgency tactic \u2014 designed to panic you so you act without thinking. Real companies never set 30-minute ultimatums in security emails.', state: 'speaking' },
-        { text: 'The \"Verify My Account\" link led to \"business-account-verify.net\" \u2014 a completely different fake site built to steal your credentials. Always hover over links first to check where they actually go!', state: 'thinking' }
+        { text: '✅ Outstanding catch! This was a classic prize scam phishing email. The sender domain is "paypa1.com" — notice the number "1" instead of the letter "l"! Attackers register look-alike typosquat domains to deceive you.', state: 'success' },
+        { text: 'The "You won ₱1,000,000 Pesos" lure and "30-minute forfeiture deadline" are false urgency tactics — dangling huge sums of money with artificial pressure so you panic and act without thinking.', state: 'speaking' },
+        { text: 'The "Claim Now" button directs to "paypa1.com" — a counterfeit phishing site created to harvest your PayPal login credentials. Always hover over links to inspect the actual web address!', state: 'thinking' }
       ],
       wrong: [
-        { text: '\u26a0\ufe0f That was actually a phishing email! The sender used \"support@business-secure-alert.com\" \u2014 the domain \"business-secure-alert.com\" is NOT the company\'s real domain. Attackers register look-alike domains to trick you.', state: 'concerned' },
-        { text: 'The \"30-minute suspension\" deadline was a pressure tactic \u2014 designed to make you act before you think. Real organizations always give reasonable timeframes, never 30-minute ultimatums.', state: 'speaking' },
-        { text: 'The link went to \"business-account-verify.net\" \u2014 a fake site built to steal your credentials. Remember: Stop, Check, Verify before clicking any link in an email!', state: 'thinking' }
+        { text: '⚠️ That was actually a phishing email! Look closely at the sender: "rewards-claim@paypa1.com". The domain uses the number "1" instead of the letter "l" — a deceptive typosquat!', state: 'concerned' },
+        { text: 'Unsolicited emails claiming you won ₱1,000,000 Pesos with a 30-minute countdown are always phishing scams. Real organizations never give away money out of the blue or set panic ultimatums.', state: 'speaking' },
+        { text: 'The "Claim Now" link pointed to "paypa1.com" to harvest your PayPal account credentials. Remember: Stop, Check, and Verify before trusting any links!', state: 'thinking' }
       ]
     }
   },
@@ -516,8 +516,8 @@ function ch1InjectWave(waveNum) {
           source: 'Zmail',
           icon: '📧',
           iconType: 'mail',
-          title: 'New Email: Business Support Alert',
-          body: 'Subject: URGENT: Your Account Requires Immediate Verification. Click to inspect in Zmail.',
+          title: 'New Email: PayPal Rewards Prize Alert',
+          body: 'Subject: CONGRATULATIONS: You Won ₱1,000,000 Pesos! Claim Your Prize Now. Click to inspect in Zmail.',
           time: 'Just now',
           app: 'gmail',
           emailId: 1
@@ -574,6 +574,57 @@ const SENT_EMAILS = [];
 // Fake websites for the browser
 // Fake websites for the browser (Authentic Phishing Website Examples)
 const FAKE_SITES = {
+  'https://paypa1.com/claim-reward': `
+    <div class="fakesite fakesite-paypal">
+      <div class="phish-sim-banner">
+        <span class="phish-banner-icon">🚨</span>
+        <span class="phish-banner-text">Look at the browser URL bar: <code>paypa1.com</code> uses the digit <strong>1</strong> instead of the letter <strong>l</strong>! This is a fake phishing clone. Real PayPal is <code>paypal.com</code>.</span>
+      </div>
+      <div class="fakesite-header" style="background:#ffffff;border-bottom:1px solid #e2e8f0;">
+        <div class="fakesite-header-inner">
+          <div class="fakesite-logo" style="color:#003087;">🅿️ PayPal</div>
+          <div class="fakesite-subtag" style="color:#0070ba;font-weight:600;">🎁 ₱1,000,000 Pesos Prize Disbursement Center</div>
+        </div>
+      </div>
+      <div class="fakesite-body">
+        <div class="fakesite-card">
+          <div class="fakesite-card-header">
+            <div style="background:#e0f2fe;color:#0369a1;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;margin-bottom:12px;text-align:center;">
+              🎉 Prize Disbursement: ₱1,000,000.00 PHP Ready for Transfer
+            </div>
+            <h2 style="color:#003087;">Log in to your PayPal account</h2>
+            <p>Enter your PayPal credentials below to confirm your identity and claim your ₱1,000,000 cash prize.</p>
+          </div>
+          <form onsubmit="event.preventDefault(); handlePhishingSubmit('paypa1.com', 'PayPal');">
+            <div class="fakesite-field">
+              <label for="paypal-claim-email">Email address or mobile number</label>
+              <input type="text" id="paypal-claim-email" placeholder="Email or mobile number" required autocomplete="off" />
+            </div>
+            <div class="fakesite-field">
+              <label for="paypal-claim-pass">PayPal Password</label>
+              <input type="password" id="paypal-claim-pass" placeholder="Password" required autocomplete="off" />
+            </div>
+            <div class="fakesite-row">
+              <label class="fakesite-remember">
+                <input type="checkbox" checked /> Remember this device
+              </label>
+              <a href="#" class="fakesite-link" onclick="event.preventDefault(); showToast('⚠️ Fake link: Attackers only collect submitted credentials.', 'warning');">Having trouble logging in?</a>
+            </div>
+            <button type="submit" class="fakesite-submit" style="background:linear-gradient(90deg, #003087, #0070ba);">
+              Claim ₱1,000,000 &amp; Deposit to Wallet
+            </button>
+            <div style="margin-top:14px;text-align:center;">
+              <button type="button" class="fakesite-secondary-btn" onclick="event.preventDefault(); showToast('⚠️ Fake link on phishing portal.', 'warning');">Create an Account</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="fakesite-footer">
+        <p>English | Filipino | Español | Privacy | Legal</p>
+        <p style="margin-top:4px;">Copyright © 1999–2026 PayPal. All rights reserved.</p>
+      </div>
+    </div>`,
+
   'https://business-account-verify.net/login': `
     <div class="fakesite fakesite-corporate">
       <div class="phish-sim-banner">
@@ -1162,6 +1213,7 @@ function openApp(appName) {
     if (typeof wsUpdateWifiTab === 'function') wsUpdateWifiTab();
     if (typeof wsUpdateBluetoothTab === 'function') wsUpdateBluetoothTab();
     if (typeof wsUpdateAirplaneTab === 'function') wsUpdateAirplaneTab();
+    if (typeof switchWifiSettingsTab === 'function') switchWifiSettingsTab('wifi');
   }
 
   if (appName === 'videoplayer') {
@@ -4110,57 +4162,129 @@ function toggleStickyNoteCollapse() {
   if (note) note.classList.toggle('collapsed');
 }
 
-// ─── Sticky note live checklist ──────────────────────────────────────────────
+// ─── Phishing Investigation Task Achievements ────────────────────────────────
+// Helper: count correctly flagged & reported phishing emails
+function _countCorrectPhishing() {
+  return gameState.emailResults.filter(r =>
+    r.isPhishing === true && r.playerDecision === true && r.correctDecision === true && r.savedFlags && r.savedFlags.length > 0
+  ).length;
+}
+
+// Helper: count investigated emails where required evidence/verification was submitted
+function _countInvestigatedWithEvidence() {
+  return gameState.emailResults.filter(r => {
+    if (r.isPhishing) {
+      return r.correctDecision === true && r.savedFlags && r.savedFlags.length > 0;
+    } else {
+      return r.correctDecision === true && !r.isPhishing;
+    }
+  }).length;
+}
+
+// Helper: count emails where player flagged fake_sender
+function _countFakeSenderFound() {
+  return gameState.emailResults.filter(r =>
+    r.isPhishing === true && r.correctDecision === true && r.savedFlags && r.savedFlags.some(f => f.type === 'fake_sender')
+  ).length;
+}
+
+// Helper: count phishing emails where player flagged false_urgency OR suspicious_link
+function _countIndicatorsFound() {
+  return gameState.emailResults.filter(r =>
+    r.isPhishing === true && r.correctDecision === true && r.savedFlags && r.savedFlags.some(f => f.type === 'false_urgency' || f.type === 'suspicious_link' || f.type === 'malicious_attachment')
+  ).length;
+}
+
+const PHISHING_TASK_GOALS = { t1: 5, t2: 10, t3: 5, t4: 5, t5_total: 10 };
+
 const SN_ACHIEVEMENTS = [
   {
-    id: 'first_catch',
-    icon: '🎯',
-    label: 'First Incident Intake',
-    desc: 'Submit your first email evaluation (Phishing or Non-phishing)',
-    check: () => gameState.emailResults.length >= 1,
-    progress: () => `${Math.min(gameState.emailResults.length, 1)}/1`
-  },
-  {
-    id: 'phishing_eval',
+    id: 'task_report_phishing',
     icon: '🚩',
-    label: 'Phishing Threat Evaluation',
-    desc: 'Evaluate and report emails identified as Phishing',
-    check: () => gameState.emailResults.filter(r => r.playerDecision === true).length >= 3,
-    progress: () => {
-      const count = gameState.emailResults.filter(r => r.playerDecision === true).length;
-      return `${Math.min(count, 3)}/3`;
-    }
+    label: 'Task 1: Report Phishing Emails',
+    desc: 'Report at least 5 confirmed phishing emails.',
+    check: () => _countCorrectPhishing() >= PHISHING_TASK_GOALS.t1,
+    progress: () => `${Math.min(_countCorrectPhishing(), PHISHING_TASK_GOALS.t1)}/${PHISHING_TASK_GOALS.t1} phishing emails reported`
   },
   {
-    id: 'safe_check',
-    icon: '🛡️',
-    label: 'Safe Email Verification',
-    desc: 'Verify and confirm safe communications as Non-phishing',
-    check: () => gameState.emailResults.filter(r => r.playerDecision === false).length >= 3,
-    progress: () => {
-      const count = gameState.emailResults.filter(r => r.playerDecision === false).length;
-      return `${Math.min(count, 3)}/3`;
-    }
+    id: 'task_collect_evidence',
+    icon: '🔍',
+    label: 'Task 2: Collect Investigation Evidence',
+    desc: 'Complete at least 10 investigations with supporting evidence.',
+    check: () => _countInvestigatedWithEvidence() >= PHISHING_TASK_GOALS.t2,
+    progress: () => `${Math.min(_countInvestigatedWithEvidence(), PHISHING_TASK_GOALS.t2)}/${PHISHING_TASK_GOALS.t2} investigations completed`
   },
   {
-    id: 'halfway',
-    icon: '📈',
-    label: 'Mid-Mission Awareness',
-    desc: 'Investigate 5 incoming email cases',
-    check: () => gameState.emailResults.length >= 5,
-    progress: () => `${Math.min(gameState.emailResults.length, 5)}/5`
+    id: 'task_fake_sender',
+    icon: '🌐',
+    label: 'Task 3: Identify Fake Sender Domains',
+    desc: 'Identify and document suspicious sender addresses or domains.',
+    check: () => _countFakeSenderFound() >= PHISHING_TASK_GOALS.t3,
+    progress: () => `${Math.min(_countFakeSenderFound(), PHISHING_TASK_GOALS.t3)}/${PHISHING_TASK_GOALS.t3} fake senders documented`
   },
   {
-    id: 'chapter_complete',
+    id: 'task_phish_indicators',
+    icon: '⚠️',
+    label: 'Task 4: Identify Phishing Indicators',
+    desc: 'Identify and document phishing indicators.',
+    check: () => _countIndicatorsFound() >= PHISHING_TASK_GOALS.t4,
+    progress: () => `${Math.min(_countIndicatorsFound(), PHISHING_TASK_GOALS.t4)}/${PHISHING_TASK_GOALS.t4} indicators recorded`
+  },
+  {
+    id: 'task_all_complete',
     icon: '🏆',
-    label: 'Mission Knowledge & Awareness',
-    desc: 'Complete all 10 email evaluations to finish the training',
-    check: () => gameState.emailResults.length >= 10,
-    progress: () => `${gameState.emailResults.length}/10`
+    label: 'Task 5: Complete All Investigations',
+    desc: 'Submit the required investigation evidence and reports.',
+    check: () => _countCorrectPhishing() >= PHISHING_TASK_GOALS.t1 &&
+                 _countInvestigatedWithEvidence() >= PHISHING_TASK_GOALS.t2 &&
+                 _countFakeSenderFound() >= PHISHING_TASK_GOALS.t3 &&
+                 _countIndicatorsFound() >= PHISHING_TASK_GOALS.t4 &&
+                 gameState.emailResults.length >= PHISHING_TASK_GOALS.t5_total,
+    progress: () => `${Math.min(gameState.emailResults.length, PHISHING_TASK_GOALS.t5_total)}/${PHISHING_TASK_GOALS.t5_total} evidence submissions completed`
   }
 ];
 
 const _achievementUnlocked = new Set();
+let _trophyUnlockedDate = null;
+
+function savePhishingProgress() {
+  try {
+    const isTrophyUnlocked = _achievementUnlocked.has('task_all_complete') ||
+      (_countCorrectPhishing() >= PHISHING_TASK_GOALS.t1 &&
+       _countInvestigatedWithEvidence() >= PHISHING_TASK_GOALS.t2 &&
+       _countFakeSenderFound() >= PHISHING_TASK_GOALS.t3 &&
+       _countIndicatorsFound() >= PHISHING_TASK_GOALS.t4 &&
+       gameState.emailResults.length >= PHISHING_TASK_GOALS.t5_total);
+
+    const data = {
+      unlockedAchievements: Array.from(_achievementUnlocked),
+      trophyUnlocked: isTrophyUnlocked,
+      unlockedDate: _trophyUnlockedDate || (isTrophyUnlocked ? new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) : null)
+    };
+    localStorage.setItem('cyberzero_phishing_progress', JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadPhishingProgress() {
+  try {
+    const saved = localStorage.getItem('cyberzero_phishing_progress');
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (Array.isArray(data.unlockedAchievements)) {
+        data.unlockedAchievements.forEach(id => _achievementUnlocked.add(id));
+      }
+      if (data.trophyUnlocked) {
+        _achievementUnlocked.add('task_all_complete');
+        _trophyUnlockedDate = data.unlockedDate || new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+      }
+    }
+  } catch(e) {}
+}
+
+function isPhishingTrophyUnlocked() {
+  return _achievementUnlocked.has('task_all_complete') ||
+    (SN_ACHIEVEMENTS && SN_ACHIEVEMENTS[4] && SN_ACHIEVEMENTS[4].check());
+}
 
 function updateStickyChecklist() {
   if (gameState.phase !== 'mission') return;
@@ -4177,7 +4301,7 @@ function updateStickyChecklist() {
   let html = `
     <div class="sn-progress-card">
       <div class="sn-progress-header">
-        <span class="sn-progress-title">🎯 Awareness Checklist</span>
+        <span class="sn-progress-title">Awareness Checklist</span>
         <span class="sn-progress-count">${completedCount}/${totalGoals} (${progressPercent}%)</span>
       </div>
       <div class="sn-progress-bar-track">
@@ -4191,11 +4315,11 @@ function updateStickyChecklist() {
     const prog = ach.progress();
     html += `
       <li class="sn-ach-item ${done ? 'sn-ach-done' : ''}">
-        <div class="sn-checkbox ${done ? 'checked' : ''}">${done ? '✓' : ''}</div>
+        <div class="sn-checkbox ${done ? 'checked' : ''}" aria-hidden="true">${done ? '✓' : ''}</div>
         <div class="sn-ach-body">
           <div class="sn-ach-header-row">
-            <span class="sn-ach-label">${ach.label}</span>
-            <span class="sn-ach-prog-badge ${done ? 'done' : ''}">${prog}</span>
+            <span class="sn-ach-label">${ach.icon} ${ach.label}</span>
+            <span class="sn-ach-prog-badge ${done ? 'done' : ''}" title="${prog}">${prog}</span>
           </div>
           <div class="sn-ach-desc">${ach.desc}</div>
         </div>
@@ -4204,16 +4328,41 @@ function updateStickyChecklist() {
     // Fire achievement toast on first unlock
     if (done && !_achievementUnlocked.has(ach.id)) {
       _achievementUnlocked.add(ach.id);
+      savePhishingProgress();
       setTimeout(() => showAchievementToast(ach), 500);
     }
   });
 
   html += '</ul>';
   section.innerHTML = html;
+
+  // Update trophy tip in Sticky Note if present
+  const trophyTip = document.getElementById('sn-trophy-tip');
+  if (trophyTip) {
+    const isUnlocked = isPhishingTrophyUnlocked();
+    if (isUnlocked) {
+      trophyTip.style.borderLeft = '3px solid #16a34a';
+      trophyTip.style.background = 'rgba(34, 197, 94, 0.12)';
+      trophyTip.style.color = '#14532d';
+      trophyTip.innerHTML = `<span>🏆 <strong>Phishing Investigator Trophy:</strong> <span style="color:#16a34a; font-weight:800;">UNLOCKED</span></span><button type="button" class="sn-trophy-btn" onclick="showPhishingInvestigatorTrophy()" style="background:#f59e0b; color:#000; border:none; border-radius:4px; padding:3px 8px; font-size:10px; font-weight:800; cursor:pointer; margin-left:6px;">VIEW 🏆</button>`;
+    } else {
+      trophyTip.style.borderLeft = '3px solid #f59e0b';
+      trophyTip.style.background = 'rgba(245, 158, 11, 0.08)';
+      trophyTip.style.color = '#78350f';
+      trophyTip.innerHTML = `🏆 <strong>Goal:</strong> Complete all 5 Investigation Tasks to unlock the <em>Phishing Investigator</em> trophy! (${completedCount}/${totalGoals} Complete)`;
+    }
+  }
 }
 
 function showAchievementToast(ach) {
-  // Create a premium achievement popup
+  // Task 5 (all complete) gets the full trophy modal
+  if (ach.id === 'task_all_complete') {
+    _trophyUnlockedDate = new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+    savePhishingProgress();
+    setTimeout(() => showPhishingInvestigatorTrophy(), 600);
+    return;
+  }
+
   const existing = document.getElementById('achievement-toast');
   if (existing) existing.remove();
 
@@ -4224,23 +4373,88 @@ function showAchievementToast(ach) {
     <div class="ach-toast-glow"></div>
     <div class="ach-toast-icon">${ach.icon}</div>
     <div class="ach-toast-body">
-      <div class="ach-toast-title">Awareness Goal Reached!</div>
+      <div class="ach-toast-title">🎯 Task Completed!</div>
       <div class="ach-toast-name">${ach.label}</div>
-      <div class="ach-toast-desc">${ach.desc}</div>
+      <div class="ach-toast-desc">${ach.progress()}</div>
     </div>
   `;
   document.body.appendChild(toast);
 
-  // Animate in
   requestAnimationFrame(() => {
     requestAnimationFrame(() => toast.classList.add('ach-toast-show'));
   });
 
-  // Auto-dismiss after 3.5s
   setTimeout(() => {
     toast.classList.remove('ach-toast-show');
     setTimeout(() => toast.remove(), 400);
-  }, 3500);
+  }, 4000);
+
+  if (typeof AudioManager !== 'undefined' && AudioManager.playCorrect) {
+    AudioManager.playCorrect();
+  }
+}
+
+// ─── Phishing Investigator Trophy Modal ──────────────────────────────────────
+function showPhishingInvestigatorTrophy() {
+  if (document.getElementById('phish-trophy-modal')) return;
+
+  const dateStr = _trophyUnlockedDate || new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const modal = document.createElement('div');
+  modal.id = 'phish-trophy-modal';
+  modal.className = 'phish-trophy-modal';
+  modal.innerHTML = `
+    <div class="ptm-backdrop" onclick="closePhishingTrophy()"></div>
+    <div class="ptm-card">
+      <div class="ptm-glow-ring"></div>
+      <div class="ptm-header">
+        <div class="ptm-trophy-icon">🏆</div>
+        <div class="ptm-confetti" id="ptm-confetti"></div>
+      </div>
+      <div class="ptm-body">
+        <div class="ptm-badge">🔓 ACHIEVEMENT UNLOCKED</div>
+        <h2 class="ptm-title">Phishing Investigator</h2>
+        <p class="ptm-desc">Congratulations! You have completed all phishing investigation tasks, identified suspicious emails, collected evidence, and submitted your reports.</p>
+        <div class="ptm-date">🗓️ Completed: ${dateStr}</div>
+        <div class="ptm-tasks-summary">
+          <div class="ptm-task-row"><span class="ptm-task-icon">🚩</span><span>5 Phishing Emails Correctly Reported</span><span class="ptm-task-check">✓</span></div>
+          <div class="ptm-task-row"><span class="ptm-task-icon">🔍</span><span>10 Emails Investigated with Evidence</span><span class="ptm-task-check">✓</span></div>
+          <div class="ptm-task-row"><span class="ptm-task-icon">🌐</span><span>Fake Sender Domains Identified</span><span class="ptm-task-check">✓</span></div>
+          <div class="ptm-task-row"><span class="ptm-task-icon">⚠️</span><span>Phishing Indicators Flagged</span><span class="ptm-task-check">✓</span></div>
+          <div class="ptm-task-row"><span class="ptm-task-icon">📋</span><span>All Investigations Submitted</span><span class="ptm-task-check">✓</span></div>
+        </div>
+      </div>
+      <div class="ptm-footer">
+        <button class="ptm-close-btn" onclick="closePhishingTrophy()">🎉 Claim Trophy &amp; Continue</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const confettiEl = modal.querySelector('#ptm-confetti');
+  const colors = ['#ffd700','#ff6b6b','#4fc3f7','#69db7c','#f9ca24','#ff9ff3'];
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'ptm-particle';
+    p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*1.2}s;animation-duration:${1.2+Math.random()*1.2}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>0.5?'50%':'2px'};`;
+    confettiEl.appendChild(p);
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => modal.classList.add('ptm-show'));
+  });
+
+  if (typeof AudioManager !== 'undefined' && AudioManager.playCorrect) {
+    AudioManager.playCorrect();
+  }
+}
+
+function closePhishingTrophy() {
+  const modal = document.getElementById('phish-trophy-modal');
+  if (!modal) return;
+  modal.classList.remove('ptm-show');
+  savePhishingProgress();
+  setTimeout(() => modal.remove(), 400);
 }
 
 
@@ -4263,8 +4477,23 @@ function updateStickyNoteForPhase(phase) {
 
   // In Chapter 1 (phishing), strictly show Detective's Notes (Red Flag Guidelines & Checklist)
   if (currentCat === 'phishing' || phase === 'phishing') {
-    if (titleEl) titleEl.textContent = "📒 Detective's Notes";
+    if (titleEl) titleEl.textContent = "📒 Phishing Investigation Tasks";
+    const tutDone = typeof PhishTutorial !== 'undefined' && PhishTutorial.isDone();
+    const lockedBanner = !tutDone
+      ? `<div class="sn-locked-banner">🔒 Complete the first email guided tutorial to unlock Task progress tracking</div>`
+      : '';
+    const isUnlocked = isPhishingTrophyUnlocked();
+    const trophyBanner = isUnlocked
+      ? `<div class="sticky-note-tip" id="sn-trophy-tip" style="border-left: 3px solid #16a34a; background: rgba(34, 197, 94, 0.12); color: #14532d; font-size: 11px; padding: 7px 10px; border-radius: 6px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
+          <span>🏆 <strong>Phishing Investigator Trophy:</strong> <span style="color:#16a34a; font-weight:800;">UNLOCKED</span></span>
+          <button type="button" class="sn-trophy-btn" onclick="showPhishingInvestigatorTrophy()" style="background:#f59e0b; color:#000; border:none; border-radius:4px; padding:3px 8px; font-size:10px; font-weight:800; cursor:pointer;">VIEW 🏆</button>
+        </div>`
+      : `<div class="sticky-note-tip" id="sn-trophy-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
+          🏆 <strong>Goal:</strong> Complete all 5 Investigation Tasks to unlock the <em>Phishing Investigator</em> trophy!
+        </div>`;
+
     scrollEl.innerHTML = `
+      ${lockedBanner}
       <div id="sn-checklist-section"></div>
       <div class="sn-rules-card">
         <div class="sn-rules-title">🔍 Red Flag Guidelines</div>
@@ -4275,9 +4504,7 @@ function updateStickyNoteForPhase(phase) {
           <li><span class="sn-icon sn-good">🚩</span><span>Flag suspicious clues before submitting your <strong>verdict</strong></span></li>
         </ul>
       </div>
-      <div class="sticky-note-tip" style="border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.08); color: #78350f; font-size: 11px; padding: 6px 8px; border-radius: 4px; margin-top: 8px;">
-        💡 <strong>Mission Goal:</strong> Build Phishing Knowledge & Awareness. Submitting Phishing or Non-phishing verdicts updates your live checklist progress.
-      </div>`;
+      ${trophyBanner}`;
     updateStickyChecklist();
     return;
   }
@@ -4680,22 +4907,12 @@ function openEmail(idx) {
   gameState.currentEmail = idx;
   const existingResult = gameState.emailResults.find(r => r.emailId === email.id);
 
-  // ── Investigation tutorial — show once when first email is opened ──────────
-  if (!ch1InvestigationTutorialDone && !existingResult && gameState.phase === 'mission') {
+  // ── Investigation tutorial — start inline tutorial directly on first email ──
+  if (!ch1InvestigationTutorialDone && !existingResult && gameState.phase === 'mission' && email.id === 1) {
     ch1InvestigationTutorialDone = true;
-    if (typeof RyanGuide !== 'undefined') {
-      setTimeout(function() {
-        RyanGuide.speak([
-          { text: "Before you decide whether this message is safe, let's investigate it.", state: 'thinking' },
-          { text: "Start with the sender. Don't rely only on the name — check the actual email address and domain.", state: 'speaking' },
-          { text: "Next, look at what the message wants you to do. Is it asking for your password, personal information, payment, or an unexpected action?", state: 'speaking' },
-          { text: "Look for pressure too. Words like 'URGENT,' 'IMMEDIATELY,' or 'FINAL WARNING' can be signs of social engineering.", state: 'concerned' },
-          { text: "Finally, be careful with links and attachments. A link can appear legitimate while taking you somewhere completely different.", state: 'speaking' },
-          { text: "Don't look for just one clue. Look at the whole message and the context.", state: 'thinking' },
-          { text: "Now it's your turn. Investigate the email and decide what you think.", state: 'success' }
-        ]);
-      }, 400);
-    }
+    setTimeout(function() {
+      if (typeof PhishTutorial !== 'undefined') PhishTutorial.start();
+    }, 250);
   }
 
   // ── Second email: guide player to open Sticky Notes & highlight it ───────────
@@ -4901,7 +5118,8 @@ function renderEmailContent(email) {
       const actionsRow = document.createElement('div');
       actionsRow.className = 'email-link-actions-row';
 
-      // 1. Primary flaggable link
+      // Flaggable link — single-click flags (in flag mode) or shows inspect popup;
+      // double-click opens the phishing site in the simulated browser.
       const link = document.createElement('a');
       const isFlagged = gameState.currentEmailFlags.some(f => f.type === part.flagType);
       link.className = 'email-link flaggable' + (isFlagged ? ' flagged' : '');
@@ -4912,18 +5130,17 @@ function renderEmailContent(email) {
       link.dataset.flagText = part.destination;
       link.dataset.destination = part.destination;
       link.textContent = part.text;
+      link.title = 'Double-click to investigate this website in the safe browser';
       link.setAttribute('onclick', 'handleEmailLinkClick(event, this)');
+      link.setAttribute('ondblclick', 'handleEmailLinkDblClick(event, this)');
       link.setAttribute('oncontextmenu', 'handleEmailLinkRightClick(event, this)');
       actionsRow.appendChild(link);
 
-      // 2. Dedicated "View Website" button (always inspects the site in the simulated browser)
-      const viewBtn = document.createElement('button');
-      viewBtn.type = 'button';
-      viewBtn.className = 'email-view-website-btn';
-      viewBtn.innerHTML = `<span>🌐 View Website</span><span class="view-btn-arrow">➔</span>`;
-      viewBtn.title = `Inspect simulated website in browser: ${part.destination}`;
-      viewBtn.setAttribute('onclick', `event.stopPropagation(); openSuspiciousSite('${part.destination}')`);
-      actionsRow.appendChild(viewBtn);
+      // Hint label below the link
+      const hint = document.createElement('div');
+      hint.className = 'email-link-dblclick-hint';
+      hint.textContent = '🖱️ Double-click to open in safe browser';
+      actionsRow.appendChild(hint);
 
       wrap.appendChild(actionsRow);
       body.appendChild(wrap);
@@ -5013,13 +5230,23 @@ function handleEmailLinkRightClick(event, el) {
 
 function handleEmailLinkClick(event, el) {
   event.preventDefault();
-  const destination = el.dataset.destination;
   if (gameState.flagModeActive) {
     placeFlag(el);
     return;
   }
+  // Single-click (outside flag mode): show the inspect/link popup
+  const destination = el.dataset.destination;
   if (destination) {
-    // Directly open the phishing website in the browser app
+    showLinkPopup(el, destination);
+  }
+}
+
+// Double-click on a link: open the phishing site in the simulated browser
+function handleEmailLinkDblClick(event, el) {
+  event.preventDefault();
+  event.stopPropagation();
+  const destination = el.dataset.destination;
+  if (destination) {
     openSuspiciousSite(destination);
   }
 }
@@ -5073,6 +5300,10 @@ function openInBrowser() {
 }
 
 function openSuspiciousSite(url) {
+  // Notify tutorial that the website was opened
+  if (typeof PhishTutorial !== 'undefined' && PhishTutorial.isActive()) {
+    PhishTutorial.notify('websiteOpened');
+  }
   const win = document.getElementById('win-browser');
   if (win) {
     win.classList.remove('hidden', 'minimized');
@@ -5133,8 +5364,10 @@ function toggleFlagMode() {
     btn.classList.add('active');
     body.classList.add('flag-mode-active');
     showToast('🚩 Flag Mode ON — click suspicious elements to flag them.', 'warning');
-
-    if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
+    // Notify tutorial that flag mode was turned on
+    if (typeof PhishTutorial !== 'undefined' && PhishTutorial.isActive()) {
+      PhishTutorial.notify('flagModeOn');
+    } else if (typeof RyanGuide !== 'undefined' && gameState.phase === 'mission') {
       RyanGuide.once('flag-mode-guide', function() {
         setTimeout(function() {
           RyanGuide.speak(RYAN_DIALOGUES.firstEmailRead);
@@ -5187,8 +5420,15 @@ function placeFlag(el) {
   if (typeof AudioManager !== 'undefined') AudioManager.playFlagChirp();
   showToast(`🚩 Flagged: ${flag.label}`, 'success');
 
-  // ── Ryan explains the flag — only on the first email ────────────────────
-  if (gameState.currentEmail === 0 && gameState.phase === 'mission') {
+  // ── Notify tutorial of which flag was placed ─────────────────────────────
+  if (typeof PhishTutorial !== 'undefined' && PhishTutorial.isActive()) {
+    if (flagType === 'fake_sender')     PhishTutorial.notify('senderFlagged');
+    if (flagType === 'false_urgency')   PhishTutorial.notify('urgencyFlagged');
+    if (flagType === 'suspicious_link') PhishTutorial.notify('linkFlagged');
+  }
+
+  // ── Ryan explains the flag — only when tutorial is not actively guiding ─
+  if ((typeof PhishTutorial === 'undefined' || !PhishTutorial.isActive()) && gameState.currentEmail === 0 && gameState.phase === 'mission') {
     clearTimeout(placeFlag._ryanTimer);
     placeFlag._ryanTimer = setTimeout(function() {
       ryanExplainFlag(flagType, flagText, flag.label);
@@ -5659,28 +5899,52 @@ function submitReport(isPhishing) {
   try {
     const correctDecision = (isPhishing === email.phishing);
 
-    if (correctDecision) {
-      gameState.correctDecisions++;
-      if (isPhishing) gameState.phishingDetected++;
-      else gameState.legitimateDetected++;
-      if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
-    } else {
+    // ── WHEN DECISION IS INCORRECT: Allow retry, explain evidence, do NOT record as success ──
+    if (!correctDecision) {
       if (typeof AudioManager !== 'undefined') AudioManager.playWrong();
+
+      let explainText = '';
+      if (email.phishing) {
+        if (email.id === 1) {
+          explainText = "Take a closer look before deciding! The sender address 'rewards-claim@paypa1.com' uses typosquatting ('1' instead of 'l'), creates extreme urgency with a 30-minute deadline, and the link leads to an unverified domain. Review the email and simulated URL, then try again!";
+        } else {
+          const addr = email.sender ? email.sender.address : 'the sender';
+          explainText = `Take a closer look before deciding! "${addr}" has clear phishing indicators: notice the suspicious sender address, manufactured urgency, or deceptive links. Review the email and simulated URL, then try again!`;
+        }
+      } else {
+        const addr = email.sender ? email.sender.address : 'the sender';
+        explainText = `Take a closer look — this email is actually legitimate! The sender "${addr}" is official and verified, with no manufactured urgency or deceptive links. Review the details and try again!`;
+      }
+
+      if (typeof RyanGuide !== 'undefined') {
+        RyanGuide.speak([{ text: explainText, state: 'concerned' }]);
+      } else {
+        showToast(explainText, 'warning');
+      }
+
+      // Do NOT save result, do NOT lock buttons, do NOT close email view
+      return;
     }
 
-    // Store result
+    // ── WHEN DECISION IS CORRECT ──
+    if (typeof AudioManager !== 'undefined') AudioManager.playCorrect();
+    gameState.correctDecisions++;
+    if (isPhishing) gameState.phishingDetected++;
+    else gameState.legitimateDetected++;
+
+    // Store verified result
     const result = {
       emailId: email.id,
       emailIdx: gameState.currentEmail,
       isPhishing: email.phishing,
       playerDecision: isPhishing,
-      correctDecision,
+      correctDecision: true,
       playerFlags: gameState.currentEmailFlags.map(f => f.type),
       savedFlags: [...gameState.currentEmailFlags]
     };
     gameState.emailResults.push(result);
 
-    // ── Lock report & flag buttons ───────────────────────────
+    // ── Lock report & flag buttons on this email ──
     const reportBtn = document.getElementById('report-btn');
     const legitBtn  = document.getElementById('legit-btn');
     if (reportBtn) {
@@ -5718,34 +5982,11 @@ function submitReport(isPhishing) {
       const old = emailContent.querySelector('.verdict-banner');
       if (old) old.remove();
       const banner = document.createElement('div');
-      banner.className = 'verdict-banner ' + (correctDecision ? 'verdict-banner-correct' : 'verdict-banner-wrong');
-
-      let bannerTitle = '';
-      let bannerMsg = '';
-      let bannerIcon = '';
-
-      if (correctDecision) {
-        bannerIcon = '✅';
-        if (email.phishing) {
-          bannerTitle = 'CORRECT — PHISHING';
-          bannerMsg = 'Good catch! You correctly identified this as a phishing email.';
-        } else {
-          bannerTitle = 'CORRECT — NON-PHISHING';
-          bannerMsg = 'Correct! This email is safe and non-phishing.';
-        }
-      } else {
-        bannerIcon = '❌';
-        if (email.phishing) {
-          bannerTitle = 'WRONG — PHISHING';
-          bannerMsg = 'Incorrect. This was actually a phishing email!';
-        } else {
-          bannerTitle = 'WRONG — NON-PHISHING';
-          bannerMsg = 'Incorrect. This was actually a safe, non-phishing email.';
-        }
-      }
-
+      banner.className = 'verdict-banner verdict-banner-correct';
+      let bannerTitle = isPhishing ? 'CORRECT — PHISHING' : 'CORRECT — NON-PHISHING';
+      let bannerMsg = isPhishing ? 'Good catch! You correctly identified this as a phishing email.' : 'Correct! This email is safe and legitimate.';
       banner.innerHTML = `
-        <span class="vb-icon">${bannerIcon}</span>
+        <span class="vb-icon">✅</span>
         <div style="flex:1;">
           <strong>${bannerTitle}</strong> — ${bannerMsg}
         </div>
@@ -5755,27 +5996,15 @@ function submitReport(isPhishing) {
       emailContent.insertBefore(banner, emailContent.firstChild);
     }
 
-    // If Ryan is guiding the player, don't show a toast that would sit behind his dialogue
-    if (typeof RyanGuide === 'undefined' || gameState.phase !== 'mission') {
-      const toastText = correctDecision
-        ? (email.phishing ? '✅ Correct! Email is Phishing.' : '✅ Correct! Email is Non-phishing.')
-        : (email.phishing ? '❌ Wrong! Email is actually Phishing.' : '❌ Wrong! Email is actually Non-phishing.');
-      showToast(toastText, correctDecision ? 'success' : 'warning');
-    } else {
-      const toast = document.getElementById('toast');
-      if (toast) toast.classList.add('hidden');
-    }
-
-    // Push dynamic investigation log notification
     if (typeof addSimulationNotification === 'function') {
       const subjShort = email.subject.length > 30 ? email.subject.slice(0, 30) + '…' : email.subject;
       addSimulationNotification({
         id: 'notif-verdict-' + email.id,
         source: 'Investigation Log',
-        icon: correctDecision ? '✅' : '❌',
-        iconType: correctDecision ? 'shield' : 'warning',
-        title: (correctDecision ? '✅ Correct: ' : '❌ Wrong: ') + (email.phishing ? 'Phishing' : 'Non-phishing') + ' — ' + subjShort,
-        body: `Decision recorded. ${bannerMsg}`,
+        icon: '✅',
+        iconType: 'shield',
+        title: '✅ Correct: ' + (email.phishing ? 'Phishing' : 'Non-phishing') + ' — ' + subjShort,
+        body: 'Decision recorded successfully.',
         time: 'Just now',
         app: 'gmail',
         emailId: email.id
@@ -5785,10 +6014,14 @@ function submitReport(isPhishing) {
     updateHUD();
     updateFolderCounts();
     updateStickyChecklist();
+    savePhishingProgress();
 
+    // If tutorial was active on email 1, finish tutorial
+    if (typeof PhishTutorial !== 'undefined' && PhishTutorial.isActive()) {
+      PhishTutorial.finishTutorial();
+    }
 
-
-    // ── Update and expand Investigation Evidence panel to show found and missed flags ──
+    // ── Update and expand Investigation Evidence panel ──
     renderEvidencePanel();
     const evPanel = document.getElementById('evidence-panel');
     if (evPanel) {
@@ -5800,13 +6033,12 @@ function submitReport(isPhishing) {
       if (arrow) arrow.textContent = '▼';
     }
 
-    // Clear any previous auto-advance timer
     if (ch1AutoAdvanceTimer) {
       clearTimeout(ch1AutoAdvanceTimer);
       ch1AutoAdvanceTimer = null;
     }
 
-    // ── Immediately close the open email and return back to the inbox list ──
+    // Return to list view
     const detailView = document.getElementById('email-detail-view');
     const listView   = document.getElementById('email-list-view');
     if (detailView) detailView.classList.remove('active');
@@ -6522,7 +6754,13 @@ function triggerRyanPhishingAwareness(url) {
   const lower = (url || '').toLowerCase();
   let dialogue;
 
-  if (lower.includes('business-account-verify.net')) {
+  if (lower.includes('paypa1') || lower.includes('paypal1')) {
+    dialogue = [
+      { text: `⚠️ Typosquatting Alert! Look closely at the browser address bar: you're visiting "${host}" — notice the number "1" instead of the letter "l"!`, state: 'concerned' },
+      { text: "This counterfeit site clones PayPal's login page and uses a fake prize claim of ₱1,000,000 Pesos to lure victims into surrendering their passwords.", state: 'speaking' },
+      { text: "Authentic PayPal is strictly located at paypal.com. Never enter credentials or financial data on look-alike domains — close this tab immediately!", state: 'thinking' }
+    ];
+  } else if (lower.includes('business-account-verify.net')) {
     dialogue = [
       { text: `⚠️ Awareness Alert! Look at the browser address bar: you're visiting "${host}" — an unverified fake domain.`, state: 'concerned' },
       { text: "Notice how this page clones a corporate Single Sign-On (SSO) login. Attackers design these to trick employees into surrendering real workplace credentials.", state: 'speaking' },
@@ -6698,7 +6936,17 @@ function getPhishingSiteForUrl(url) {
   if (!url) return null;
   const lower = url.toLowerCase();
 
-  // 1. Corporate SSO Phishing (Email 1)
+  // 1. Phishing PayPal Claim (Email 1) & Typosquat lookalikes
+  if (lower.includes('paypa1') || lower.includes('paypal1')) {
+    return {
+      key: 'https://paypa1.com/claim-reward',
+      title: 'Log in to your PayPal account — Claim ₱1,000,000',
+      icon: '🅿️',
+      html: FAKE_SITES['https://paypa1.com/claim-reward'] || FAKE_SITES['https://paypal-account-check.com/login']
+    };
+  }
+
+  // 1b. Corporate SSO Phishing
   if (lower.includes('business-account-verify.net')) {
     return {
       key: 'https://business-account-verify.net/login',
@@ -11204,7 +11452,7 @@ function startGroup4Mission() {
     openApp('wifi-settings');
     renderG4WiFiSettings();
     const win = document.getElementById('win-wifi-settings');
-    if (win) { win.style.left = '100px'; win.style.top = '60px'; win.style.width = '700px'; win.style.height = '480px'; }
+    if (win) { win.style.left = '100px'; win.style.top = '60px'; win.style.width = '860px'; win.style.height = '580px'; }
     // Also open Phone app for context
     setTimeout(() => {
       renderPhoneLinkApp();
@@ -11354,7 +11602,7 @@ function g4ProceedToStage2() {
     openApp('security-settings');
     renderG4SecuritySettings();
     const win = document.getElementById('win-security-settings');
-    if (win) { win.style.left = '120px'; win.style.top = '70px'; win.style.width = '700px'; win.style.height = '480px'; }
+    if (win) { win.style.left = '120px'; win.style.top = '70px'; win.style.width = '860px'; win.style.height = '580px'; }
     showToast('🛡️ Stage 2: Check your sharing settings. Disable unnecessary exposure on public networks.', 'info');
   }, 300);
 }
@@ -13930,15 +14178,37 @@ function openWifiSettingsFromFlyout(event) {
 // ── WIFI SETTINGS WINDOW TAB SWITCHING ──────────────────────────────────────
 
 function switchWifiSettingsTab(tab) {
-  const tabs = ['wifi', 'bluetooth', 'airplane'];
+  const tabs = ['wifi', 'bluetooth', 'airplane', 'display', 'sound', 'power', 'privacy', 'firewall', 'winupdate', 'about'];
   tabs.forEach(t => {
     const tabEl = document.getElementById('wstab-' + t);
     const navEl = document.getElementById('wsnav-' + t);
-    if (tabEl) tabEl.style.display = (t === tab) ? '' : 'none';
+    if (tabEl) {
+      if (t === tab) {
+        tabEl.classList.remove('hidden-init');
+        tabEl.style.display = 'block';
+      } else {
+        tabEl.style.display = 'none';
+      }
+    }
     if (navEl) {
       navEl.classList.toggle('active', t === tab);
     }
   });
+  // Update window title bar to reflect active section
+  const titleMap = {
+    wifi: 'Settings \u2014 Network & Internet \u2014 Wi-Fi',
+    bluetooth: 'Settings \u2014 Network & Internet \u2014 Bluetooth',
+    airplane: 'Settings \u2014 Network & Internet \u2014 Airplane Mode',
+    display: 'Settings \u2014 System \u2014 Display',
+    sound: 'Settings \u2014 System \u2014 Sound',
+    power: 'Settings \u2014 System \u2014 Power & Sleep',
+    privacy: 'Settings \u2014 Privacy & Security',
+    firewall: 'Settings \u2014 Privacy & Security \u2014 Windows Security',
+    winupdate: 'Settings \u2014 Windows Update',
+    about: 'Settings \u2014 System \u2014 About'
+  };
+  const titleEl = document.querySelector('#titlebar-wifi-settings .win-title span:last-child');
+  if (titleEl && titleMap[tab]) titleEl.textContent = titleMap[tab];
   // Sync tab states with current networkSettings
   if (tab === 'wifi') wsUpdateWifiTab();
   if (tab === 'airplane') wsUpdateAirplaneTab();
@@ -14454,8 +14724,8 @@ function initChapterMissionNotifications(chapterId, playChime = false) {
       source: 'Zmail',
       icon: '📧',
       iconType: 'mail',
-      title: 'New Email: Business Support Alert',
-      body: 'Subject: URGENT: Your Account Requires Immediate Verification. Click to inspect in Zmail.',
+      title: 'New Email: PayPal Rewards Prize Alert',
+      body: 'Subject: CONGRATULATIONS: You Won ₱1,000,000 Pesos! Claim Your Prize Now. Click to inspect in Zmail.',
       time: 'Just now',
       app: 'gmail',
       emailId: 1
@@ -15190,6 +15460,7 @@ document.addEventListener('pointerdown', (e) => {
 // Start game with Title Menu on load
 window.addEventListener('DOMContentLoaded', () => {
   loadCategoriesProgress();
+  loadPhishingProgress();
   initTitleParticles();
   initPreAssessment();
   initSimulationNotifications();
@@ -16034,6 +16305,254 @@ function _htmlEsc(str) {
 }
 
 /* ===========================================================
+   PHISH TUTORIAL — Inline Guided Walkthrough
+   Pure inline text highlights & direct element instructions.
+   NO step modals, NO popup containers, NO screen overlays.
+=========================================================== */
+
+const PhishTutorial = (() => {
+  let _active = false;
+  let _step = 0;
+  let _currentTarget = null;
+  let _done = false;
+
+  const STEPS = [
+    // 1. Ryan: "Click Flag to mark this suspicious email for investigation."
+    {
+      id: 'flag_intro',
+      targetId: 'flag-mode-btn',
+      text: 'Click Flag to mark this suspicious email for investigation.',
+      requireAction: 'flagModeOn',
+      state: 'speaking'
+    },
+    // 2. Ryan: "Check the sender's address for unusual spelling or a suspicious domain."
+    {
+      id: 'flag_sender',
+      targetSelector: '.email-meta-value .flaggable',
+      text: "Check the sender's address for unusual spelling or a suspicious domain.",
+      requireAction: 'senderFlagged',
+      state: 'speaking'
+    },
+    // 3. Ryan: "Scammers use urgency to pressure you into acting quickly."
+    {
+      id: 'flag_urgency',
+      targetSelector: '.email-body-text .flaggable[data-flag-type="false_urgency"]',
+      text: 'Scammers use urgency to pressure you into acting quickly.',
+      requireAction: 'urgencyFlagged',
+      state: 'speaking'
+    },
+    // 4. Ryan: "Inspect the suspicious link — hover or flag it to see where it really goes."
+    {
+      id: 'flag_link',
+      targetSelector: '.email-body-text .flaggable[data-flag-type="suspicious_link"]',
+      text: 'Inspect the suspicious link — hover or flag it to see where it really goes.',
+      requireAction: 'linkFlagged',
+      state: 'speaking'
+    },
+    // 5. Ryan: "Click Investigate Website to inspect the destination safely."
+    {
+      id: 'open_website',
+      targetSelector: '.email-view-website-btn',
+      text: 'Click Investigate Website to inspect the destination safely.',
+      requireAction: 'websiteOpened',
+      state: 'speaking'
+    },
+    // 6. Ryan: "Inspect the URL carefully. Does the domain match the legitimate organization?"
+    {
+      id: 'browser_url_inspect',
+      targetSelector: '.browser-omnibox-wrap',
+      text: 'Inspect the URL carefully. Does the domain match the legitimate organization?',
+      requireAction: 'urlInspected',
+      state: 'thinking'
+    },
+    // 7. Decision — all 6 evidence steps done; highlight classification buttons and show final message.
+    {
+      id: 'decision',
+      text: "Great job investigating the evidence! Now decide whether this email is phishing or legitimate. Choose one of the highlighted buttons.",
+      requireAction: 'verdictSubmitted',
+      state: 'speaking'
+    }
+  ];
+
+  function _getTarget(step) {
+    if (step.targetId) return document.getElementById(step.targetId);
+    if (step.targetSelector) return document.querySelector(step.targetSelector);
+    return null;
+  }
+
+  function _clearHighlight() {
+    if (_currentTarget) {
+      _currentTarget.classList.remove('phish-tutorial-highlight');
+      _currentTarget = null;
+    }
+    // Always clear the flag-button blink in case we are leaving step 1
+    const flagBtn = document.getElementById('flag-mode-btn');
+    if (flagBtn) flagBtn.classList.remove('tutorial-flag-blink');
+    const oldCallout = document.getElementById('ptt-inline-callout');
+    if (oldCallout) oldCallout.remove();
+  }
+
+  function _showStep(idx) {
+    if (idx >= STEPS.length) {
+      _finish();
+      return;
+    }
+
+    _step = idx;
+    const step = STEPS[idx];
+
+    _clearHighlight();
+
+    setTimeout(() => {
+      // Step 5: browser inspection
+      if (step.id === 'browser_url_inspect') {
+        const win = document.getElementById('win-browser');
+        if (win) {
+          win.classList.remove('hidden', 'minimized');
+          focusWindow('browser');
+        }
+      }
+
+      // Step 7: decision — all 6 evidence steps completed
+      if (step.id === 'decision') {
+        // Bring Gmail back into front/focus
+        openApp('gmail');
+        focusWindow('gmail');
+
+        // Only now — after all evidence is investigated — add the tutorial highlight to both
+        // classification buttons. Visibility and layout are unchanged; only the highlight class
+        // is added here.
+        const rBtn = document.getElementById('report-btn');
+        const lBtn = document.getElementById('legit-btn');
+        if (rBtn) rBtn.classList.add('btn-pulse-highlight');
+        if (lBtn) lBtn.classList.add('btn-pulse-highlight');
+
+        // Show Ryan's final instruction through his existing dialogue interface.
+        // The Phishing / Non-phishing buttons are NOT placed inside the dialogue box.
+        if (typeof RyanGuide !== 'undefined') {
+          RyanGuide.speak([{ text: step.text, state: 'speaking' }]);
+        }
+        return;
+      }
+
+      const target = _getTarget(step);
+      if (target) {
+        _currentTarget = target;
+        target.classList.add('phish-tutorial-highlight');
+        // Step 1 only: also add the vivid amber border-blink so the flag button is unmissable
+        if (step.id === 'flag_intro') {
+          target.classList.add('tutorial-flag-blink');
+        }
+        target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Display dialogue through Ryan's character interface
+      if (typeof RyanGuide !== 'undefined') {
+        RyanGuide.speak([{ text: step.text, state: step.state || 'speaking' }]);
+
+        const continueBtn = document.getElementById('ryan-continue-btn');
+        if (step.id === 'browser_url_inspect') {
+          // Allow player to inspect URL by clicking URL bar OR dialogue continue button
+          if (continueBtn) {
+            continueBtn.classList.remove('hidden');
+            const label = document.getElementById('ryan-continue-label');
+            if (label) label.textContent = 'URL INSPECTED ➔';
+            continueBtn.onclick = function() {
+              continueBtn.onclick = () => RyanGuide.advance();
+              notify('urlInspected');
+            };
+          }
+          const urlInput = document.getElementById('browser-url-input');
+          const omnibox = document.querySelector('.browser-omnibox-wrap');
+          const onInspect = () => {
+            if (urlInput) urlInput.removeEventListener('click', onInspect);
+            if (omnibox) omnibox.removeEventListener('click', onInspect);
+            notify('urlInspected');
+          };
+          if (urlInput) urlInput.addEventListener('click', onInspect, { once: true });
+          if (omnibox) omnibox.addEventListener('click', onInspect, { once: true });
+        } else {
+          // For interactive steps 1-4, advance only upon required interaction
+          if (continueBtn) continueBtn.classList.add('hidden');
+        }
+      }
+    }, step.id === 'browser_url_inspect' ? 250 : 50);
+  }
+
+  function notify(event) {
+    if (!_active || _done) return;
+    const step = STEPS[_step];
+    if (!step) return;
+
+    if (step.requireAction === event) {
+      setTimeout(() => _showStep(_step + 1), 160);
+    }
+  }
+
+  function finishTutorial() {
+    _finish();
+  }
+
+  function _finish() {
+    _done = true;
+    _active = false;
+    _clearHighlight();
+
+    const rBtn = document.getElementById('report-btn');
+    const lBtn = document.getElementById('legit-btn');
+    if (rBtn) rBtn.classList.remove('btn-pulse-highlight');
+    if (lBtn) lBtn.classList.remove('btn-pulse-highlight');
+
+    // Clean up any remaining legacy elements if present
+    const oldOverlay = document.getElementById('phish-tutorial-overlay');
+    if (oldOverlay) oldOverlay.remove();
+    const oldTooltip = document.getElementById('phish-tutorial-tooltip');
+    if (oldTooltip) oldTooltip.remove();
+    const oldCallout = document.getElementById('ptt-inline-callout');
+    if (oldCallout) oldCallout.remove();
+    const oldModal = document.getElementById('phish-edu-summary-modal');
+    if (oldModal) oldModal.remove();
+    const oldWidget = document.getElementById('url-investigation-widget');
+    if (oldWidget) oldWidget.remove();
+
+    // Unlock sticky notes checklist and update UI
+    setTimeout(() => {
+      updateStickyNoteForPhase('phishing');
+      if (typeof showStickyNote === 'function') showStickyNote();
+      if (typeof highlightStickyNotesHint === 'function') highlightStickyNotesHint();
+
+      openApp('gmail');
+      focusWindow('gmail');
+    }, 200);
+  }
+
+  function start() {
+    if (_done || _active) return;
+    if (gameState.emailResults.length > 0) return;
+    const emailObj = ch1InboxEmails[gameState.currentEmail];
+    if (!emailObj || emailObj.id !== 1) return;
+
+    if (typeof RyanGuide !== 'undefined') {
+      RyanGuide.dismiss();
+    }
+
+    _active = true;
+    _showStep(0);
+  }
+
+  function isDone() { return _done; }
+  function isActive() { return _active; }
+
+  return {
+    start,
+    notify,
+    isDone,
+    isActive,
+    finishTutorial
+  };
+})();
+
+/* ===========================================================
    RYAN GUIDE SYSTEM - IT Support Mentor
    -----------------------------------------------------------
    Ryan is the trainee's personal IT Support Mentor.
@@ -16171,7 +16690,10 @@ const RyanGuide = (() => {
     const refs = el();
 
     _setState(step.state || 'speaking');
-    refs.choices.classList.add('hidden');
+    if (refs.choices) {
+      refs.choices.classList.add('hidden');
+      refs.choices.innerHTML = '';
+    }
     refs.continueBtn.classList.remove('hidden');
 
     const isLast = _queue.length === 1;
@@ -16254,106 +16776,59 @@ const RyanGuide = (() => {
       _skipTyping();
       return;
     }
-    _queue.shift();
+    const current = _queue.shift();
+    if (current && typeof current.action === 'function') {
+      try { current.action(); } catch(e) {}
+    }
     if (_queue.length > 0) {
       _showStep();
     } else {
-      const cb = _onDoneCallback;
-      _onDoneCallback = null;
       _hide();
-      if (cb) setTimeout(cb, 350);
-    }
-  }
-
-  /**
-   * Ask an interactive mentoring question with choices
-   */
-  function ask(question, choices, opts) {
-    opts = opts || {};
-    _queue = [{ text: question, state: 'thinking' }];
-    _onDoneCallback = opts.onDone || null;
-
-    _show();
-    const refs = el();
-    _setState('thinking');
-    refs.continueBtn.classList.add('hidden');
-    refs.choices.classList.add('hidden');
-
-    _typeText(question, function() {
-      refs.choices.innerHTML = '';
-      refs.choices.classList.remove('hidden');
-      choices.forEach(function(choice, idx) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'ryan-choice-btn';
-        btn.textContent = choice.label;
-        btn.setAttribute('data-choice-idx', idx);
-        btn.addEventListener('click', function() {
-          _handleChoice(btn, choice, choices);
-        });
-        refs.choices.appendChild(btn);
-      });
-    });
-  }
-
-  function _handleChoice(btn, choice, allChoices) {
-    const refs = el();
-    refs.choices.querySelectorAll('.ryan-choice-btn').forEach(function(b) {
-      b.disabled = true;
-      if (b !== btn) b.style.opacity = '0.45';
-    });
-
-    if (choice.correct) {
-      btn.classList.add('ryan-correct');
-      _setState('success');
-    } else {
-      btn.classList.add('ryan-wrong');
-      _setState('concerned');
-      setTimeout(function() {
-        const btns = refs.choices.querySelectorAll('.ryan-choice-btn');
-        allChoices.forEach(function(c, i) {
-          if (c.correct && btns[i]) btns[i].classList.add('ryan-correct');
-        });
-      }, 500);
-    }
-
-    if (choice.reply) {
-      setTimeout(function() {
-        refs.choices.classList.add('hidden');
-        refs.continueBtn.classList.remove('hidden');
-        refs.continueLabel.textContent = 'TAP / CLICK TO CONTINUE';
-        _queue = [{ text: choice.reply, state: choice.correct ? 'success' : 'concerned' }];
-        _showStep();
-      }, 800);
-    } else {
-      setTimeout(function() {
+      if (typeof _onDoneCallback === 'function') {
         const cb = _onDoneCallback;
         _onDoneCallback = null;
-        _hide();
-        if (cb) setTimeout(cb, 400);
-      }, 1200);
+        try { cb(); } catch(e) {}
+      }
+    }
+  }
+
+  function ask(question, choices, callback) {
+    speak([{ text: question, state: 'thinking' }]);
+    const refs = el();
+    if (refs.continueBtn) refs.continueBtn.classList.add('hidden');
+    if (refs.choices) {
+      refs.choices.classList.remove('hidden');
+      refs.choices.innerHTML = '';
+      (choices || []).forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ryan-choice-btn' + (c && c.className ? ' ' + c.className : '');
+        btn.textContent = (c && c.text) ? c.text : c;
+        btn.onclick = () => {
+          refs.choices.classList.add('hidden');
+          if (typeof callback === 'function') callback(c && c.value !== undefined ? c.value : c);
+        };
+        refs.choices.appendChild(btn);
+      });
     }
   }
 
   function dismiss() {
-    clearTimeout(_dismissTimer);
     clearTimeout(_typeTimeout);
+    clearTimeout(_dismissTimer);
+    _dismissTimer = null;
     _typing = false;
     _queue = [];
-    _onDoneCallback = null;
     _hide();
   }
 
   function once(key, fn) {
-    if (_seen[key]) return;
+    if (_seen[key]) return false;
     _seen[key] = true;
-    fn();
+    if (typeof fn === 'function') fn();
+    return true;
   }
 
-  /**
-   * Reset all "seen" event flags so Ryan can speak again from scratch.
-   * Call this whenever Chapter 1 is restarted so Ryan's welcome fires fresh.
-   */
   function reset() {
     _seen = {};
     dismiss();
@@ -16687,3 +17162,141 @@ const IconAttention = (() => {
   }
 
 })();
+
+// ── WINDOWS UPDATE — Full Windows 10 interactive state machine ───────────────
+
+let _wuState = 'idle'; // idle | checking | paused
+
+function wuSetRing(mode) {
+  // mode: 'idle' | 'spin' | 'done' | 'paused'
+  const ringFill = document.getElementById('wu-ring-fill');
+  const ringSvg  = document.getElementById('wu-ring-svg');
+  const ringPct  = document.getElementById('wu-ring-pct');
+  const ringCheck = document.getElementById('wu-ring-check');
+  const ringIcon  = document.getElementById('wu-ring-icon');
+  if (!ringFill) return;
+
+  const CIRC = 138.23; // 2π × 22
+
+  if (mode === 'spin') {
+    ringFill.classList.add('spin-anim');
+    ringSvg && ringSvg.classList.add('spin');
+    if (ringPct) ringPct.textContent = '';
+    if (ringIcon) { ringIcon.classList.add('spinning'); ringIcon.classList.remove('hidden'); }
+    if (ringCheck) ringCheck.classList.add('hidden');
+  } else if (mode === 'paused') {
+    ringFill.classList.remove('spin-anim');
+    ringSvg && ringSvg.classList.remove('spin');
+    ringFill.style.strokeDashoffset = 60;
+    if (ringPct) ringPct.textContent = '⏸';
+    if (ringIcon) ringIcon.classList.add('hidden');
+    if (ringCheck) ringCheck.classList.add('hidden');
+  } else {
+    // done or idle
+    ringFill.classList.remove('spin-anim');
+    ringSvg && ringSvg.classList.remove('spin');
+    ringFill.style.strokeDashoffset = 0;
+    if (ringPct) ringPct.textContent = '';
+    if (ringIcon) ringIcon.classList.add('hidden');
+    if (ringCheck) ringCheck.classList.remove('hidden');
+  }
+}
+
+function wuSetHeader(title, sub) {
+  const t = document.getElementById('wu-main-status');
+  const s = document.getElementById('wu-sub-status');
+  if (t) t.textContent = title;
+  if (s) s.textContent = sub;
+}
+
+function wuCheckForUpdates() {
+  if (_wuState === 'checking') return;
+  _wuState = 'checking';
+
+  const btn = document.getElementById('wu-btn-main');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="spin-anim" width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Checking for updates…`;
+  }
+
+  wuSetRing('spin');
+  wuSetHeader('Checking for updates…', 'Looking for the latest security and quality updates for your PC.');
+
+  setTimeout(() => {
+    _wuState = 'idle';
+    wuSetRing('done');
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    wuSetHeader("✓ You're up to date", `Last checked: Today, ${timeStr}`);
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Check for updates`;
+    }
+    showToast("🔄 Windows Update: You're up to date. No new updates available.", 'success');
+  }, 2200);
+}
+
+function wuPauseUpdates(btn) {
+  if (_wuState === 'paused') {
+    _wuState = 'idle';
+    wuSetRing('done');
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    wuSetHeader("✓ You're up to date", `Last checked: Today, ${timeStr}`);
+    if (btn) btn.textContent = 'Pause updates for 7 days';
+    showToast('▶️ Windows Update resumed.', 'info');
+  } else {
+    _wuState = 'paused';
+    wuSetRing('paused');
+    wuSetHeader('Updates paused', 'Updates will resume in 7 days. You can resume at any time.');
+    if (btn) btn.textContent = 'Resume updates';
+    showToast('⏸️ Windows Update paused for 7 days.', 'info');
+  }
+}
+
+function wuToggleHistory() {
+  const panel   = document.getElementById('wu-history-panel');
+  const toggle  = document.getElementById('wu-history-toggle');
+  if (!panel) return;
+  const isHidden = panel.classList.toggle('hidden');
+  if (toggle) toggle.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" id="wu-hist-chevron"><polyline points="${isHidden ? '6,9 12,15 18,9' : '6,15 12,9 18,15'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> ${isHidden ? 'Show' : 'Hide'}`;
+}
+
+// ── ABOUT page — copy helpers ────────────────────────────────────────────────
+
+function aboutCopyWinSpecs(btn) {
+  const text = [
+    'Edition:      Windows 10 Pro',
+    'Version:      22H2',
+    'Installed on: 3/15/2026',
+    'OS build:     19045.3803',
+    'Experience:   Windows Feature Experience Pack 1000.19041.1000.0'
+  ].join('\n');
+  _aboutCopy(btn, text);
+}
+
+function aboutCopyDevSpecs(btn) {
+  const text = [
+    'Device name:  CYBERZERO-PC',
+    'Processor:    Intel(R) Core(TM) i5-1235U CPU @ 1.30GHz',
+    'RAM:          8.00 GB (7.79 GB usable)',
+    'Device ID:    A3F2-7B14-C901-D487-9EFA-2C10-B847',
+    'Product ID:   00330-80000-00000-AA579',
+    'System type:  64-bit operating system, x64-based processor'
+  ].join('\n');
+  _aboutCopy(btn, text);
+}
+
+function _aboutCopy(btn, text) {
+  try {
+    navigator.clipboard.writeText(text).then(() => {
+      if (btn) { btn.classList.add('copied'); btn.innerHTML = btn.innerHTML.replace('Copy', '✓ Copied'); }
+      showToast('📋 System info copied to clipboard!', 'success');
+      setTimeout(() => {
+        if (btn) { btn.classList.remove('copied'); btn.innerHTML = btn.innerHTML.replace('✓ Copied', 'Copy'); }
+      }, 2000);
+    });
+  } catch(e) {
+    showToast('📋 Copy: ' + text.substring(0, 60) + '…', 'info');
+  }
+}
+

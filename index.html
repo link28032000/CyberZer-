@@ -1007,8 +1007,22 @@
       </div>
     </div>
     <div class="win-body wifi-settings-body">
-      <!-- Sidebar Nav -->
+      <!-- Sidebar Nav - Windows 11 style with category groups -->
       <div class="settings-sidebar">
+        <!-- System group -->
+        <div class="settings-nav-group-label">System</div>
+        <div class="settings-nav-item" id="wsnav-display" onclick="switchWifiSettingsTab('display')">
+          <span>🖥️</span> Display
+        </div>
+        <div class="settings-nav-item" id="wsnav-sound" onclick="switchWifiSettingsTab('sound')">
+          <span>🔊</span> Sound
+        </div>
+        <div class="settings-nav-item" id="wsnav-power" onclick="switchWifiSettingsTab('power')">
+          <span>🔋</span> Power & Sleep
+        </div>
+        <div class="settings-nav-divider"></div>
+        <!-- Network group -->
+        <div class="settings-nav-group-label">Network & Internet</div>
         <div class="settings-nav-item active" id="wsnav-wifi" onclick="switchWifiSettingsTab('wifi')">
           <span><img src="assets/icons/networks/wi-fi.svg" alt="Wi-Fi" class="settings-nav-icon"></span> Wi-Fi
         </div>
@@ -1017,6 +1031,24 @@
         </div>
         <div class="settings-nav-item" id="wsnav-airplane" onclick="switchWifiSettingsTab('airplane')">
           <span><img src="assets/icons/networks/airlane mode.svg" alt="Airplane Mode" class="settings-nav-icon"></span> Airplane Mode
+        </div>
+        <div class="settings-nav-divider"></div>
+        <!-- Privacy & Security group -->
+        <div class="settings-nav-group-label">Privacy &amp; Security</div>
+        <div class="settings-nav-item" id="wsnav-privacy" onclick="switchWifiSettingsTab('privacy')">
+          <span>🔒</span> Privacy
+        </div>
+        <div class="settings-nav-item" id="wsnav-firewall" onclick="switchWifiSettingsTab('firewall')">
+          <span>🛡️</span> Windows Security
+        </div>
+        <div class="settings-nav-divider"></div>
+        <!-- Windows Update group -->
+        <div class="settings-nav-group-label">Update &amp; Security</div>
+        <div class="settings-nav-item" id="wsnav-winupdate" onclick="switchWifiSettingsTab('winupdate')">
+          <span>🔄</span> Windows Update
+        </div>
+        <div class="settings-nav-item" id="wsnav-about" onclick="switchWifiSettingsTab('about')">
+          <span>ℹ️</span> About
         </div>
       </div>
       <!-- Main Content -->
@@ -1105,6 +1137,8 @@
                 <div class="air-transmitter-name">Wi-Fi</div>
                 <div class="air-transmitter-sub">Suspended in airplane mode</div>
               </div>
+              
+              
               <span class="air-status-active" id="ws-air-wifi-status">Active</span>
             </div>
             <div class="air-transmitter-row">
@@ -1129,6 +1163,336 @@
             <p>"Airplane Mode disables all wireless transmitters — Wi-Fi, Bluetooth, and mobile data. Enable it only when required in restricted areas."</p>
           </div>
         </div>
+
+        <!-- Display Tab (placeholder) -->
+        <div id="wstab-display" class="hidden-init">
+          <div class="settings-page-title">🖥️ Display</div>
+          <div class="settings-section-header">Brightness &amp; Color</div>
+          <div style="color:#64748b;font-size:13px;padding:12px 0;">Display settings are managed by your hardware. Adjust brightness using the keyboard function keys.</div>
+          <div class="ws-status-row" style="margin-top:10px;">
+            <div><div class="ws-status-label-primary">Night Light</div><div class="ws-status-label-secondary">Reduces blue light in the evening</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('🌙 Night Light toggled','info')">Turn On</button>
+          </div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Scale</div><div class="ws-status-label-secondary">150% (Recommended)</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('📐 Scale settings require sign-out to apply.','info')">Edit</button>
+          </div>
+        </div>
+
+        <!-- Sound Tab (placeholder) -->
+        <div id="wstab-sound" class="hidden-init">
+          <div class="settings-page-title">🔊 Sound</div>
+          <div class="settings-section-header">Output</div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Speakers</div><div class="ws-status-label-secondary">Default — Realtek HD Audio</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('🔊 Volume mixer opened','info')">Configure</button>
+          </div>
+          <div class="settings-section-header settings-section-header-mt">Input</div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Microphone</div><div class="ws-status-label-secondary">Default — Internal Mic</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('🎤 Microphone settings','info')">Configure</button>
+          </div>
+        </div>
+
+        <!-- Power Tab (placeholder) -->
+        <div id="wstab-power" class="hidden-init">
+          <div class="settings-page-title">🔋 Power &amp; Sleep</div>
+          <div class="settings-section-header">Battery</div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Battery Saver</div><div class="ws-status-label-secondary">Turns on automatically at 20%</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('🔋 Battery Saver updated','info')">Turn On</button>
+          </div>
+          <div class="settings-section-header settings-section-header-mt">Sleep</div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Sleep after</div><div class="ws-status-label-secondary">When plugged in: 30 minutes</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('⚡ Sleep timer saved','info')">Edit</button>
+          </div>
+        </div>
+
+        <!-- Privacy Tab (placeholder) -->
+        <div id="wstab-privacy" class="hidden-init">
+          <div class="settings-page-title">🔒 Privacy</div>
+          <div class="settings-section-header">Permissions</div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Location</div><div class="ws-status-label-secondary">Apps can access your location</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('📍 Location access updated','info')">Turn Off</button>
+          </div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Camera</div><div class="ws-status-label-secondary">Apps can use your camera</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('📷 Camera access updated','info')">Turn Off</button>
+          </div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Microphone</div><div class="ws-status-label-secondary">Apps can use your microphone</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('🎤 Microphone access updated','info')">Turn Off</button>
+          </div>
+        </div>
+
+        <!-- Firewall/Windows Security Tab (placeholder) -->
+        <div id="wstab-firewall" class="hidden-init">
+          <div class="settings-page-title">🛡️ Windows Security</div>
+          <div class="settings-section-header">Protection Areas</div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Virus &amp; Threat Protection</div><div class="ws-status-label-secondary" style="color:#4ade80">✓ No action needed</div></div>
+            <span style="color:#4ade80;font-size:18px;">✓</span>
+          </div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">Firewall &amp; Network Protection</div><div class="ws-status-label-secondary" style="color:#4ade80">✓ Active on all networks</div></div>
+            <span style="color:#4ade80;font-size:18px;">✓</span>
+          </div>
+          <div class="ws-status-row">
+            <div><div class="ws-status-label-primary">App &amp; Browser Control</div><div class="ws-status-label-secondary" style="color:#fb923c">⚠️ SmartScreen is off</div></div>
+            <button type="button" class="ws-toggle-btn" onclick="showToast('🛡️ App &amp; Browser Control settings opened','info')">Fix now</button>
+          </div>
+        </div>
+
+        <!-- Windows Update Tab -->
+        <div id="wstab-winupdate" class="hidden-init">
+
+          <!-- ── Top bar with back chevron style header ── -->
+          <div class="wu10-header">
+            <div class="wu10-header-icon">
+              <!-- Animated update ring (CSS-animated SVG) -->
+              <div class="wu10-ring-wrap" id="wu-ring-wrap">
+                <svg class="wu10-ring" viewBox="0 0 52 52" id="wu-ring-svg">
+                  <circle class="wu10-ring-track" cx="26" cy="26" r="22"/>
+                  <circle class="wu10-ring-fill" cx="26" cy="26" r="22" id="wu-ring-fill" style="stroke-dashoffset:0;"/>
+                </svg>
+                <div class="wu10-ring-inner" id="wu-ring-inner">
+                  <span class="wu10-ring-pct" id="wu-ring-pct"></span>
+                  <svg class="wu10-ring-check" id="wu-ring-check" viewBox="0 0 24 24" fill="none">
+                    <polyline points="4,13 9,18 20,7" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <svg class="wu10-ring-update-icon hidden" id="wu-ring-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4v4M12 4l-2 2M12 4l2 2" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12a8 8 0 0 1 8-8" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M20 12a8 8 0 0 1-8 8" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 20v-4M12 20l-2-2M12 20l2-2" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="wu10-header-text">
+              <div class="wu10-main-status" id="wu-main-status">You're up to date</div>
+              <div class="wu10-sub-status" id="wu-sub-status">Last checked: Today, 6:05 PM</div>
+            </div>
+          </div>
+
+          <!-- ── Action buttons row ── -->
+          <div class="wu10-actions-row" id="wu-actions-row">
+            <button type="button" class="wu10-btn-primary" id="wu-btn-main" onclick="wuCheckForUpdates()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">
+                <path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Check for updates
+            </button>
+            <button type="button" class="wu10-btn-ghost" onclick="wuPauseUpdates(this)" id="wu-pause-btn">
+              Pause updates for 7 days
+            </button>
+          </div>
+
+          <!-- ── Collapsible Update history ── -->
+          <div class="wu10-section-label" style="margin-top:18px;">
+            <span>Update history</span>
+            <button type="button" class="wu10-history-toggle" id="wu-history-toggle" onclick="wuToggleHistory()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" id="wu-hist-chevron">
+                <polyline points="6,9 12,15 18,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Show
+            </button>
+          </div>
+          <div class="wu10-history-panel hidden" id="wu-history-panel">
+            <div class="wu10-hist-row">
+              <div class="wu10-hist-dot wu10-dot-ok"></div>
+              <div class="wu10-hist-info">
+                <div class="wu10-hist-name">2026-10 Cumulative Update for Windows 10 Version 22H2 (KB5031455)</div>
+                <div class="wu10-hist-meta">Successfully installed &middot; 10/13/2026</div>
+              </div>
+            </div>
+            <div class="wu10-hist-row">
+              <div class="wu10-hist-dot wu10-dot-ok"></div>
+              <div class="wu10-hist-info">
+                <div class="wu10-hist-name">Windows Defender Antivirus — Security Intelligence Update (KB2267602)</div>
+                <div class="wu10-hist-meta">Successfully installed &middot; 10/13/2026</div>
+              </div>
+            </div>
+            <div class="wu10-hist-row">
+              <div class="wu10-hist-dot wu10-dot-ok"></div>
+              <div class="wu10-hist-info">
+                <div class="wu10-hist-name">Windows Defender Update (KB2267588)</div>
+                <div class="wu10-hist-meta">Successfully installed &middot; 10/10/2026</div>
+              </div>
+            </div>
+            <div class="wu10-hist-row">
+              <div class="wu10-hist-dot wu10-dot-ok"></div>
+              <div class="wu10-hist-info">
+                <div class="wu10-hist-name">2026-09 Cumulative Update (KB5030219)</div>
+                <div class="wu10-hist-meta">Successfully installed &middot; 9/12/2026</div>
+              </div>
+            </div>
+            <div class="wu10-hist-row">
+              <div class="wu10-hist-dot wu10-dot-fail"></div>
+              <div class="wu10-hist-info">
+                <div class="wu10-hist-name">Feature Update to Windows 10 22H2</div>
+                <div class="wu10-hist-meta">Failed &middot; Error 0x800F0922 &middot; 8/24/2026</div>
+              </div>
+            </div>
+            <div class="wu10-hist-row">
+              <div class="wu10-hist-dot wu10-dot-ok"></div>
+              <div class="wu10-hist-info">
+                <div class="wu10-hist-name">.NET Framework 4.8 Update (KB5011048)</div>
+                <div class="wu10-hist-meta">Successfully installed &middot; 7/8/2026</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Advanced options link ── -->
+          <div class="wu10-advanced-row" onclick="showToast('⚙️ Advanced Windows Update options opened.','info')">
+            <span>Advanced options</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="wu10-advanced-row" onclick="showToast('📅 Active hours: 8:00 AM – 11:00 PM','info')">
+            <span>Change active hours</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="wstab-about" class="hidden-init">
+
+          <!-- ── PC Hero block ── -->
+          <div class="about10-hero">
+            <div class="about10-pc-icon">
+              <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+                <rect x="4" y="8" width="72" height="48" rx="4" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+                <rect x="10" y="14" width="60" height="36" rx="2" fill="#0ea5e9" opacity="0.15"/>
+                <rect x="10" y="14" width="60" height="36" rx="2" stroke="#0ea5e9" stroke-width="1" fill="none"/>
+                <!-- Win logo on screen -->
+                <rect x="32" y="26" width="7" height="7" fill="#4FC3F7"/>
+                <rect x="41" y="26" width="7" height="7" fill="#81D4FA"/>
+                <rect x="32" y="35" width="7" height="7" fill="#29B6F6"/>
+                <rect x="41" y="35" width="7" height="7" fill="#0288D1"/>
+                <!-- Stand -->
+                <rect x="32" y="56" width="16" height="5" rx="1" fill="#334155"/>
+                <rect x="24" y="60" width="32" height="4" rx="2" fill="#334155"/>
+              </svg>
+            </div>
+            <div class="about10-hero-text">
+              <div class="about10-pc-name">CYBERZERO-PC</div>
+              <div class="about10-pc-sub">Intel Core i5-1235U · 8 GB RAM · Windows 10 Pro</div>
+              <button type="button" class="about10-rename-btn" onclick="showToast('✏️ Rename your PC requires a restart to apply changes.','info')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Rename this PC
+              </button>
+            </div>
+          </div>
+
+          <!-- ── Windows specifications ── -->
+          <div class="about10-section-title">Windows specifications</div>
+          <div class="about10-spec-table">
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Edition</div>
+              <div class="about10-spec-value" id="abt-edition">Windows 10 Pro</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Version</div>
+              <div class="about10-spec-value" id="abt-version">22H2</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Installed on</div>
+              <div class="about10-spec-value" id="abt-installed">3/15/2026</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">OS build</div>
+              <div class="about10-spec-value" id="abt-build">19045.3803</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Experience</div>
+              <div class="about10-spec-value">Windows Feature Experience Pack 1000.19041.1000.0</div>
+            </div>
+          </div>
+          <div class="about10-copy-row">
+            <button type="button" class="about10-copy-btn" onclick="aboutCopyWinSpecs(this)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+
+          <!-- ── Device specifications ── -->
+          <div class="about10-section-title" style="margin-top:14px;">Device specifications</div>
+          <div class="about10-spec-table">
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Device name</div>
+              <div class="about10-spec-value" id="abt-devname">CYBERZERO-PC</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Processor</div>
+              <div class="about10-spec-value">Intel(R) Core(TM) i5-1235U CPU @ 1.30GHz &nbsp; 1.30 GHz</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Installed RAM</div>
+              <div class="about10-spec-value">8.00 GB (7.79 GB usable)</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Device ID</div>
+              <div class="about10-spec-value" style="font-family:monospace;font-size:11px;letter-spacing:0.5px;">A3F2-7B14-C901-D487-9EFA-2C10-B847</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Product ID</div>
+              <div class="about10-spec-value" id="abt-pid">00330-80000-00000-AA579</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">System type</div>
+              <div class="about10-spec-value">64-bit operating system, x64-based processor</div>
+            </div>
+            <div class="about10-spec-row">
+              <div class="about10-spec-label">Pen and touch</div>
+              <div class="about10-spec-value">No pen or touch input is available for this display</div>
+            </div>
+          </div>
+          <div class="about10-copy-row">
+            <button type="button" class="about10-copy-btn" onclick="aboutCopyDevSpecs(this)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+
+          <!-- ── Related links ── -->
+          <div class="about10-section-title" style="margin-top:14px;">Related links</div>
+          <div class="about10-links">
+            <div class="about10-link-row" onclick="showToast('🔑 Windows is activated with a digital license linked to your Microsoft account.','info')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round"/></svg>
+              <span>BitLocker settings</span>
+              <svg class="about10-link-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="about10-link-row" onclick="showToast('🔑 Product key managed by organization. Contact your IT administrator.','info')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Change product key or upgrade your edition of Windows</span>
+              <svg class="about10-link-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="about10-link-row" onclick="switchWifiSettingsTab('winupdate')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 4v4M12 4l-2 2M12 4l2 2M4 12a8 8 0 0 1 8-8M20 12a8 8 0 0 1-8 8M12 20v-4M12 20l-2-2M12 20l2-2" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Windows Update</span>
+              <svg class="about10-link-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="about10-link-row" onclick="showToast('📋 Advanced system info: Available RAM 7.79 GB / 8 GB — C: drive 180 GB free of 256 GB','info')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="#38bdf8" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/></svg>
+              <span>Advanced system info</span>
+              <svg class="about10-link-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <!-- ── Activation banner ── -->
+          <div class="about10-activation-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#4ade80" stroke-width="2" stroke-linejoin="round"/></svg>
+            <div>
+              <div class="about10-act-title">Windows is activated</div>
+              <div class="about10-act-sub">Windows is activated with a digital license linked to your Microsoft account.</div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   </div>
